@@ -1,0 +1,16 @@
+.topbar-fix{
+    width: 100%;
+    height: 20px;
+    background-color: var(--amarelo-base);
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    
+}
+
+.topbar-fix-h1{
+    font-family: var(--fonte-inter);
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}

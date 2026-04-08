@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import TopbarFix from './components/client-web-side/portfolio-all-comp/topbar-allpage/topbar-fix.jsx'
+import Navbar from './components/client-web-side/portfolio-all-comp/navbar/navbar.jsx'
+import SectionNomeBanner from './components/client-web-side/portfolio-all-comp/section-nome-banner/section-nome-banner.jsx'
+
 
 function App() {
-
   return (
     <>
-      <testeGus/>
+      <TopbarFix />
+      <Navbar/>
+      <SectionNomeBanner/>
     </>
   )
 }
