@@ -12,10 +12,6 @@ function SectionNomeBanner() {
                     produtos físicos de alto impacto.
                 </p>
             </div>
-
-            <div className='div-n2'>
-                <img className='foto-banner' src="/logo-tons/foto-grupo.jpeg" alt="" />
-            </div>
         </section>
     )
 }

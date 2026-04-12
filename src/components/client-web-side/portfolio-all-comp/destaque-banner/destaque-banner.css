@@ -1,0 +1,105 @@
+:root {
+    --amarelo-base: #F7D708;
+    --preto-neutro: #1A1A1A;
+    --cinza-base: #E5E5E5;
+    --cinza-escuro: #6b6b6b;
+    --branco: #F2F2F2;
+    --fonte-inter: 'Inter';
+    --fonte-space: 'Space Grotesk';
+
+}
+
+.section {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.spotlight {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* imagem de fundo */
+.spotlight-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* overlay escuro */
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right,
+            rgba(0, 0, 0, 0.75) 30%,
+            rgba(0, 0, 0, 0.3) 60%,
+            rgba(0, 0, 0, 0) 100%);
+}
+
+/* conteúdo */
+.content {
+    position: absolute;
+    top: 50%;
+    left: 60px;
+    transform: translateY(-50%);
+    color: #fff;
+    max-width: 500px;
+}
+
+/* badge amarelo */
+.badge {
+    display: inline-block;
+    background: #f5c400;
+    color: #000;
+    font-family: var(--fonte-inter);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px 10px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+/* título */
+.content h1 {
+    font-family: var(--fonte-inter);
+    font-size: 48px;
+    line-height: 1.05;
+    margin: 0 0 15px;
+    font-weight: 800;
+}
+
+/* descrição */
+.content p {
+    font-family: var(--fonte-inter);
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+/* botão */
+.btn {
+      font-family: var(--fonte-space);
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 12px 22px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #eaeaea;
+}
+
+.btn span {
+    font-size: 18px;
+}
