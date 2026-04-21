@@ -19,6 +19,35 @@
 
 }
 
+.active1 {
+    display: flex;
+    width: 50%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    padding: 1.5%;
+
+}
+
+.active3 {
+    display: flex;
+    width: 50%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: right;
+    padding: 1.5%;
+
+}
+
+.lista-salvos {
+    width: 35px;
+    cursor: pointer;
+}
+
+.icon {
+    width: 25px;
+    margin-left: 10px;
+}
 
 
 .active a {
@@ -29,7 +58,7 @@
 
 }
 
-.active a:hover{
+.active a:hover {
     color: var(--preto-neutro);
     transition: 0.25s;
     font-weight: bolder;
@@ -60,4 +89,10 @@
 
 .active a:hover::before {
     width: 100%;
+}
+
+.logo-inicio {
+    width: 150px;
+    cursor: pointer;
+
 }

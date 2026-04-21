@@ -22,21 +22,21 @@ function Footer() {
                             <p>email@email.com</p>
                         </div>
                         <div>
-                            <img className='icon' src="/icons/maps-and-flags.png" alt="" />
+                            <img className='icon' src="/icons/illed-point.png" alt="" />
                             <p>endereco</p>
                         </div>
                         <div>
-                            <img className='icon' src="/icons/clock.png" alt="" />
+                            <img className='icon' src="/icons/time.png" alt="" />
                             <p>Seg. a Sex das 08h às 18h</p>
                         </div>
 
                     </div>
                     <div className="qua-div-3">
                         <button>
-                            E
+                            <img className='icon-bu' src="/icons/instagram.png" alt="" />
                         </button>
                         <button>
-                            R
+                            <img className='icon-bu' src="/icons/facebook.png" alt="" />
                         </button>
                         <button>
                             T

@@ -34,7 +34,7 @@
 
 .qua-1 h1 {
     font-family: var(--fonte-space);
-    font-size: 24px;
+    font-size: 40px;
     font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 15px;
@@ -88,8 +88,8 @@
 }
 
 .qua-div-3 button {
-    width: 35px;
-    height: 35px;
+    width: 50px;
+    height: 50px;
     border-radius: 8px;
     border: 1px solid var(--cinza-escuro);
     background-color: transparent;
@@ -102,9 +102,13 @@
 }
 
 .qua-div-3 button:hover {
-    background-color: var(--amarelo-base);
+    background-color: var(--preto-neutro);
     color: var(--preto-neutro);
     border-color: var(--amarelo-base);
+}
+
+.icon-bu{
+    width: 25px;
 }
 
 /* Seção Inferior: Copyright */

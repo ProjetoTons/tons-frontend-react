@@ -1,0 +1,123 @@
+:root {
+  --amarelo-base: #F7D708;
+  --preto-neutro: #1A1A1A;
+  --cinza-base: #E5E5E5;
+  --cinza-escuro: #6b6b6b;
+  --branco: #F2F2F2;
+  --fonte-inter: 'Inter';
+  --fonte-space: 'Space Grotesk';
+
+}
+
+* {
+  font-family: var(--fonte-inter);
+}
+
+
+/* Fundo escuro que cobre o site apenas quando aberto */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  /* Um abaixo do drawer */
+  cursor: pointer;
+}
+
+/* Container lateral (Igual ao protótipo) */
+.drawer-container {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  /* Começa escondido à direita */
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  background: #E0E0E0;
+  z-index: 9999;
+  transition: right 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+  padding: 1% ;
+}
+
+/* Classe que ativa a abertura */
+.drawer-container.open {
+  right: 0;
+}
+
+/* Itens de dentro (Brancos para destacar no fundo cinza) */
+.drawer-card {
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 15px;
+  gap: 15px;
+  border-radius: 4px;
+}
+
+.card-img-box img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+}
+
+/* Botão Amarelo no rodapé fixo */
+.btn-send-list {
+  width: 100%;
+  padding: 18px;
+  background: #F7D708;
+  /* Seu amarelo base */
+  border: none;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.drawer-header{
+  height: 15%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.drawer-close{
+  border: solid #E5E5E5;
+  background-color: #E5E5E5 ;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.drawer-footer{
+  display: flex;
+  height: 10%;
+  align-items: end;
+  padding-bottom: 10%;
+}
+
+.drawer-content{
+  height: 80%;
+  display: flex;
+  align-items: center;
+}
+
+.espec1{
+
+}
+
+.espec2{
+  display: flex;
+  justify-content: center;
+  font-size: 25px;
+}
+
+
+
+.espec3{
+ 
+}
