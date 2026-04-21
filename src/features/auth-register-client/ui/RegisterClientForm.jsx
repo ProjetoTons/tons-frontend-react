@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import InputForm from "@/components/Auth/atom/InputForm"; 
+import InputForm from "@/shared/ui/molecules/FormField/FormField"; 
 
 export default function RegisterClient() {
 

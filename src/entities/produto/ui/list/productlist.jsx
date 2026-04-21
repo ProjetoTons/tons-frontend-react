@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Card from "../card/card.jsx";
-import SavedDrawer from "../savedrawer/SaveDrawer.jsx";
+import SavedDrawer from "@/features/salvar-produto/ui/SaveDrawer.jsx";
 import './list.css';
 
 export default function ProductList({ produtos }) {

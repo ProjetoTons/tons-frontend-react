@@ -1,4 +1,3 @@
-// components/Auth/atom/InputForm.jsx
 export default function InputForm({ label, type = "text", placeholder, name, disabled, value, onChange }) {
   const inputId = `input-${name}`;
 

@@ -1,20 +1,14 @@
 import { useState, useMemo } from "react";
-import TopNavBar from "./TopNavBar";
-import PageHeader from "./PageHeader";
-import StatsGrid from "./StatsGrid";
-import OrderTable from "./OrderTable";
-import { mockPedidos, calcularEstatisticas } from "./mockData";
+import TopNavBar from "@/widgets/topnav-grafica/TopNavBar";
+import PageHeader from "@/widgets/page-header/PageHeader";
+import StatsGrid from "@/widgets/kpi-grid/StatsGrid";
+import OrderTable from "@/widgets/order-table/OrderTable";
+import { mockPedidos, calcularEstatisticas } from "@/entities/pedido/api/mockPedidos";
 
-/**
- * PedidosPage - Página completa de Gerenciamento de Pedidos
- * Integra todos os componentes
- */
-
-function PedidosPage() {
+export default function PedidosPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState("pedidos");
 
-  // Filtrar pedidos baseado no search
   const pedidosFiltrados = useMemo(() => {
     if (!searchTerm) return mockPedidos;
     return mockPedidos.filter(
@@ -24,27 +18,22 @@ function PedidosPage() {
     );
   }, [searchTerm]);
 
-  // Calcular estatísticas
   const stats = useMemo(() => calcularEstatisticas(mockPedidos), []);
 
-  // Handlers
   const handleSearch = (value) => {
     setSearchTerm(value);
   };
 
   const handleFilter = () => {
     console.log("Filtro clicado");
-    // TODO: Implementar modal de filtros
   };
 
   const handleNovoPedido = () => {
     console.log("Novo pedido clicado");
-    // TODO: Implementar modal/formulário de novo pedido
   };
 
   const handleAvancar = (pedidoId) => {
     console.log("Avançar pedido:", pedidoId);
-    // TODO: Implementar lógica de avançar etapa
   };
 
   const handleNavClick = (page) => {
@@ -54,24 +43,19 @@ function PedidosPage() {
 
   return (
     <div className="bg-[#f3f3f3] min-h-screen flex flex-col">
-      {/* TopNavBar */}
       <TopNavBar onNavClick={handleNavClick} currentPage={currentPage} />
 
-      {/* Main Content */}
       <main className="flex-1 px-[64px] py-[32px] flex flex-col gap-[32px]">
-        {/* Page Header com Título, Busca e Filtros */}
         <PageHeader
           onSearch={handleSearch}
           onFilter={handleFilter}
           onNovoPedido={handleNovoPedido}
         />
 
-        {/* Stats Grid */}
         <div>
           <StatsGrid stats={stats} />
         </div>
 
-        {/* Orders Table */}
         <div className="bg-white rounded shadow-sm">
           <OrderTable
             pedidos={pedidosFiltrados}
@@ -82,5 +66,3 @@ function PedidosPage() {
     </div>
   );
 }
-
-export default PedidosPage;

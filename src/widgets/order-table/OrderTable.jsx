@@ -1,4 +1,4 @@
-import OrderRow from "./OrderRow";
+import OrderRow from "@/entities/pedido/ui/OrderRow";
 
 /**
  * OrderTable - Tabela completa de pedidos
