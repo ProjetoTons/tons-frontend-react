@@ -1,0 +1,98 @@
+@import url("../../../../index.css");
+
+
+.navtop {
+    width: 100%;
+    font-family: var(--fonte-inter);
+    display: flex;
+    justify-content: center;
+
+}
+
+.active {
+    display: flex;
+    width: 50%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 1.5%;
+
+}
+
+.active1 {
+    display: flex;
+    width: 50%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    padding: 1.5%;
+
+}
+
+.active3 {
+    display: flex;
+    width: 50%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: right;
+    padding: 1.5%;
+
+}
+
+.lista-salvos {
+    width: 35px;
+    cursor: pointer;
+}
+
+.icon {
+    width: 25px;
+    margin-left: 10px;
+}
+
+
+.active a {
+    color: #6b6b6b;
+    text-decoration: none;
+    font-style: normal;
+    font-size: small;
+
+}
+
+.active a:hover {
+    color: var(--preto-neutro);
+    transition: 0.25s;
+    font-weight: bolder;
+
+}
+
+
+/* decoração dos LINKS */
+
+.active a {
+    display: inline-block;
+    padding-bottom: 0.25rem;
+    position: relative;
+}
+
+.active a::before {
+    content: "";
+    position: absolute;
+    background-color: var(--amarelo-base);
+    right: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    transition: width 0.25s ease-out;
+
+
+}
+
+.active a:hover::before {
+    width: 100%;
+}
+
+.logo-inicio {
+    width: 150px;
+    cursor: pointer;
+
+}

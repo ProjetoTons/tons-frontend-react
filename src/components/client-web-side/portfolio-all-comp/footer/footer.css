@@ -1,0 +1,148 @@
+:root {
+  --amarelo-base: #F7D708;
+  --preto-neutro: #1A1A1A;
+  --cinza-base: #E5E5E5;
+  --cinza-escuro: #6b6b6b;
+  --branco: #F2F2F2;
+  --fonte-inter: 'Inter';
+  --fonte-space: 'Space Grotesk';
+
+}
+
+.footer {
+    background-color: var(--preto-neutro);
+    color: var(--branco);
+    padding: 60px 80px 20px 80px;
+    font-family: var(--fonte-inter), sans-serif;
+}
+
+/* Seção Superior: Colunas */
+.sec {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+/* Coluna 1: Logo e Texto */
+.qua-1 {
+    flex: 1;
+    min-width: 250px;
+}
+
+.qua-1 h1 {
+    font-family: var(--fonte-space);
+    font-size: 40px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.qua-1 p {
+    color: var(--cinza-base);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 250px;
+}
+
+/* Coluna 2: Contato e Botões Sociais */
+.qua-2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.qua-div-2 h2 {
+    color: var(--amarelo-base);
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+.qua-div-2 div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* Estilo para ícones vazios ou imagens */
+.qua-div-2 img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) saturate(100%) invert(85%) sepia(61%) saturate(2331%) hue-rotate(354deg) brightness(103%) contrast(94%); /* Cor amarela para imagens se necessário */
+}
+
+.qua-div-2 p {
+    font-size: 14px;
+    color: var(--branco);
+}
+
+/* Botões de Redes Sociais */
+.qua-div-3 {
+    display: flex;
+    gap: 10px;
+}
+
+.qua-div-3 button {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    border: 1px solid var(--cinza-escuro);
+    background-color: transparent;
+    color: var(--branco);
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qua-div-3 button:hover {
+    background-color: var(--preto-neutro);
+    color: var(--preto-neutro);
+    border-color: var(--amarelo-base);
+}
+
+.icon-bu{
+    width: 25px;
+}
+
+/* Seção Inferior: Copyright */
+.sec-2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sec-2 p {
+    font-size: 12px;
+    color: var(--cinza-escuro);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sec-2 p:last-child {
+    font-weight: 700;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .footer {
+        padding: 40px 20px;
+    }
+    .sec {
+        flex-direction: column;
+    }
+    .sec-2 {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+}

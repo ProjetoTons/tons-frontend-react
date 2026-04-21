@@ -1,1 +1,22 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Marvel:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Marvel:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap');
+
+:root {
+  --amarelo-base: #F7D708;
+  --preto-neutro: #1A1A1A;
+  --cinza-base: #E5E5E5;
+  --cinza-escuro: #6b6b6b;
+  --branco: #F2F2F2;
+  --fonte-inter: 'Inter';
+  --fonte-space: 'Space Grotesk';
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* ------------------------------------------------ */
