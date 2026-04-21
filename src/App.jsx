@@ -4,15 +4,15 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 import StatusBadge from './components/business-web-side/StatusBadge'
+import PageHeader from './components/business-web-side/PageHeader'
+import TopNavBar from './components/business-web-side/TopNavBar'
+import PedidosPage from './components/business-web-side/PedidosPage'
 
 function App() {
 
   return (
     <>
-      <StatusBadge status="andamento" />
-      <StatusBadge status="avaliacao" />
-      <StatusBadge status="nao-iniciado" />
-      <StatusBadge status="concluido" />
+    <PedidosPage />
     </>
   )
 }
