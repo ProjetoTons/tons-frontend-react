@@ -1,5 +1,5 @@
   import React from 'react';
-  import './filtros.css'; // Vamos criar este arquivo abaixo
+  import '@/features/filtrar-produtos/ui/filtrosFeatureUi.css'; // Vamos criar este arquivo abaixo
 
   function Filtros({ categoriaAtiva, aoMudar }) {
     const categorias = ["CORPORATIVO", "COMEMORAÇÕES", "FAMÍLIA"];

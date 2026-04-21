@@ -1,83 +1,10 @@
 import React, { useState } from "react";
-import InputForm from "@/shared/ui/molecules/FormField/FormField"; 
+import InputForm from "@/shared/ui/molecules/FormField/FormField";
+import { useRegisterClient } from "@/features/auth-register-client/model/RegisterClientFeatureModel";
 
 export default function RegisterClient() {
 
-  const [cpfValido, setCpfValido] = useState(false);
-  
-  const [cpf, setCpf] = useState("");
-
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: ""
-  });
-
-  const handleCpf = (e) => {
-
-    const cleanCpf = e.target.value.replace(/\D/g, "");
-
-    const aplicarMascaraCpf = (cleanCpf) => {
-      if (cleanCpf.length <= 3) return cleanCpf;
-      if (cleanCpf.length <= 6) return `${cleanCpf.slice(0, 3)}.${cleanCpf.slice(3)}`;
-      if (cleanCpf.length <= 9) return `${cleanCpf.slice(0, 3)}.${cleanCpf.slice(3, 6)}.${cleanCpf.slice(6)}`;
-      return `${cleanCpf.slice(0, 3)}.${cleanCpf.slice(3, 6)}.${cleanCpf.slice(6, 9)}-${cleanCpf.slice(9, 11)}`;
-    }
-
-    const validarCPF = (cpf) => {
-      const numeros = cpf.replace(/\D/g, '');
-      if (numeros.length !== 11 || /^(\d)\1+$/.test(numeros)) return false;
-      let soma = 0, resto;
-      for (let i = 1; i <= 9; i++) soma += parseInt(numeros.substring(i - 1, i)) * (11 - i);
-      resto = (soma * 10) % 11;
-      if (resto === 10 || resto === 11) resto = 0;
-      if (resto !== parseInt(numeros.substring(9, 10))) return false;
-      soma = 0;
-      for (let i = 1; i <= 10; i++) soma += parseInt(numeros.substring(i - 1, i)) * (12 - i);
-      resto = (soma * 10) % 11;
-      if (resto === 10 || resto === 11) resto = 0;
-      if (resto !== parseInt(numeros.substring(10, 11))) return false;
-      return true;
-    };
-
-    if (cleanCpf.length > 11) return;
-    setCpf(aplicarMascaraCpf(cleanCpf));
-
-    if (cleanCpf.length === 11) {
-      if (validarCPF(cleanCpf)) setCpfValido(true);
-      else {
-        alert("CPF Inválido")
-        setCpfValido(false);
-      }
-    } else {
-      setCpfValido(false);
-    }
-  };
-
-  const handleFullName = (e) => {
-    let nomeCompletoAtual = e.target.value;
-    const nomeCompletoFormatado = nomeCompletoAtual.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
-
-    setFormData({ ...formData, fullName: nomeCompletoFormatado });
-  };
-
-  const handleEmail = (e) => {
-    let emailAtual = e.target.value.toLowerCase().trim();
-    setFormData({ ...formData, email: emailAtual });
-  };
-
-  const handlePhone = (e) => {
-    let telefoneAtual = e.target.value.replace(/\D/g, "");
-    if (telefoneAtual.length > 11) return;
-
-    let telefoneFormatado = telefoneAtual;
-    if (telefoneAtual.length > 2) telefoneFormatado = `(${telefoneAtual.slice(0, 2)}) ${telefoneAtual.slice(2)}`;
-    if (telefoneAtual.length > 7) telefoneFormatado = `(${telefoneAtual.slice(0, 2)}) ${telefoneAtual.slice(2, 7)}-${telefoneAtual.slice(7)}`;
-
-    setFormData({ ...formData, phone: telefoneFormatado });
-  };
+  const { cpf, cpfValido, formData, handleCpf, handleFullName, handleEmail, handlePhone } = useRegisterClient();
 
   return (
     <div className="flex h-screen overflow-hidden bg-white font-sans">
@@ -104,7 +31,7 @@ export default function RegisterClient() {
 
             {/* Campo CPF */}
             <div className="w-full">
-              <label htmlFor='cpfId' className="block text-[9px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
+              <label htmlFor='cpfId' className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
                 CPF
               </label>
               <input
@@ -120,7 +47,7 @@ export default function RegisterClient() {
                   }`}
               />
             </div>
-            
+
             {/* Nome Completo */}
             <InputForm
               label="Nome Completo"
@@ -153,7 +80,7 @@ export default function RegisterClient() {
                 disabled={!cpfValido}
               />
             </div>
-            
+
             {/* Senha */}
             <InputForm
               label="Senha"
@@ -185,9 +112,9 @@ export default function RegisterClient() {
               </svg>
             </button>
           </form>
-          
+
           {/* Já tem conta */}
-          <p className="mt-4 text-center text-gray-700 text-[10px]">
+          <p className="mt-4 text-center text-gray-700 text-[11px]">
             Já tem uma conta? <a href="#" className="font-semibold text-black hover:underline">Login</a>
           </p>
         </div>

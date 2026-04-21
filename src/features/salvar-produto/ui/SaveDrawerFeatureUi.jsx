@@ -1,5 +1,5 @@
 import React from "react";
-import "./savedrawer.css";
+import "@/features/salvar-produto/ui/SaveDrawerFeatureUi.css";
 
 export default function SaveDrawer({ isOpen, onClose, savedItems = [] }) {
   return (

@@ -3,7 +3,7 @@ export default function InputForm({ label, type = "text", placeholder, name, dis
 
   return (
     <div className={`w-full ${disabled ? 'opacity-40' : 'opacity-100'}`}>
-      <label htmlFor={inputId} className="block text-[9px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
+      <label htmlFor={inputId} className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
         {label}
       </label>
       <input
