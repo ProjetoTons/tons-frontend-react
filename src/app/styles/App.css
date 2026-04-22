@@ -6,6 +6,5 @@
 
 body {
   background-color: #f5f5f5;
- font-family: Verdana, Geneva, Tahoma, sans-serif;
-
+  font-family: var(--fonte-inter), sans-serif;
 }

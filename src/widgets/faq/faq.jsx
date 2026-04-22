@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './faq.css';
 
 export default function FAQ() {
   const duvidas = [
@@ -27,26 +26,26 @@ export default function FAQ() {
   };
 
   return (
-    <section className="faq-container">
-      <h2 className="faq-title">DÚVIDAS FREQUENTES</h2>
+    <section className="max-w-[800px] mx-auto my-10 px-5 font-sans">
+      <h2 className="text-[28px] font-black mb-[30px] text-black">DÚVIDAS FREQUENTES</h2>
       
-      <div className="faq-list">
+      <div className="border-t border-[#eee]">
         {duvidas.map((item) => (
-          <div key={item.id} className="faq-item">
+          <div key={item.id} className="border-b border-[#eee]">
             <button
               onClick={() => toggleAba(item.id)}
-              className="faq-question"
+              className="w-full flex justify-between items-center py-5 bg-transparent border-none cursor-pointer text-left text-sm font-bold tracking-[1px] text-black uppercase"
             >
               <span>{item.pergunta}</span>
-              <span className={`faq-icon ${abaAberta === item.id ? 'open' : ''}`}>
+              <span className={`w-5 h-5 text-[#1d1d1d] transition-transform duration-300 ${abaAberta === item.id ? 'rotate-180' : ''}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
               </span>
             </button>
 
-            <div className={`faq-answer-container ${abaAberta === item.id ? 'show' : ''}`}>
-              <div className="faq-answer-content">
+            <div className={`overflow-hidden transition-all duration-400 ${abaAberta === item.id ? 'max-h-[200px] mt-[10px] mb-5' : 'max-h-0'}`}>
+              <div className="text-sm leading-relaxed text-[#666]">
                 {item.resposta}
               </div>
             </div>

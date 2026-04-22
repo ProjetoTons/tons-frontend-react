@@ -21,14 +21,14 @@ export default function PortfolioPage() {
       <DestaqueBanner />
       <Filtros />
 
-      <section style={{ padding: '0 40px' }}>
-        <h2>Papelaria</h2>
+      <section className="px-10">
+        <h2 className="text-2xl font-bold">Papelaria</h2>
         <ProductList produtos={produtos.filter(p => p.type === 'papelaria')} />
 
-        <h2>Banners</h2>
+        <h2 className="text-2xl font-bold">Banners</h2>
         <ProductList produtos={produtos.filter(p => p.type === 'banner')} />
 
-        <h2>Brindes</h2>
+        <h2 className="text-2xl font-bold">Brindes</h2>
         <ProductList produtos={produtos.filter(p => p.type === 'brinde')} />
       </section>
 

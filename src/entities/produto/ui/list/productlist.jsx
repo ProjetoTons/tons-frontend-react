@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Card from "../card/card.jsx";
 import SavedDrawer from "@/features/salvar-produto/ui/SaveDrawerFeatureUi.jsx";
-import './list.css';
 
 export default function ProductList({ produtos }) {
   const [salvos, setSalvos] = useState([]);
@@ -20,11 +19,11 @@ export default function ProductList({ produtos }) {
   return (
     <>
       <img
-        className='lista-salvos'
+        className='w-[35px] cursor-pointer'
         onClick={() => setIsDrawerOpen(true)}
       />
 
-      <div className="product-list">
+      <div className="flex gap-5 p-5">
         {produtos.map((produto) => (
           <Card
             key={produto.id}

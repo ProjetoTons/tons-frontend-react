@@ -1,40 +1,38 @@
 import React from "react";
-import "@/features/salvar-produto/ui/SaveDrawerFeatureUi.css";
 
 export default function SaveDrawer({ isOpen, onClose, savedItems = [] }) {
   return (
     <>
-      {/* O Overlay só existe se o drawer estiver aberto */}
-      {isOpen && <div className="drawer-overlay" onClick={onClose}></div>}
+      {isOpen && <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-[9998] cursor-pointer" onClick={onClose}></div>}
 
-      <aside className={`drawer-container ${isOpen ? "open" : ""}`}>
-        <div className="drawer-header">
-          <div className="espec1">
-            <button className="drawer-close" onClick={onClose}>✕</button>
+      <aside className={`fixed top-0 w-full max-w-[430px] h-screen bg-[#E0E0E0] z-[9999] transition-[right] duration-500 ease-in-out flex flex-col shadow-[-5px_0_15px_rgba(0,0,0,0.2)] p-[1%] ${isOpen ? 'right-0' : '-right-full'}`}>
+        <div className="h-[15%] flex flex-col justify-evenly">
+          <div>
+            <button className="border border-solid border-[#E5E5E5] bg-[#E5E5E5] text-[30px] cursor-pointer" onClick={onClose}>✕</button>
           </div>
 
-          <div className="espec2">
-            <h3>ITENS SALVOS</h3>
+          <div className="flex justify-center text-[25px]">
+            <h3 className="text-[25px] font-bold">ITENS SALVOS</h3>
 
           </div>
-          <div className="espec3">
+          <div>
             <p>Salve seus itens favoritos, para ter melhor acesso!</p>
 
           </div>
         </div>
 
 
-        <div className="drawer-content">
+        <div className="h-[80%] flex items-center">
           {savedItems.length === 0 ? (
-            <p className="drawer-empty">Nenhum item salvo ainda.</p>
+            <p>Nenhum item salvo ainda.</p>
           ) : (
             savedItems.map((item) => (
-              <div key={item.id} className="drawer-card">
-                <div className="card-img-box">
-                  <img src={item.image} alt={item.title} />
+              <div key={item.id} className="bg-white flex items-center p-[15px] mb-[15px] gap-[15px] rounded">
+                <div>
+                  <img className="w-[60px] h-[60px] object-cover" src={item.image} alt={item.title} />
                 </div>
-                <div className="card-info">
-                  <h4>{item.title}</h4>
+                <div>
+                  <h4 className="text-base font-bold">{item.title}</h4>
                   <span>{item.category}</span>
                 </div>
               </div>
@@ -42,8 +40,8 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [] }) {
           )}
         </div>
 
-        <div className="drawer-footer">
-          <button className="btn-send-list">
+        <div className="flex h-[10%] items-end pb-[10%]">
+          <button className="w-full py-[18px] bg-[#F7D708] border-none font-black text-[15px] cursor-pointer">
             ENVIAR PARA LISTA DE INTERESSE
           </button>
         </div>
