@@ -4,6 +4,7 @@ import PedidosPage from '@/pages/pedidos/PedidosPage'
 import LoginPage from '@/pages/login/LoginPage'
 import RegisterClientPage from '@/pages/register/RegisterClientPage'
 import RegisterEmployeePage from '@/pages/register/RegisterEmployeePage'
+import RegisterEnterprisePage from '@/pages/register/RegisterEnterprisePage'
 
 export function AppRouter() {
   return (
@@ -15,6 +16,7 @@ export function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/cadastro/cliente" element={<RegisterClientPage />} />
         <Route path="/cadastro/funcionario" element={<RegisterEmployeePage />} />
+        <Route path="/cadastro/empresa" element={<RegisterEnterprisePage />} />
       </Routes>
     </BrowserRouter>
   )

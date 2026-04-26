@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import InputForm from "@/shared/ui/molecules/FormField/FormField";
 import { useRegisterClient } from "@/features/auth-register-client/model/RegisterClientFeatureModel";
+import { Link } from "react-router-dom";
 
 export default function RegisterClient() {
 
-  const { cpf, cpfValido, formData, handleCpf, handleFullName, handleEmail, handlePhone } = useRegisterClient();
+  const { cpf, cpfValido, formData, isLoading, errorMessage, handleCpf, handleFullName, handleEmail, handlePhone, handlePassword, handleSubmit } = useRegisterClient();
 
   return (
     <div className="flex h-screen overflow-hidden bg-white font-sans">
 
       {/* SEÇÃO ESQUERDA */}
-      <div className="w-1/2 flex flex-col items-center justify-start pt-0 pb-0 px-8 lg:px-16 overflow-y-auto">
+      <div className="w-1/2 relative flex flex-col items-center justify-start pt-0 pb-0 px-8 lg:px-16 overflow-y-auto">
         <div className="w-full max-w-md">
           {/* Logo */}
           <img
@@ -26,8 +27,15 @@ export default function RegisterClient() {
             {!cpfValido ? "Insira o CPF para começar." : "Insira seus dados para criar um conta."}
           </p>
 
+          {/* EXIBIÇÃO DE ERRO VISUAL */}
+          {errorMessage && (
+            <div className="absolute top-15 left-1/2 transform -translate-x-1/2 w-[65%] z-50 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-[11px] font-semibold uppercase tracking-wider text-center shadow-lg animate-pulse">
+              {errorMessage}
+            </div>
+          )}
+
           {/* Formulário */}
-          <form className="space-y-2">
+          <form onSubmit={handleSubmit} className="space-y-2">
 
             {/* Campo CPF */}
             <div className="w-full">
@@ -72,7 +80,7 @@ export default function RegisterClient() {
 
               <InputForm
                 label="Telefone"
-                name="phone"
+                name="cellphone"
                 type="tel"
                 value={formData.phone}
                 onChange={handlePhone}
@@ -86,6 +94,8 @@ export default function RegisterClient() {
               label="Senha"
               name="password"
               type="password"
+              value={formData.password}
+              onChange={handlePassword}
               placeholder="********"
               disabled={!cpfValido}
             />
@@ -95,6 +105,8 @@ export default function RegisterClient() {
               label="Confirmar Senha"
               name="confirmPassword"
               type="password"
+              value={formData.confirmPassword}
+              onChange={handlePassword}
               placeholder="********"
               disabled={!cpfValido}
             />
@@ -103,19 +115,28 @@ export default function RegisterClient() {
             {/* Botão de confirmação */}
             <button
               type="submit"
-              disabled={!cpfValido}
+              disabled={!cpfValido || isLoading}
               className="w-full bg-[#FFE300] text-black font-semibold py-2.5 mt-2 px-6 text-sm uppercase flex items-center justify-center gap-2 hover:bg-[#EED100] disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
             >
-              Cadastrar Usuário
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
+              {isLoading ? (
+                "Processando..."
+              ) : (
+                <>
+                  Cadastrar Usuário
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                  </svg>
+                </>
+              )}
             </button>
           </form>
 
           {/* Já tem conta */}
           <p className="mt-4 text-center text-gray-700 text-[11px]">
-            Já tem uma conta? <a href="#" className="font-semibold text-black hover:underline">Login</a>
+            Já tem uma conta?
+            <Link to="/login" className="font-semibold text-black hover:underline">
+              Login
+            </Link>
           </p>
         </div>
       </div>
@@ -125,8 +146,9 @@ export default function RegisterClient() {
         className="w-1/2 bg-cover bg-center flex flex-col justify-end p-12"
         style={{ backgroundImage: "url('/cadastro-imgIndustrial.png')" }}
       >
-        <div className="text-5xl font-extrabold text-white uppercase tracking-tighter leading-none max-w-lg mb-16">
-          ideias que ganham <span className="block text-[#FFE300]">forma.</span>
+        <div className="text-5xl font-extrabold text-white uppercase tracking-tighter leading-none max-w-lg mb-16 text-center" >
+          ideias que ganham
+          <span className="block text-[#FFE300]">forma.</span>
         </div>
         <div className="text-gray-300 text-[10px]">
           <p className="uppercase text-gray-500 font-semibold mb-1">Localização</p>
