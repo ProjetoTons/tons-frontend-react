@@ -1,0 +1,16 @@
+  :root {
+    --amarelo-base: #F7D708;
+    --preto-neutro: #1A1A1A;
+    --cinza-base: #E5E5E5;
+    --cinza-escuro: #6b6b6b;
+    --branco: #F2F2F2;
+    --fonte-inter: 'Inter';
+    --fonte-space: 'Space Grotesk';
+
+  }
+
+  h1{
+    font-family: var(--fonte-space);
+    font-weight:500;
+
+}
