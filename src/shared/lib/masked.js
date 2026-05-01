@@ -53,3 +53,11 @@ export const aplicarMascaraCnpj = (cleanCnpj) => {
 
     return `${cleanCnpj.slice(0, 2)}.${cleanCnpj.slice(2, 5)}.${cleanCnpj.slice(5,8)}/${cleanCnpj.slice(8,12)}-${cleanCnpj.slice(12,14)}`;
 }
+
+export const aplicarMascaraData = (dataIso) => {
+    if (!dataIso) return "";
+    const partes = dataIso.split("-");
+    if (partes.length !== 3) return dataIso;
+    const [ano, mes, dia] = partes;
+    return `${dia}/${mes}/${ano}`; 
+}

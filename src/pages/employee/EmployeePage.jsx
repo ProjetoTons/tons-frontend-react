@@ -4,7 +4,6 @@ import EmployeeManagerWidget from "@/widgets/employee-manager/EmployeeManagerWid
 export default function EmployeePage() {
   
   const handleNavClick = (page) => {
-    // Lógica simples de navegação de rotas que pertence à página
     console.log("Navegando para:", page);
   };
 

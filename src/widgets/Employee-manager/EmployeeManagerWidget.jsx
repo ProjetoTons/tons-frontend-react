@@ -1,9 +1,11 @@
 import { useState, useMemo } from "react";
 import EmployeeTable from "@/entities/employee/ui/EmployeeTable";
-import {mockEmployee} from "@/entities/employee/api/mockEmployee.js" ;
-import { Link } from "react-router-dom";
+import { mockEmployee } from "@/entities/employee/api/mockEmployee.js";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function EmployeeManagerWidget() {
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState("");
 
   // Lógica de negócio/filtro encapsulada no widget
@@ -17,8 +19,19 @@ export default function EmployeeManagerWidget() {
     );
   }, [searchTerm]);
 
-  const handleEdit = (id) => console.log("Editar funcionário:", id);
-  const handleDelete = (id) => console.log("Excluir funcionário:", id);
+  // Callback de Edição
+  const handleEditar = (idDoFuncionario) => {
+    navigate(`/funcionario/editar/${idDoFuncionario}`);
+  };
+
+  // Callback de Exclusão
+  const handleDeletar = (idDoFuncionario) => {
+    const confirmar = window.confirm("Tem certeza que deseja excluir?");
+    if (confirmar) {
+      console.log("Deletando no banco de dados o ID:", idDoFuncionario);
+      // api.delete(`/funcionarios/${idDoFuncionario}`)
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -49,8 +62,8 @@ export default function EmployeeManagerWidget() {
           </div>
 
           {/* Botão Adicionar */}
-          <Link 
-            className="bg-[#FFE300] text-black font-bold py-2.5 px-6 text-[11px] uppercase tracking-wider border border-black shadow-[3px_3px_0px_#ccc] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[1px_1px_0px_#ccc] active:translate-y-[3px] active:translate-x-[3px] active:shadow-none transition-all flex items-center justify-center gap-2"
+          <Link
+            className="bg-[#FFE300] text-black font-bold py-2.5 px-6 text-[11px] uppercase tracking-wider shadow-[3px_3px_0px_#ccc] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[1px_1px_0px_#ccc] active:translate-y-[3px] active:translate-x-[3px] active:shadow-none transition-all flex items-center justify-center gap-2"
             to={"/funcionario/cadastro"}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,10 +75,10 @@ export default function EmployeeManagerWidget() {
       </div>
 
       {/* TABELA DE FUNCIONÁRIOS (Entity/Widget) */}
-      <EmployeeTable 
-        funcionarios={funcionariosFiltrados} 
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+      <EmployeeTable
+        funcionarios={funcionariosFiltrados}
+        onEdit={handleEditar}
+        onDelete={handleDeletar}
       />
     </div>
   );

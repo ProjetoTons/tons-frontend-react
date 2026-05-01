@@ -8,6 +8,7 @@ import RegisterEnterprisePage from '@/pages/register/RegisterEnterprisePage'
 import PageNotFind from '@/pages/Page-Not-Find/PageNotFind'
 import RegistrationSuccessPage from '@/pages/register/RegisterSuccessPage'
 import EmployeePage from '@/pages/employee/EmployeePage'
+import EmployeeEditPage from '@/pages/employee/EmployeeEditPage'
 
 export function AppRouter() {
   return (
@@ -27,6 +28,7 @@ export function AppRouter() {
         {/* Painel kanban */}
         <Route path="/pedidos" element={<PedidosPage />} />
         <Route path="/funcionario" element={<EmployeePage/>}/>
+        <Route path='/funcionario/editar/:id' element={<EmployeeEditPage/>}/>
       </Routes>
     </BrowserRouter>
   )
