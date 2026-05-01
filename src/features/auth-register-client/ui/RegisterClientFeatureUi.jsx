@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import InputForm from "@/shared/ui/molecules/FormField/FormField";
 import { useRegisterClient } from "@/features/auth-register-client/model/RegisterClientFeatureModel";
 import { Link } from "react-router-dom";
+import EtapaVisual from "@/shared/ui/molecules/Etapas/EtapaVisual";
 
 export default function RegisterClient() {
 
@@ -11,13 +12,20 @@ export default function RegisterClient() {
     <div className="flex h-screen overflow-hidden bg-white font-sans">
 
       {/* SEÇÃO ESQUERDA */}
-      <div className="w-1/2 relative flex flex-col items-center justify-start pt-0 pb-0 px-8 lg:px-16 overflow-y-auto">
+      <div className="w-1/2 relative flex flex-col items-center justify-start pt-4 pb-0 px-8 lg:px-16 overflow-y-auto">
         <div className="w-full max-w-md">
           {/* Logo */}
           <img
-            src="/logo-tons/Logo tons_pages-to-jpg-0002.jpg"
+            src="/logo-tons/Logo tons_Sem_Fundo.png"
             alt="Logo"
-            className="w-22 mb-0 mx-auto" />
+            className="w-32 mb-10 mx-auto" />
+
+          <EtapaVisual
+            NomeEstapa={"Dados Pessoais"}
+            faseInicial={1}
+            faseFinal={2}
+          />
+
 
           {/* Titulo */}
           <h1 className="text-2xl font-bold text-gray-900 mb-0.5 uppercase tracking-wide">

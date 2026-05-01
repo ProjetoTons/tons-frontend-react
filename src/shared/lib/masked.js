@@ -22,8 +22,15 @@ export const aplicarMascaraEmail = (cleanEmail) => {
     return cleanEmail.toLowerCase().trim();
 }
 
-export const aplicarMascaraTelefone = (cleanTelefone) => {
+export const aplicarMascaraRazaoSocial = (cleanRazaoSocial) => {
+    if (!cleanRazaoSocial) return "";
     
+    // Converte tudo para maiúsculo e remove espaços duplos
+    return cleanRazaoSocial.toUpperCase().replace(/\s{2,}/g, ' ');
+};
+
+export const aplicarMascaraTelefone = (cleanTelefone) => {
+
     cleanTelefone = cleanTelefone.replace(/\D/g, "");
 
     if (cleanTelefone.length > 7) return `(${cleanTelefone.slice(0, 2)}) ${cleanTelefone.slice(2, 7)}-${cleanTelefone.slice(7)}`;
@@ -32,3 +39,17 @@ export const aplicarMascaraTelefone = (cleanTelefone) => {
     return cleanTelefone;
 }
 
+export const aplicarMascaraCnpj = (cleanCnpj) => {
+
+    cleanCnpj = cleanCnpj.replace(/\D/g, "");
+
+    if (cleanCnpj.length <= 2) return cleanCnpj;
+
+    if (cleanCnpj.length <= 5) return `${cleanCnpj.slice(0,2)}.${cleanCnpj.slice(2)}`;
+
+    if (cleanCnpj.length <= 8) return `${cleanCnpj.slice(0, 2)}.${cleanCnpj.slice(2, 5)}.${cleanCnpj.slice(5,8)}`;
+
+    if (cleanCnpj.length <= 12) return `${cleanCnpj.slice(0, 2)}.${cleanCnpj.slice(2, 5)}.${cleanCnpj.slice(5,8)}/${cleanCnpj.slice(8,12)}`;
+
+    return `${cleanCnpj.slice(0, 2)}.${cleanCnpj.slice(2, 5)}.${cleanCnpj.slice(5,8)}/${cleanCnpj.slice(8,12)}-${cleanCnpj.slice(12,14)}`;
+}

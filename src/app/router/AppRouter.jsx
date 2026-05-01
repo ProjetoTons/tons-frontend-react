@@ -5,11 +5,14 @@ import LoginPage from '@/pages/login/LoginPage'
 import RegisterClientPage from '@/pages/register/RegisterClientPage'
 import RegisterEmployeePage from '@/pages/register/RegisterEmployeePage'
 import RegisterEnterprisePage from '@/pages/register/RegisterEnterprisePage'
+import PageNotFind from '@/pages/Page-Not-Find/PageNotFind'
+import RegistrationSuccessPage from '@/pages/register/RegisterSuccessPage'
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="*" element={<PageNotFind/>} />
         <Route path="/" element={<Navigate to="/portfolio" replace />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/pedidos" element={<PedidosPage />} />
@@ -17,6 +20,7 @@ export function AppRouter() {
         <Route path="/cadastro/cliente" element={<RegisterClientPage />} />
         <Route path="/cadastro/funcionario" element={<RegisterEmployeePage />} />
         <Route path="/cadastro/empresa" element={<RegisterEnterprisePage />} />
+        <Route path="/cadastro/sucesso" element={<RegistrationSuccessPage/>}/>
       </Routes>
     </BrowserRouter>
   )

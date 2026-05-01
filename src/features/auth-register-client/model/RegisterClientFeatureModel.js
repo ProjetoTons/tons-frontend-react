@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { validarCPF, obterErroComplexidadeSenha, obterErroSenhaIgualConfirmarSenha, obterErroNomeCompleto, obterErroEmail, obterErroTelefone } from "@/shared/lib/dataValidation";
 import { aplicarMascaraCpf, aplicarMascaraNomeCompleto, aplicarMascaraEmail, aplicarMascaraTelefone } from "@/shared/lib/masked";
 
 export const useRegisterClient = () => {
 
-    const [cpfValido, setCpfValido] = useState(false);
-    const [cpf, setCpf] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const [formData, setFormData] = useState({
+    const dadosRecuperados = location.state?.dadosPessoais;
+    const cpfRecuperado = location.state?.cpfSalvo;
+    const dadosEmpresaRecuperados = location.state?.dadosEmpresa;
+
+    const [cpfValido, setCpfValido] = useState(cpfRecuperado ? true : false);
+    const [cpf, setCpf] = useState(cpfRecuperado || "");
+
+    const [formData, setFormData] = useState(dadosRecuperados || {
         fullName: "",
         email: "",
         phone: "",
@@ -18,8 +25,6 @@ export const useRegisterClient = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (errorMessage) {
@@ -117,8 +122,6 @@ export const useRegisterClient = () => {
             return;
         }
 
-
-
         setIsLoading(true);
 
         try {
@@ -135,8 +138,14 @@ export const useRegisterClient = () => {
             }
 
             // Aqui você chamaria o endpoint de POST para criar o usuário.
-            
-            navigate("/portfolio");
+
+            navigate("/cadastro/empresa", {
+                state: {
+                    dadosPessoais: formData,
+                    cpfSalvo: cpf,
+                    dadosEmpresa: dadosEmpresaRecuperados
+                }
+            });
 
         } catch (error) {
             setErrorMessage("Erro ao conectar com o servidor. Tente novamente.");
