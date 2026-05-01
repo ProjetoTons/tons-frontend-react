@@ -1,0 +1,63 @@
+:root {
+  --amarelo-base: #F7D708;
+  --preto-neutro: #1A1A1A;
+  --cinza-base: #E5E5E5;
+  --cinza-escuro: #6b6b6b;
+  --branco: #F2F2F2;
+  --fonte-inter: 'Inter';
+  --fonte-space: 'Space Grotesk';
+
+}
+
+.section-up {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+
+}
+
+.div-n1 {
+    width: 90%;
+    margin-top: 70px;
+
+}
+
+.nome-ton {
+    color: var(--preto-neutro);
+    font-size: 65px;
+    font-family: var(--fonte-space);
+
+}
+
+.traço-div {
+    width: 50px;
+    height: 5px;
+    color: var(--amarelo-base);
+    background-color: var(--amarelo-base);
+    padding-left: 2%;
+    margin-bottom: 10px;
+
+}
+
+.ntexto {
+    width: 60%;
+    color: var(--cinza-escuro);
+    font-family: var(--fonte-inter);
+    margin-bottom: 10px;
+
+}
+
+/* segunda div  */
+
+.div-n2{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.foto-banner{
+    width: 70%;
+    height: 400px;
+}

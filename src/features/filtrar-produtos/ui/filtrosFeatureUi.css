@@ -1,0 +1,47 @@
+.filtros-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  gap: 12px;
+  margin-bottom: 30px;
+  margin-top: 30px;
+}
+
+.botao-filtro {
+  /* Estilo Base */
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  color: #b0b0b0;
+  
+  /* A MÁGICA DA ANIMAÇÃO */
+  transition: all 0.3s ease; /* Duração de 0.3 segundos */
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito ao passar o mouse (Hover) */
+.botao-filtro:hover {
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+}
+
+/* Estado Ativado (quando clicado) */
+button.botao-filtro.active {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-color: #1a1a1a;
+  transform: scale(1.05); /* Dá um leve "pulo" para destacar */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Efeito de clique rápido (Active) */
+.botao-filtro:active {
+  transform: scale(0.95); /* Efeito de 'apertar' o botão */
+}
