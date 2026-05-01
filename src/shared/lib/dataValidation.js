@@ -109,7 +109,7 @@ export const obterErroSenhaIgualConfirmarSenha = (senha, ConfirmarSenha) => {
 export const obterErroNomeCompleto = (nomeParaValidar) => {
 
     if (!nomeParaValidar.trim().includes(" ")) {
-        return "Por favor, insira seu nome completo (nome e sobrenome).";
+        return "Por favor, insira o nome completo (nome e sobrenome).";
     }
 
     return null;
