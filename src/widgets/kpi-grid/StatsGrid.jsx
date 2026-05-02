@@ -26,17 +26,17 @@ function StatsGrid({ stats }) {
       {/* Card Em Avaliação - Light Variant */}
       <div>
         <KpiCard
-          title="Em Avaliação"
-          value={stats.emAvaliacao}
+          title="Aguardando Arte"
+          value={stats.aguardandoArte}
           variant="light"
         />
       </div>
 
-      {/* Card Em Andamento - Light Variant */}
+      {/* Card Enviado - Light Variant */}
       <div>
         <KpiCard
-          title="Em Andamento"
-          value={stats.emAndamento}
+          title="Enviado / Aguardando Retirada"
+          value={stats.enviadoAguardandoRetirada}
           variant="light"
         />
       </div>
