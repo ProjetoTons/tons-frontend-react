@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { http } from "@/shared/api/http";
 import { setSession } from "@/shared/api/authToken";
+import { env } from "@/shared/config/env";
 
 export const useLogin = () => {
     const navigate = useNavigate();
@@ -47,7 +48,14 @@ export const useLogin = () => {
 
             setSession({ token, usuario });
 
-            navigate("/portfolio");
+            // Redireciona conforme CNPJ do usuário
+            const cnpjUsuario = (usuario.cnpj ?? "").replace(/\D/g, "");
+
+            if (cnpjUsuario && cnpjUsuario === env.cnpjGrafica) {
+                navigate("/pedidos");
+            } else {
+                navigate("/portfolio");
+            }
         } catch (error) {
             const status = error.response?.status;
 

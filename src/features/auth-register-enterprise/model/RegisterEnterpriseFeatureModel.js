@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { obterErroEmail, obterErroTelefone, validarCNPJ, obterErroRazaoSocial } from "@/shared/lib/dataValidation";
 import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraCnpj, aplicarMascaraRazaoSocial } from "@/shared/lib/masked";
 import { useNavigate, useLocation } from "react-router-dom";
+import { consultarCnpj } from "@/entities/empresa/api/empresaApi";
 
 export const useRegisterEnterprise = () => {
     const navigate = useNavigate();
@@ -31,22 +32,43 @@ export const useRegisterEnterprise = () => {
         }
     }, [errorMessage]);
 
-    const handleCnpj = (e) => {
+    const handleCnpj = async (e) => {
         const cleanCnpj = e.target.value.replace(/\D/g, "");
 
         if (cleanCnpj.length > 14) return;
 
         setCnpj(aplicarMascaraCnpj(cleanCnpj));
 
-        if (cleanCnpj.length === 14) {
-            if (validarCNPJ(cleanCnpj)) {
-                setCnpjValido(true);
-            } else {
-                setErrorMessage('CNPJ Inválido');
-                setCnpjValido(false);
-            }
-        } else {
+        if (cleanCnpj.length !== 14) {
             setCnpjValido(false);
+            return;
+        }
+
+        if (!validarCNPJ(cleanCnpj)) {
+            setErrorMessage('CNPJ Inválido');
+            setCnpjValido(false);
+            return;
+        }
+
+        setCnpjValido(true);
+
+        // Autopreenche via BrasilAPI
+        setIsLoading(true);
+        try {
+            const dados = await consultarCnpj(cleanCnpj);
+            if (dados) {
+                setFormData((prev) => ({
+                    razaoSocial: aplicarMascaraRazaoSocial(dados.razaoSocial || prev.razaoSocial),
+                    email: dados.email ? aplicarMascaraEmail(dados.email) : prev.email,
+                    phone: dados.telefone ? aplicarMascaraTelefone(dados.telefone) : prev.phone,
+                }));
+            } else {
+                setErrorMessage('CNPJ não encontrado na Receita.');
+            }
+        } catch (err) {
+            setErrorMessage('Não foi possível consultar o CNPJ no momento.');
+        } finally {
+            setIsLoading(false);
         }
     }
 

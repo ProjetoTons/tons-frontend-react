@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cadastrarUsuario } from "@/entities/usuario/api/usuarioApi";
+import { cadastrarEmpresa } from "@/entities/empresa/api/empresaApi";
 import { apenasDigitos } from "@/shared/lib/masked";
 
 export default function RegistrationSuccessFeature() {
@@ -36,6 +37,20 @@ export default function RegistrationSuccessFeature() {
     setErrorMessage("");
 
     try {
+      // 1) Se houver CNPJ, garante que a empresa existe no banco antes de
+      //    cadastrar o usuário (cadastrarEmpresa ignora 409 silenciosamente).
+      if (dadosEmpresa?.cnpj) {
+        const razaoSocial = dadosEmpresa.formData?.razaoSocial ?? "";
+        await cadastrarEmpresa({
+          cnpj: apenasDigitos(dadosEmpresa.cnpj),
+          razaoSocial,
+          nomeFantasia: razaoSocial, // backend exige @NotNull; usa razaoSocial como fallback
+          email: dadosEmpresa.formData?.email,
+          telefone: apenasDigitos(dadosEmpresa.formData?.phone ?? ""),
+        });
+      }
+
+      // 2) Cadastra o usuário, já com o CNPJ vinculado se aplicável.
       await cadastrarUsuario({
         nome: dadosPessoais.fullName,
         cpf: apenasDigitos(cpfSalvo),
