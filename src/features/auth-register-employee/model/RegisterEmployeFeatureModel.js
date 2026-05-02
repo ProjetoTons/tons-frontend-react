@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { obterErroComplexidadeSenha, obterErroNomeCompleto, obterErroEmail, obterErroTelefone } from "@/shared/lib/dataValidation";
 import { aplicarMascaraNomeCompleto, aplicarMascaraEmail, aplicarMascaraTelefone } from "@/shared/lib/masked";
+import { acessoApi, acessoToOption } from "@/entities/employee/api/acessoApi";
+import { employeeApi, toFuncionarioRequest } from "@/entities/employee/api/employeeApi";
+import { http } from "@/shared/api/http";
 
 export default function useRegisterEmployeFeature() {
     const navigate = useNavigate();
@@ -11,6 +14,7 @@ export default function useRegisterEmployeFeature() {
         email: "",
         senha: "",
         telefone: "",
+        dataNascimento: "",
         cargo: [],
         foto: null,
     });
@@ -18,13 +22,30 @@ export default function useRegisterEmployeFeature() {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    // Lista de cargos/acessos vinda do backend (GET /acessos)
+    const [opcoesCargo, setOpcoesCargo] = useState([]);
+    const [carregandoAcessos, setCarregandoAcessos] = useState(true);
 
-    const opcoesCargo = [
-        { value: "ceo", label: "CEO" },
-        { value: "design", label: "Design" },
-        { value: "logistica", label: "Logística" },
-        { value: "operador", label: "Operador de Máquina" }
-    ];
+    useEffect(() => {
+        let ativo = true;
+        setCarregandoAcessos(true);
+        acessoApi
+            .listar()
+            .then((lista) => {
+                if (!ativo) return;
+                setOpcoesCargo(lista.map(acessoToOption));
+            })
+            .catch(() => {
+                if (!ativo) return;
+                setErrorMessage("Não foi possível carregar a lista de cargos.");
+            })
+            .finally(() => {
+                if (ativo) setCarregandoAcessos(false);
+            });
+        return () => {
+            ativo = false;
+        };
+    }, []);
 
     useEffect(() => {
         if (errorMessage) {
@@ -75,6 +96,7 @@ export default function useRegisterEmployeFeature() {
             email: "",
             senha: "",
             telefone: "",
+            dataNascimento: "",
             cargo: [],
             foto: null,
         });
@@ -97,20 +119,51 @@ export default function useRegisterEmployeFeature() {
         const erroSenha = obterErroComplexidadeSenha(formData.senha);
         if (erroSenha) return setErrorMessage(erroSenha);
 
+        if (!formData.dataNascimento) return setErrorMessage("Por favor, informe a data de nascimento.");
+
         if (!formData.cargo || formData.cargo.length === 0) return setErrorMessage("Por favor, selecione ao menos um cargo para o funcionário.");
 
         setIsLoading(true);
-        
-        try {
-            console.log("Dados do novo funcionário processados com sucesso:", formData);
+        console.log("[DEBUG] handleSubmit disparado, payload:", formData);
 
-            // Aqui futuramente você colocará sua requisição:
-            // await api.post('/funcionarios', formData);
+        try {
+            const payload = toFuncionarioRequest(formData);
+            await employeeApi.criar(payload);
+
+            // Dispara notificações e aguarda antes de navegar
+            const primeiroNome = formData.nome.trim().split(" ")[0];
+            const telefoneComDDI = "55" + String(formData.telefone).replace(/\D/g, "");
+
+            console.log("[DEBUG] Enviando notificações para:", formData.email.trim(), telefoneComDDI);
+
+            const results = await Promise.allSettled([
+                // E-mail de boas-vindas (rota pública — skipAuth para evitar issue com token)
+                http.post("/notificacao/enviar-email", {
+                    destinatario: formData.email.trim(),
+                    assunto: "Cadastro confirmado - Tons Personalizados",
+                    corpo: `Olá ${primeiroNome}!\n\nSeu cadastro na Tons foi confirmado.`,
+                }, { skipAuth: true }),
+                // WhatsApp de boas-vindas (template confirmar-cadastro)
+                http.post(`/whatsapp/confirmar-cadastro/${telefoneComDDI}?nome=${encodeURIComponent(primeiroNome)}`, null, { skipAuth: true }),
+            ]);
+
+            results.forEach((r, i) => {
+                const canal = i === 0 ? "Email" : "WhatsApp";
+                if (r.status === "fulfilled") {
+                    console.log(`[DEBUG] ${canal} enviado com sucesso:`, r.value?.data);
+                } else {
+                    console.error(`[DEBUG] ${canal} FALHOU:`, r.reason?.response?.status, r.reason?.response?.data ?? r.reason?.message);
+                }
+            });
 
             navigate("/funcionario");
-
         } catch (error) {
-            setErrorMessage("Ocorreu um erro ao tentar salvar o funcionário.");
+            const msg = error?.response?.data;
+            setErrorMessage(
+                typeof msg === "string" && msg.length
+                    ? msg
+                    : "Ocorreu um erro ao tentar salvar o funcionário."
+            );
         } finally {
             setIsLoading(false);
         }
@@ -121,6 +174,7 @@ export default function useRegisterEmployeFeature() {
         isLoading,
         errorMessage,
         opcoesCargo,
+        carregandoAcessos,
         handleFullName,
         handleEmail,
         handlePhone,

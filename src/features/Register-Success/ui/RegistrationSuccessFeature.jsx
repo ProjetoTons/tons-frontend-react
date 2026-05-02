@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cadastrarUsuario } from "@/entities/usuario/api/usuarioApi";
 import { cadastrarEmpresa } from "@/entities/empresa/api/empresaApi";
 import { apenasDigitos } from "@/shared/lib/masked";
+import { http } from "@/shared/api/http";
 
 export default function RegistrationSuccessFeature() {
   const location = useLocation();
@@ -59,6 +60,25 @@ export default function RegistrationSuccessFeature() {
         senha: dadosPessoais.password,
         // CNPJ é opcional — só envia se o Step 2 foi preenchido
         ...(dadosEmpresa?.cnpj && { cnpj: apenasDigitos(dadosEmpresa.cnpj) }),
+      });
+
+      // Notificações de boas-vindas (não bloqueia a tela de sucesso)
+      const primeiroNome = dadosPessoais.fullName.trim().split(" ")[0];
+      const telefoneComDDI = "55" + apenasDigitos(dadosPessoais.phone);
+
+      Promise.allSettled([
+        http.post("/notificacao/enviar-email", {
+          destinatario: dadosPessoais.email.trim(),
+          assunto: "Cadastro confirmado - Tons Personalizados",
+          corpo: `Olá ${primeiroNome}!\n\nSeu cadastro na Tons foi confirmado.`,
+        }, { skipAuth: true }),
+        http.post(`/whatsapp/confirmar-cadastro/${telefoneComDDI}?nome=${encodeURIComponent(primeiroNome)}`, null, { skipAuth: true }),
+      ]).then((results) => {
+        results.forEach((r, i) => {
+          if (r.status === "rejected") {
+            console.error(`[Notificação ${i === 0 ? "Email" : "WhatsApp"}] falhou:`, r.reason?.response?.data ?? r.reason?.message);
+          }
+        });
       });
 
       setIsConfirmed(true);
