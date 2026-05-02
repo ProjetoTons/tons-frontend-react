@@ -8,21 +8,21 @@ export const produtos = [
   },
   {
     id: 2,
-    image: "/product/foto-card.png",
+    image: "/product/caixa.png",
     category: "Grandes Formatos",
     title: "Banners & Lonas",
     type: "papelaria"
   },
   {
     id: 3,
-    image: "/product/foto-card.png",
+    image: "/product/banner.png",
     category: "Brindes Corporativos",
     title: "Canecas Custom",
     type: "papelaria"
   },
   {
     id: 4,
-    image: "/product/foto-card.png",
+    image: "/product/musc-cup.png",
     category: "Embalagens",
     title: "Embalagens",
     type: "papelaria"

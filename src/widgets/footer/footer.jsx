@@ -36,9 +36,6 @@ function Footer() {
                         <button className="w-[50px] h-[50px] rounded-lg border border-[var(--cinza-escuro)] bg-transparent text-[var(--branco)] cursor-pointer transition-colors duration-300 flex justify-center items-center hover:bg-[var(--preto-neutro)] hover:border-[var(--amarelo-base)]">
                             <img className='w-[25px]' src="/icons/facebook.png" alt="" />
                         </button>
-                        <button className="w-[50px] h-[50px] rounded-lg border border-[var(--cinza-escuro)] bg-transparent text-[var(--branco)] cursor-pointer transition-colors duration-300 flex justify-center items-center hover:bg-[var(--preto-neutro)] hover:border-[var(--amarelo-base)]">
-                            T
-                        </button>
                     </div>
                 </section>
             </section>
@@ -46,7 +43,7 @@ function Footer() {
             <section className="flex flex-wrap justify-between items-center pt-[30px] border-t border-white/10 max-md:flex-col max-md:gap-5 max-md:text-center">
                 <div></div>
                 <p className="text-xs text-[var(--cinza-escuro)] uppercase tracking-[1px]">
-                    © 2026 Nome da Sua Gráfica - Todos os direitos reservados.
+                    © 2026 Ton's Personalizados - Todos os direitos reservados.
                 </p>
                 <p className="text-xs text-[var(--cinza-escuro)] uppercase tracking-[1px] font-bold">SÃO PAULO</p>
             </section>

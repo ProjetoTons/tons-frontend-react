@@ -1,11 +1,25 @@
-import { useState } from 'react'
+// src/features/salvar-produto/model/useSaveDrawerFeatureModel.js
+import { useState } from 'react';
 
 export function useSaveDrawer() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [itemsSalvos, setItemsSalvos] = useState([])
+  const [itemsSalvos, setItemsSalvos] = useState([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const openDrawer = () => setIsDrawerOpen(true)
-  const closeDrawer = () => setIsDrawerOpen(false)
+  const toggleSaveProduct = (product) => {
+    setItemsSalvos((prev) => {
+      const exists = prev.find(item => item.id === product.id);
+      if (exists) {
+        return prev.filter(item => item.id !== product.id);
+      }
+      return [...prev, product];
+    });
+  };
 
-  return { isDrawerOpen, itemsSalvos, setItemsSalvos, openDrawer, closeDrawer }
+  return {
+    itemsSalvos,
+    isDrawerOpen,
+    openDrawer: () => setIsDrawerOpen(true),
+    closeDrawer: () => setIsDrawerOpen(false),
+    toggleSaveProduct
+  };
 }

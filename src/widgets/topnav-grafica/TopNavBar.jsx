@@ -25,7 +25,7 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         </div>
 
         {/* Brand Name */}
-        <h1 className="font-bold text-[20px] text-[#161616] tracking-[-1px] uppercase">
+        <h1 className="font-[family-name:var(--fonte-space)] font-bold text-[20px] text-[#161616] tracking-[-1px] uppercase">
           Ton's personalizados
         </h1>
       </div>
