@@ -107,8 +107,7 @@ export default function useRegisterEmployeFeature() {
             // Aqui futuramente você colocará sua requisição:
             // await api.post('/funcionarios', formData);
 
-            // Exemplo de como você poderia usar o navigate após sucesso:
-            // navigate("/funcionarios"); 
+            navigate("/funcionario");
 
         } catch (error) {
             setErrorMessage("Ocorreu um erro ao tentar salvar o funcionário.");

@@ -1,10 +1,12 @@
 import React from "react";
 import InputForm from "@/shared/ui/molecules/FormField/FormField";
 import { useRegisterEnterprise } from '@/features/auth-register-enterprise/model/RegisterEnterpriseFeatureModel.js'
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import EtapaVisual from "@/shared/ui/molecules/Etapas/EtapaVisual";
 
 export default function RegisterEnterpriseFeature() {
+
+  const location = useLocation();
 
   const {
     cnpj,

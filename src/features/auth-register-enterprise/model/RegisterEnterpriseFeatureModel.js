@@ -117,49 +117,18 @@ export const useRegisterEnterprise = () => {
             return;
         }
 
-        setIsLoading(true);
-
-        try {
-            // 4. Simulação de Chamada à API para verificar CPF existente
-            // Quando sua API Java/Spring Boot estiver pronta, você substituirá este bloco
-            // por algo como: await http.get(`/api/usuarios/verificar-cpf/${cpfCru}`)
-
-            const cnpjJaExiste = await simularVerificacaoBancoDeDados(cnpj);
-
-            if (cnpjJaExiste) {
-                setErrorMessage("Este CNPJ já está cadastrado em nosso sistema.");
-                setIsLoading(false);
-                return;
-            }
-
-            // Aqui você chamaria o endpoint de POST para criar o usuário.
-
-            navigate("/cadastro/sucesso", {
-                state: {
-                    dadosPessoais: location.state?.dadosPessoais,
-                    cpfSalvo: location.state?.cpfSalvo,
-                    dadosEmpresa: {
-                        cnpj: cnpj,
-                        formData: formData
-                    }
+        // Sem chamada à API neste step. CNPJ + dados da empresa são apenas validados
+        // e propagados via router state. O cadastro real (POST /usuarios com cnpj)
+        // acontece no último step (RegistrationSuccessFeature).
+        navigate("/cadastro/sucesso", {
+            state: {
+                dadosPessoais: location.state?.dadosPessoais,
+                cpfSalvo: location.state?.cpfSalvo,
+                dadosEmpresa: {
+                    cnpj: cnpj,
+                    formData: formData
                 }
-            });
-
-        } catch (error) {
-            setErrorMessage("Erro ao conectar com o servidor. Tente novamente.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Função auxiliar apenas para simular o tempo de resposta de um backend real
-    const simularVerificacaoBancoDeDados = (cnpjAtual) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Simula que o CPF com final '00' já existe no banco
-                const existe = cnpjAtual.endsWith("00");
-                resolve(existe);
-            }, 1000);
+            }
         });
     };
 

@@ -1,6 +1,16 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { clearSession } from '@/shared/api/authToken';
 
 export default function MobileMenu({ isOpen, onClose }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearSession();
+    onClose && onClose();
+    navigate('/portfolio');
+  };
+
   return (
     <>
       {/* Overlay - Suave */}
@@ -28,9 +38,9 @@ export default function MobileMenu({ isOpen, onClose }) {
           
           {/* Link Lista de Interesse */}
           <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <a className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]" href="#">
+            <Link to="/portfolio" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
               LISTA DE INTERESSE
-            </a>
+            </Link>
             <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/clipboard.png" alt="" />
           </div>
 
@@ -43,9 +53,9 @@ export default function MobileMenu({ isOpen, onClose }) {
           </div>
 
            <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <a className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]" href="#">
+            <Link to="/portfolio" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
               CONFIGURAÇÕES
-            </a>
+            </Link>
             <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/settings.png" alt="" />
           </div>
 
@@ -57,7 +67,8 @@ export default function MobileMenu({ isOpen, onClose }) {
           
           {/* Botão de Logout Industrial - Sem arredondamento */}
           <button 
-            className="w-full bg-black text-white py-4 font-black text-xs tracking-[4px] uppercase hover:bg-red-600 transition-colors duration-300 flex items-center justify-center gap-3"
+            onClick={handleLogout}
+            className="w-full bg-black text-white py-4 font-black text-xs tracking-[4px] uppercase hover:bg-red-600 transition-colors duration-300 flex items-center justify-center gap-3 cursor-pointer"
             style={{ borderRadius: '0px' }} // Garante que não haja arredondamento
           >
             SAIR DA CONTA

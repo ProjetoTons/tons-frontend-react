@@ -61,3 +61,18 @@ export const aplicarMascaraData = (dataIso) => {
     const [ano, mes, dia] = partes;
     return `${dia}/${mes}/${ano}`; 
 }
+
+/**
+ * Remove qualquer caractere não-numérico de uma string.
+ * Inverso das funções `aplicarMascara*` — usado antes de enviar dados ao backend,
+ * que espera CPF, CNPJ e telefone como dígitos puros.
+ *
+ * @param {string | null | undefined} valor
+ * @returns {string} string contendo apenas dígitos (vazia se entrada for falsy)
+ *
+ * @example
+ * apenasDigitos("(11) 99999-8888")   // "11999998888"
+ * apenasDigitos("123.456.789-01")    // "12345678901"
+ * apenasDigitos(null)                // ""
+ */
+export const apenasDigitos = (valor) => (valor ?? "").replace(/\D/g, "");
