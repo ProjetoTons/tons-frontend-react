@@ -12,6 +12,7 @@ export default function RegisterEmployeeFeature() {
         isLoading,
         errorMessage,
         opcoesCargo,
+        carregandoAcessos,
         handleFullName,
         handleEmail,
         handlePhone,
@@ -91,8 +92,8 @@ export default function RegisterEmployeeFeature() {
                                 value={formData.cargo}
                                 onChange={handleChange}
                                 options={opcoesCargo}
-                                placeholder="Selecione as funções"
-                                disabled={isLoading}
+                                placeholder={carregandoAcessos ? "Carregando cargos..." : "Selecione as funções"}
+                                disabled={isLoading || carregandoAcessos}
                                 required={true}
                             />
 
@@ -123,6 +124,15 @@ export default function RegisterEmployeeFeature() {
                                 onChange={handlePhone}
                                 placeholder="(11) 99999-9999"
                                 type="tel"
+                                disabled={isLoading}
+                            />
+
+                            <InputForm
+                                label="Data de Nascimento"
+                                name="dataNascimento"
+                                value={formData.dataNascimento}
+                                onChange={handleChange}
+                                type="date"
                                 disabled={isLoading}
                             />
 

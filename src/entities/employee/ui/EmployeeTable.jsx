@@ -25,7 +25,7 @@ export default function EmployeeTable({ funcionarios, onEdit, onDelete }) {
             {/* Usuário (Avatar + Nome + ID) */}
             <div className="w-[25%] flex items-center gap-3">
               <img
-                src={func.avatar}
+                src={func.avatar ?? `https://i.pravatar.cc/150?u=${func.id}`}
                 alt={func.nome}
                 className="w-10 h-10 object-cover border border-gray-200 shadow-sm"
               />
@@ -36,7 +36,7 @@ export default function EmployeeTable({ funcionarios, onEdit, onDelete }) {
             </div>
 
             {/* E-mail */}
-            <div className="w-[25%] text-gray-500">{func.email}</div>
+            <div className="w-[25%] text-gray-500">{func.email ?? "—"}</div>
 
             {/* Telefone */}
             <div className="w-[15%] text-gray-500">{func.telefone}</div>
@@ -44,12 +44,12 @@ export default function EmployeeTable({ funcionarios, onEdit, onDelete }) {
 
             {/* Cargo (Badges) */}
             <div className="w-[15%] flex flex-wrap gap-1">
-              {func.cargo.map((c) => (
+              {(func.acessos ?? []).map((a) => (
                 <span
-                  key={c.Id}
+                  key={a.id}
                   className="bg-[#EFEFEF] text-gray-600 px-2 py-1 text-[9px] font-bold uppercase tracking-widest rounded-sm whitespace-nowrap"
                 >
-                  {c.Cargo}
+                  {a.role}
                 </span>
               ))}
             </div>

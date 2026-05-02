@@ -12,6 +12,7 @@ export default function EditEmployeeFeature() {
         isLoading,
         errorMessage,
         opcoesCargo,
+        carregandoAcessos,
         handleFullName,
         handleEmail,
         handleChange,
@@ -136,7 +137,8 @@ export default function EditEmployeeFeature() {
                                         onChange={handleChange}
                                         options={opcoesCargo}
                                         multiple={true}
-                                        disabled={isLoading}
+                                        disabled={isLoading || carregandoAcessos}
+                                        placeholder={carregandoAcessos ? "Carregando cargos..." : "Selecione as funções"}
                                     />
 
                                     <InputForm
@@ -164,6 +166,18 @@ export default function EditEmployeeFeature() {
                                             value={formData.email}
                                             onChange={handleEmail}
                                             type="email"
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+
+                                    <div className="sm:col-span-2">
+                                        <InputForm
+                                            label="Nova Senha (obrigatória para salvar)"
+                                            name="senha"
+                                            value={formData.senha}
+                                            onChange={handleChange}
+                                            type="password"
+                                            placeholder="••••••••"
                                             disabled={isLoading}
                                         />
                                     </div>

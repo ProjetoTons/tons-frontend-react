@@ -9,6 +9,7 @@ import PageNotFind from '@/pages/Page-Not-Find/PageNotFind'
 import RegistrationSuccessPage from '@/pages/register/RegisterSuccessPage'
 import EmployeePage from '@/pages/employee/EmployeePage'
 import EmployeeEditPage from '@/pages/employee/EmployeeEditPage'
+import GraficaRoute from '@/app/router/GraficaRoute'
 
 export function AppRouter() {
   return (
@@ -25,10 +26,10 @@ export function AppRouter() {
         <Route path="/cadastro/empresa" element={<RegisterEnterprisePage />} />
         <Route path="/cadastro/sucesso" element={<RegistrationSuccessPage/>}/>
         <Route path="/funcionario/cadastro" element={<RegisterEmployeePage />} />
-        {/* Painel kanban */}
-        <Route path="/pedidos" element={<PedidosPage />} />
-        <Route path="/funcionario" element={<EmployeePage/>}/>
-        <Route path='/funcionario/editar/:id' element={<EmployeeEditPage/>}/>
+        {/* Painel kanban — acesso restrito ao CNPJ da gráfica */}
+        <Route path="/pedidos" element={<GraficaRoute><PedidosPage /></GraficaRoute>} />
+        <Route path="/funcionario" element={<GraficaRoute><EmployeePage/></GraficaRoute>}/>
+        <Route path='/funcionario/editar/:id' element={<GraficaRoute><EmployeeEditPage/></GraficaRoute>}/>
       </Routes>
     </BrowserRouter>
   )

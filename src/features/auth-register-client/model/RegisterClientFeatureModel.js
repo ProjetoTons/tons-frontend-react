@@ -122,46 +122,15 @@ export const useRegisterClient = () => {
             return;
         }
 
-        setIsLoading(true);
-
-        try {
-            // 4. Simulação de Chamada à API para verificar CPF existente
-            // Quando sua API Java/Spring Boot estiver pronta, você substituirá este bloco
-            // por algo como: await http.get(`/api/usuarios/verificar-cpf/${cpfCru}`)
-
-            const cpfJaExiste = await simularVerificacaoBancoDeDados(cpf);
-
-            if (cpfJaExiste) {
-                setErrorMessage("Este CPF já está cadastrado em nosso sistema.");
-                setIsLoading(false);
-                return;
+        // Sem chamada à API neste step. Os dados pessoais são apenas validados
+        // e propagados via router state. O cadastro real (POST /usuarios) acontece
+        // no último step (RegistrationSuccessFeature) com todos os dados acumulados.
+        navigate("/cadastro/empresa", {
+            state: {
+                dadosPessoais: formData,
+                cpfSalvo: cpf,
+                dadosEmpresa: dadosEmpresaRecuperados
             }
-
-            // Aqui você chamaria o endpoint de POST para criar o usuário.
-
-            navigate("/cadastro/empresa", {
-                state: {
-                    dadosPessoais: formData,
-                    cpfSalvo: cpf,
-                    dadosEmpresa: dadosEmpresaRecuperados
-                }
-            });
-
-        } catch (error) {
-            setErrorMessage("Erro ao conectar com o servidor. Tente novamente.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Função auxiliar apenas para simular o tempo de resposta de um backend real
-    const simularVerificacaoBancoDeDados = (cpfAtual) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Simula que o CPF com final '00' já existe no banco
-                const existe = cpfAtual.endsWith("00");
-                resolve(existe);
-            }, 1000);
         });
     };
 

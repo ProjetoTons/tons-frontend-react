@@ -1,35 +1,52 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import EmployeeTable from "@/entities/employee/ui/EmployeeTable";
-import { mockEmployee } from "@/entities/employee/api/mockEmployee.js";
+import { employeeApi } from "@/entities/employee/api/employeeApi";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function EmployeeManagerWidget() {
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
-  // Lógica de negócio/filtro encapsulada no widget
+  const recarregar = useCallback(() => {
+    setCarregando(true);
+    setErro("");
+    employeeApi
+      .listar()
+      .then((lista) => setFuncionarios(Array.isArray(lista) ? lista : []))
+      .catch(() => setErro("Falha ao carregar funcionários."))
+      .finally(() => setCarregando(false));
+  }, []);
+
+  useEffect(() => {
+    recarregar();
+  }, [recarregar]);
+
   const funcionariosFiltrados = useMemo(() => {
-    if (!searchTerm) return mockEmployee;
-    return mockEmployee.filter(
-      (func) =>
-        func.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        func.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        func.cargo.toLowerCase().includes(searchTerm.toLowerCase())
+    if (!searchTerm) return funcionarios;
+    const t = searchTerm.toLowerCase();
+    return funcionarios.filter(
+      (f) =>
+        f.nome?.toLowerCase().includes(t) ||
+        String(f.id).includes(t) ||
+        f.acessos?.some((a) => a.role?.toLowerCase().includes(t))
     );
-  }, [searchTerm]);
+  }, [funcionarios, searchTerm]);
 
-  // Callback de Edição
   const handleEditar = (idDoFuncionario) => {
     navigate(`/funcionario/editar/${idDoFuncionario}`);
   };
 
-  // Callback de Exclusão
-  const handleDeletar = (idDoFuncionario) => {
-    const confirmar = window.confirm("Tem certeza que deseja excluir?");
-    if (confirmar) {
-      console.log("Deletando no banco de dados o ID:", idDoFuncionario);
-      // api.delete(`/funcionarios/${idDoFuncionario}`)
+  const handleDeletar = async (idDoFuncionario) => {
+    if (!window.confirm("Tem certeza que deseja excluir?")) return;
+    try {
+      await employeeApi.remover(idDoFuncionario);
+      recarregar();
+    } catch {
+      alert("Falha ao excluir funcionário.");
     }
   };
 
@@ -74,12 +91,28 @@ export default function EmployeeManagerWidget() {
         </div>
       </div>
 
-      {/* TABELA DE FUNCIONÁRIOS (Entity/Widget) */}
-      <EmployeeTable
-        funcionarios={funcionariosFiltrados}
-        onEdit={handleEditar}
-        onDelete={handleDeletar}
-      />
+      {/* ESTADOS */}
+      {erro && (
+        <div className="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs font-semibold uppercase tracking-wider">
+          {erro}
+        </div>
+      )}
+
+      {carregando ? (
+        <div className="w-full bg-white shadow-sm p-10 text-center text-sm text-gray-500">
+          Carregando funcionários...
+        </div>
+      ) : funcionariosFiltrados.length === 0 ? (
+        <div className="w-full bg-white shadow-sm p-10 text-center text-sm text-gray-500">
+          Nenhum funcionário encontrado.
+        </div>
+      ) : (
+        <EmployeeTable
+          funcionarios={funcionariosFiltrados}
+          onEdit={handleEditar}
+          onDelete={handleDeletar}
+        />
+      )}
     </div>
   );
 }

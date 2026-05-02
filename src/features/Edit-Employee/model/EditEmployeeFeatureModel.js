@@ -1,28 +1,25 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { aplicarMascaraEmail, aplicarMascaraTelefone } from "@/shared/lib/masked";
-import { mockEmployee } from "@/entities/employee/api/mockEmployee.js"
+import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraNomeCompleto } from "@/shared/lib/masked";
 import { obterErroEmail, obterErroNomeCompleto, obterErroTelefone } from "@/shared/lib/dataValidation";
+import { acessoApi, acessoToOption } from "@/entities/employee/api/acessoApi";
+import { employeeApi, toFuncionarioRequest } from "@/entities/employee/api/employeeApi";
 
 export default function useEditEmployeeFeature() {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const opcoesCargo = [
-        { value: "1", label: "Design" },
-        { value: "2", label: "CEO" },
-        { value: "3", label: "Logística" },
-        { value: "4", label: "Operador" }
-    ];
+    const [opcoesCargo, setOpcoesCargo] = useState([]);
+    const [carregandoAcessos, setCarregandoAcessos] = useState(true);
 
-    // Estado inicial
+    // cargo é number[] para casar com SelectForm + acessoToOption (value: id numérico)
     const [formData, setFormData] = useState({
         nome: "",
-        cargo: "",
+        cargo: [],
         email: "",
         telefone: "",
-        dataAdmissao: "",
-        nivelPermissao: [],
+        senha: "",
+        dataNascimento: "",
         status: "",
         desde: ""
     });
@@ -30,28 +27,44 @@ export default function useEditEmployeeFeature() {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    // Carrega acessos + dados do funcionário em paralelo
     useEffect(() => {
-        // Simula a busca no banco pelo ID da URL
-        const funcionarioEncontrado = mockEmployee.find(emp => emp.id === id);
-        if (funcionarioEncontrado) {
-            const cargosParaOFormulario = funcionarioEncontrado.cargo.map(c => String(c.Id));
+        let ativo = true;
 
-            setFormData({
-                nome: funcionarioEncontrado.nome,
-                email: funcionarioEncontrado.email,
-                telefone: funcionarioEncontrado.telefone,
-                cargo: cargosParaOFormulario,
-                dataNascimento: funcionarioEncontrado.dataNascimento,
-                avatar: funcionarioEncontrado.avatar
+        Promise.all([acessoApi.listar(), employeeApi.buscarPorId(id)])
+            .then(([acessos, func]) => {
+                if (!ativo) return;
+                setOpcoesCargo(acessos.map(acessoToOption));
+
+                if (!func) {
+                    setErrorMessage("Funcionário não encontrado.");
+                    return;
+                }
+
+                setFormData((prev) => ({
+                    ...prev,
+                    nome: func.nome ?? "",
+                    email: func.email ?? "", // backend ainda não devolve email (gap conhecido)
+                    telefone: func.telefone ?? "",
+                    cargo: (func.acessos ?? []).map((a) => a.id),
+                    dataNascimento: func.dataNascimento ?? "",
+                }));
+            })
+            .catch(() => {
+                if (ativo) setErrorMessage("Falha ao carregar dados do funcionário.");
+            })
+            .finally(() => {
+                if (ativo) setCarregandoAcessos(false);
             });
-        }
+
+        return () => {
+            ativo = false;
+        };
     }, [id]);
 
     useEffect(() => {
         if (errorMessage) {
-            const timer = setTimeout(() => {
-                setErrorMessage("");
-            }, 8000);
+            const timer = setTimeout(() => setErrorMessage(""), 8000);
             return () => clearTimeout(timer);
         }
     }, [errorMessage]);
@@ -62,82 +75,67 @@ export default function useEditEmployeeFeature() {
     };
 
     const handleFullName = (e) => {
-        let nomeCompletoAtual = e.target.value;
-
-        let nomeCompletoFormatado = aplicarMascaraNomeCompleto(nomeCompletoAtual);
-
-        setFormData({ ...formData, nome: nomeCompletoFormatado });
+        const nomeFormatado = aplicarMascaraNomeCompleto(e.target.value);
+        setFormData((prev) => ({ ...prev, nome: nomeFormatado }));
     };
 
     const handleEmail = (e) => {
-        let emailAtual = e.target.value;
-
-        let emailAjustado = aplicarMascaraEmail(emailAtual);
-
-        setFormData({ ...formData, email: emailAjustado });
+        const emailAjustado = aplicarMascaraEmail(e.target.value);
+        setFormData((prev) => ({ ...prev, email: emailAjustado }));
     };
 
     const handlePhone = (e) => {
-        let cleanTelefone = e.target.value.replace(/\D/g, "");
+        const cleanTelefone = e.target.value.replace(/\D/g, "");
         if (cleanTelefone.length > 11) return;
         setFormData((prev) => ({ ...prev, telefone: aplicarMascaraTelefone(cleanTelefone) }));
     };
 
-    const handleDeactivate = () => {
-        console.log("Desativar conta do ID:", id);
+    const handleDeactivate = async () => {
+        if (!window.confirm("Tem certeza que deseja excluir este funcionário?")) return;
+        setIsLoading(true);
+        try {
+            await employeeApi.remover(id);
+            navigate("/funcionario");
+        } catch {
+            setErrorMessage("Não foi possível excluir o funcionário.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const erroFullname = obterErroNomeCompleto(formData.nome);
-        if (erroFullname) {
-            setErrorMessage(erroFullname);
-            return;
-        }
+        if (erroFullname) return setErrorMessage(erroFullname);
 
         const erroTelefone = obterErroTelefone(aplicarMascaraTelefone(formData.telefone));
-        if (erroTelefone) {
-            setErrorMessage(erroTelefone);
-            return;
-        }
+        if (erroTelefone) return setErrorMessage(erroTelefone);
 
         const erroEmail = obterErroEmail(formData.email);
-        if (erroEmail) {
-            setErrorMessage(erroEmail);
-            return;
+        if (erroEmail) return setErrorMessage(erroEmail);
+
+        if (!formData.cargo || formData.cargo.length === 0) {
+            return setErrorMessage("Selecione ao menos um cargo.");
+        }
+
+        // Limitação do backend: FuncionarioRequestDto exige `senha` no PUT.
+        if (!formData.senha) {
+            return setErrorMessage(
+                "Informe uma nova senha para confirmar a edição (limitação temporária do backend)."
+            );
         }
 
         setIsLoading(true);
-
-
         try {
-
-
-            const cargosParaOBanco = formData.cargo.map(cargoIdString => {
-                const cargoInfo = opcoesCargo.find(opt => opt.value === cargoIdString);
-
-                return {
-                    Id: cargoIdString,
-                    Cargo: cargoInfo ? cargoInfo.label.toUpperCase() : ""
-                };
-            });
-
-            // Payload final montado perfeitamente!
-            const payload = {
-                id: id,
-                nome: formData.nome,
-                email: formData.email,
-                telefone: formData.telefone.replace(/\D/g, ""),
-                dataNascimento: formData.dataNascimento,
-                cargo: cargosParaOBanco
-            };
-
-            console.log("JSON pronto para enviar na requisição PUT:", payload);
-
+            const payload = toFuncionarioRequest(formData);
+            await employeeApi.atualizar(id, payload);
             navigate("/funcionario");
         } catch (error) {
-            setErrorMessage("Erro ao atualizar os dados.");
+            const msg = error?.response?.data;
+            setErrorMessage(
+                typeof msg === "string" && msg.length ? msg : "Erro ao atualizar os dados."
+            );
         } finally {
             setIsLoading(false);
         }
@@ -149,6 +147,7 @@ export default function useEditEmployeeFeature() {
         isLoading,
         errorMessage,
         opcoesCargo,
+        carregandoAcessos,
         handleFullName,
         handleEmail,
         handleChange,

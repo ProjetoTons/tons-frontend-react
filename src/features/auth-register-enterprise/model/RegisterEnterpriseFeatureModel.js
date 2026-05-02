@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { obterErroEmail, obterErroTelefone, validarCNPJ, obterErroRazaoSocial } from "@/shared/lib/dataValidation";
 import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraCnpj, aplicarMascaraRazaoSocial } from "@/shared/lib/masked";
 import { useNavigate, useLocation } from "react-router-dom";
+import { consultarCnpj } from "@/entities/empresa/api/empresaApi";
 
 export const useRegisterEnterprise = () => {
     const navigate = useNavigate();
@@ -31,22 +32,43 @@ export const useRegisterEnterprise = () => {
         }
     }, [errorMessage]);
 
-    const handleCnpj = (e) => {
+    const handleCnpj = async (e) => {
         const cleanCnpj = e.target.value.replace(/\D/g, "");
 
         if (cleanCnpj.length > 14) return;
 
         setCnpj(aplicarMascaraCnpj(cleanCnpj));
 
-        if (cleanCnpj.length === 14) {
-            if (validarCNPJ(cleanCnpj)) {
-                setCnpjValido(true);
-            } else {
-                setErrorMessage('CNPJ Inválido');
-                setCnpjValido(false);
-            }
-        } else {
+        if (cleanCnpj.length !== 14) {
             setCnpjValido(false);
+            return;
+        }
+
+        if (!validarCNPJ(cleanCnpj)) {
+            setErrorMessage('CNPJ Inválido');
+            setCnpjValido(false);
+            return;
+        }
+
+        setCnpjValido(true);
+
+        // Autopreenche via BrasilAPI
+        setIsLoading(true);
+        try {
+            const dados = await consultarCnpj(cleanCnpj);
+            if (dados) {
+                setFormData((prev) => ({
+                    razaoSocial: aplicarMascaraRazaoSocial(dados.razaoSocial || prev.razaoSocial),
+                    email: dados.email ? aplicarMascaraEmail(dados.email) : prev.email,
+                    phone: dados.telefone ? aplicarMascaraTelefone(dados.telefone) : prev.phone,
+                }));
+            } else {
+                setErrorMessage('CNPJ não encontrado na Receita.');
+            }
+        } catch (err) {
+            setErrorMessage('Não foi possível consultar o CNPJ no momento.');
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -117,49 +139,18 @@ export const useRegisterEnterprise = () => {
             return;
         }
 
-        setIsLoading(true);
-
-        try {
-            // 4. Simulação de Chamada à API para verificar CPF existente
-            // Quando sua API Java/Spring Boot estiver pronta, você substituirá este bloco
-            // por algo como: await http.get(`/api/usuarios/verificar-cpf/${cpfCru}`)
-
-            const cnpjJaExiste = await simularVerificacaoBancoDeDados(cnpj);
-
-            if (cnpjJaExiste) {
-                setErrorMessage("Este CNPJ já está cadastrado em nosso sistema.");
-                setIsLoading(false);
-                return;
-            }
-
-            // Aqui você chamaria o endpoint de POST para criar o usuário.
-
-            navigate("/cadastro/sucesso", {
-                state: {
-                    dadosPessoais: location.state?.dadosPessoais,
-                    cpfSalvo: location.state?.cpfSalvo,
-                    dadosEmpresa: {
-                        cnpj: cnpj,
-                        formData: formData
-                    }
+        // Sem chamada à API neste step. CNPJ + dados da empresa são apenas validados
+        // e propagados via router state. O cadastro real (POST /usuarios com cnpj)
+        // acontece no último step (RegistrationSuccessFeature).
+        navigate("/cadastro/sucesso", {
+            state: {
+                dadosPessoais: location.state?.dadosPessoais,
+                cpfSalvo: location.state?.cpfSalvo,
+                dadosEmpresa: {
+                    cnpj: cnpj,
+                    formData: formData
                 }
-            });
-
-        } catch (error) {
-            setErrorMessage("Erro ao conectar com o servidor. Tente novamente.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // Função auxiliar apenas para simular o tempo de resposta de um backend real
-    const simularVerificacaoBancoDeDados = (cnpjAtual) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Simula que o CPF com final '00' já existe no banco
-                const existe = cnpjAtual.endsWith("00");
-                resolve(existe);
-            }, 1000);
+            }
         });
     };
 
