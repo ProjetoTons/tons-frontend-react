@@ -5,15 +5,19 @@
  * - onSearch: function - callback quando busca
  * - onFilter: function - callback quando clica filtro
  * - onNovoPedido: function - callback quando clica em novo pedido
+ * - onEtapaFilter: function - callback para filtrar por etapa
+ * - etapaAtiva: string - etapa atualmente selecionada
  */
 
-function PageHeader({ onSearch, onFilter, onNovoPedido }) {
+function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiva = null }) {
   const handleSearchChange = (e) => {
     onSearch && onSearch(e.target.value);
   };
 
+  const etapas = ["Design", "Produção", "Embalagem", "Logística", "Finalizados"];
+
   return (
-    <div className="p-24">
+    <div className="p-24 pt-10 pb-10">
       {/* Título e Descrição */}
       <div className="mb-[24px]">
         <h1 className="font-['Inter:Bold',sans-serif] font-bold text-[36px] text-[#161616] tracking-[-0.9px] uppercase mb-[8px]">
@@ -25,9 +29,26 @@ function PageHeader({ onSearch, onFilter, onNovoPedido }) {
       </div>
 
       {/* Controls Row - Busca, Filtro e Novo Pedido */}
-      <div className="flex items-center gap-[16px] justify-end">
+      <div className="flex items-center gap-[12px] mt-10">
+
+        {/* Filtros por etapa */}
+        <div className="flex items-center gap-[12px]">
+          {etapas.map((etapa) => (
+            <button
+              key={etapa}
+              onClick={() => onEtapaFilter && onEtapaFilter(etapa)}
+              className={`px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all ${etapaAtiva === etapa
+                  ? "bg-[#fdf210] text-[#161616] hover:bg-[#e6d800] shadow-md cursor-pointer"
+                  : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] border-2 border-transparent shadow-md cursor-pointer"
+                }`}
+            >
+              {etapa}
+            </button>
+          ))}
+        </div>
+
         {/* Search Input */}
-        <div className="relative w-full max-w-[289px]">
+        <div className="relative w-full max-w-[289px] ml-16">
           <div className="bg-[#e4e2e2] flex items-center px-[40px] py-[11px] rounded relative">
             <input
               type="text"

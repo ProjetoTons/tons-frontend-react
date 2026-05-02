@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import TopNavBar from "@/widgets/topnav-grafica/TopNavBar";
 import PageHeader from "@/widgets/page-header/PageHeader";
 import StatsGrid from "@/widgets/kpi-grid/StatsGrid";
@@ -8,15 +9,36 @@ import { mockPedidos, calcularEstatisticas } from "@/entities/pedido/api/mockPed
 export default function PedidosPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState("pedidos");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const etapaFilter = searchParams.get("etapa");
+
+  // Usuário logado (simulado - em produção viria de um contexto de autenticação)
+  const usuarioLogado = {
+    id: 1,
+    nome: "Gustavo",
+  };
 
   const pedidosFiltrados = useMemo(() => {
-    if (!searchTerm) return mockPedidos;
-    return mockPedidos.filter(
-      (pedido) =>
-        pedido.num_pedido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pedido.cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
+    let filtered = mockPedidos;
+
+    // Filtrar por etapa
+    if (etapaFilter) {
+      filtered = filtered.filter((pedido) => pedido.etapa_pedido === etapaFilter);
+    }
+
+    // Filtrar por termo de busca
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (pedido) =>
+          pedido.num_pedido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          pedido.cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          pedido.vendedor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          pedido.responsavel.nome.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [searchTerm, etapaFilter]);
 
   const stats = useMemo(() => calcularEstatisticas(mockPedidos), []);
 
@@ -28,12 +50,33 @@ export default function PedidosPage() {
     console.log("Filtro clicado");
   };
 
+  const handleEtapaFilter = (etapa) => {
+    if (etapaFilter === etapa) {
+      // Remove o filtro se clicar no mesmo botão
+      setSearchParams({});
+    } else {
+      // Define o novo filtro
+      setSearchParams({ etapa });
+    }
+  };
+
   const handleNovoPedido = () => {
     console.log("Novo pedido clicado");
   };
 
-  const handleAvancar = (pedidoId) => {
-    console.log("Avançar pedido:", pedidoId);
+  const handleAvancar = (pedidoId, pedidoAtualizado) => {
+    console.log("Avançar pedido:", pedidoId, pedidoAtualizado);
+    // Aqui você atualizaria o estado ou faria uma requisição à API
+  };
+
+  const handleRetornar = (pedidoId, pedidoAtualizado) => {
+    console.log("Retornar pedido:", pedidoId, pedidoAtualizado);
+    // Aqui você atualizaria o estado ou faria uma requisição à API
+  };
+
+  const handleStatusChange = (pedidoId, pedidoAtualizado) => {
+    console.log("Status alterado:", pedidoId, pedidoAtualizado);
+    // Aqui você atualizaria o estado ou faria uma requisição à API
   };
 
   const handleNavClick = (page) => {
@@ -50,6 +93,8 @@ export default function PedidosPage() {
           onSearch={handleSearch}
           onFilter={handleFilter}
           onNovoPedido={handleNovoPedido}
+          onEtapaFilter={handleEtapaFilter}
+          etapaAtiva={etapaFilter}
         />
 
         <div>
@@ -60,6 +105,9 @@ export default function PedidosPage() {
           <OrderTable
             pedidos={pedidosFiltrados}
             onAvancar={handleAvancar}
+            onRetornar={handleRetornar}
+            onStatusChange={handleStatusChange}
+            usuarioLogado={usuarioLogado}
           />
         </div>
       </main>
