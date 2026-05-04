@@ -11,6 +11,7 @@ import './topnav.css'
 
 const NAV_ROUTES = {
   portfolio: "/portfolio",
+  pedidos: "/pedidos",
   funcionarios: "/funcionario",
 };
 
@@ -63,7 +64,7 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
 
         {/* Gerenciamento Pedidos Link - Active */}
         <button
-          onClick={() => onNavClick && onNavClick("pedidos")}
+          onClick={() => handleNav("pedidos")}
           className={`font-['Inter:Bold',sans-serif] font-bold text-[16px] pb-[10px] transition-colors ${currentPage === "pedidos"
               ? "text-[#161616] border-b-2 border-[#fdf210]"
               : "text-[#6b7280] hover:text-[#161616]"

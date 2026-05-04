@@ -10,11 +10,13 @@ export default function LoginFeatureUi() {
 
       {/* Logo */}
       <div className="w-full max-w-md mb-8">
-        <img
-          src="/logo-tons/Logo tons_Sem_Fundo.png"
-          alt="Logo"
-          className="w-28 sm:w-32 mx-auto"
-        />
+        <Link to="/portfolio">
+          <img
+            src="/logo-tons/Logo tons_Sem_Fundo.png"
+            alt="Logo"
+            className="w-28 sm:w-32 mx-auto cursor-pointer"
+          />
+        </Link>
       </div>
 
       {/* Card */}

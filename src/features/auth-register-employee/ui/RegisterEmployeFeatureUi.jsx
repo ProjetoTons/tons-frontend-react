@@ -28,11 +28,13 @@ export default function RegisterEmployeeFeature() {
 
             {/* HEADER: Logo da Empresa */}
             <div className="w-full max-w-2xl mb-0">
-                <img
-                    src="/logo-tons/Logo tons_Sem_Fundo.png"
-                    alt="Logo"
-                    className="w-24 sm:w-32 mx-auto"
-                />
+                <Link to="/portfolio">
+                    <img
+                        src="/logo-tons/Logo tons_Sem_Fundo.png"
+                        alt="Logo"
+                        className="w-24 sm:w-32 mx-auto cursor-pointer"
+                    />
+                </Link>
             </div>
 
             {/* WRAPPER CENTRAL */}

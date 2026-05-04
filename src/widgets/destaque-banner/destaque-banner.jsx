@@ -9,7 +9,7 @@ function DestaqueBanner() {
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.75)_30%,rgba(0,0,0,0.3)_60%,transparent_100%)]"></div>
 
                 <div className="absolute top-1/2 left-[60px] -translate-y-1/2 text-white max-w-[500px]">
-                    <span className="inline-block bg-[#f5c400] text-black text-xs font-bold px-[10px] py-[6px] mb-[15px] tracking-[1px]">ECO BAG</span>
+                    <span className="inline-block bg-[#f5c400] text-black text-xs font-bold px-[10px] py-[6px] mb-[15px] tracking-[1px]">ECOBAG</span>
 
                     <h1 className="text-5xl leading-[1.05] mb-[15px] font-extrabold">
                         PRODUTOS <br />
