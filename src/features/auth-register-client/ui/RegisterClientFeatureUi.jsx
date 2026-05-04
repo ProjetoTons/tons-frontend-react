@@ -12,13 +12,15 @@ export default function RegisterClient() {
     <div className="flex h-screen overflow-hidden bg-white font-sans">
 
       {/* SEÇÃO ESQUERDA */}
-      <div className="w-1/2 relative flex flex-col items-center justify-start pt-4 pb-0 px-8 lg:px-16 overflow-y-auto">
-        <div className="w-full max-w-md">
+      <div className="w-1/2 relative flex flex-col items-center justify-center px-8 lg:px-16 overflow-y-auto animate-slide-in-left">
+        <div className="w-full max-w-lg">
           {/* Logo */}
-          <img
-            src="/logo-tons/Logo tons_Sem_Fundo.png"
-            alt="Logo"
-            className="w-32 mb-10 mx-auto" />
+          <Link to="/portfolio">
+            <img
+              src="/logo-tons/Logo tons_Sem_Fundo.png"
+              alt="Logo"
+              className="w-32 mb-10 mx-auto cursor-pointer" />
+          </Link>
 
           <EtapaVisual
             NomeEstapa={"Dados Pessoais"}
@@ -151,14 +153,16 @@ export default function RegisterClient() {
 
       {/* SEÇÃO DIREITA */}
       <div
-        className="w-1/2 bg-cover bg-center flex flex-col justify-end p-12"
+        className="w-1/2 bg-cover bg-center flex flex-col justify-between p-12 animate-fade-in relative"
         style={{ backgroundImage: "url('/cadastro-imgIndustrial.png')" }}
       >
-        <div className="text-5xl font-extrabold text-white uppercase tracking-tighter leading-none max-w-lg mb-16 text-center" >
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div></div>
+        <div className="text-5xl font-extrabold text-white uppercase tracking-tighter leading-none max-w-lg text-center self-center relative z-10" >
           ideias que ganham
           <span className="block text-[#FFE300]">forma.</span>
         </div>
-        <div className="text-gray-300 text-[10px]">
+        <div className="text-gray-300 text-[10px] relative z-10">
           <p className="uppercase text-gray-500 font-semibold mb-1">Localização</p>
           <p>Rua Adolfo Appia, 177 - Jardim Cibele, São Paulo - SP, 08260-210</p>
         </div>

@@ -38,7 +38,7 @@ export default function MobileMenu({ isOpen, onClose }) {
           
           {/* Link Lista de Interesse */}
           <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <Link to="/portfolio" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
+            <Link to="/lista-interesse" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
               LISTA DE INTERESSE
             </Link>
             <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/clipboard.png" alt="" />
@@ -46,14 +46,14 @@ export default function MobileMenu({ isOpen, onClose }) {
 
           {/* Link Meus Pedidos */}
           <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <a className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]" href="#">
+            <Link to="/meus-pedidos" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
               MEUS PEDIDOS
-            </a>
+            </Link>
             <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/parcel.png" alt="" />
           </div>
 
            <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <Link to="/portfolio" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
+            <Link to="/configuracoes" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
               CONFIGURAÇÕES
             </Link>
             <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/settings.png" alt="" />

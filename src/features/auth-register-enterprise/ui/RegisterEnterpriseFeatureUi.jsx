@@ -24,18 +24,21 @@ export default function RegisterEnterpriseFeature() {
 
 
   return (
-    <div className="h-screen overflow-hidden bg-[#F8F9FA] flex flex-col items-center justify-evenly px-4 font-sans">
+    <div className="flex h-screen overflow-hidden bg-white font-sans">
 
-      {/* HEADER: Logo da Empresa */}
-      <div className="w-full max-w-2xl mb-0">
-        <img
-          src="/logo-tons/Logo tons_Sem_Fundo.png"
-          alt="Logo"
-          className="w-24 sm:w-32 mb-0 mx-auto" />
-      </div>
+      {/* SEÇÃO ESQUERDA */}
+      <div className="w-1/2 relative flex flex-col items-center justify-center px-8 lg:px-16 overflow-y-auto bg-[#F8F9FA] animate-slide-in-right">
+        <div className="w-full max-w-lg">
 
-      {/* WRAPPER CENTRAL */}
-      <div className="w-full max-w-2xl ">
+        {/* HEADER: Logo da Empresa */}
+        <div className="w-full max-w-2xl mb-0">
+          <Link to="/portfolio">
+            <img
+              src="/logo-tons/Logo tons_Sem_Fundo.png"
+              alt="Logo"
+              className="w-24 sm:w-32 mb-0 mx-auto cursor-pointer" />
+          </Link>
+        </div>
 
         {/* PROGRESSO: Configuração da Empresa */}
         <EtapaVisual
@@ -48,7 +51,6 @@ export default function RegisterEnterpriseFeature() {
         <div className="bg-white p-6 sm:p-8 shadow-sm border border-gray-100 relative">
 
           {/* Títulos */}
-          {/* Margem reduzida de mb-10 para mb-6 */}
           <div className="mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 uppercase tracking-tight">
               Qual é a sua empresa?
@@ -147,7 +149,7 @@ export default function RegisterEnterpriseFeature() {
 
         </div>
 
-        {/* FORA DO CARTÃO: Ações secundárias e badgets */}
+        {/* FORA DO CARTÃO: Ações secundárias */}
         <div className="mt-8 mb-8 flex flex-col items-center gap-8 text-center">
 
           <Link
@@ -163,7 +165,27 @@ export default function RegisterEnterpriseFeature() {
 
         </div>
 
-      </div >
-    </div >
+        </div>
+      </div>
+
+      {/* SEÇÃO DIREITA - IMAGEM */}
+      <div
+        className="w-1/2 bg-cover bg-center flex flex-col justify-between p-12 animate-fade-in relative"
+        style={{ backgroundImage: "url('/product/step2.png')" }}
+      >
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div></div>
+        <div className="text-5xl font-extrabold text-white uppercase tracking-tighter leading-none max-w-lg text-center self-center relative z-10">
+          Personalize,
+          <br />
+          impacte,
+          <span className="block text-[#FFE300]">marque.</span>
+        </div>
+        <div className="text-gray-300 text-[10px] relative z-10">
+          <p className="uppercase text-gray-500 font-semibold mb-1">Localização</p>
+          <p>Rua Adolfo Appia, 177 - Jardim Cibele, São Paulo - SP, 08260-210</p>
+        </div>
+      </div>
+    </div>
   );
 }

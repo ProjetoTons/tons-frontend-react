@@ -44,10 +44,14 @@ export default function useEditEmployeeFeature() {
                 setFormData((prev) => ({
                     ...prev,
                     nome: func.nome ?? "",
-                    email: func.email ?? "", // backend ainda não devolve email (gap conhecido)
+                    email: func.email ?? "",
                     telefone: func.telefone ?? "",
                     cargo: (func.acessos ?? []).map((a) => a.id),
                     dataNascimento: func.dataNascimento ?? "",
+                    status: func.ativo != null ? (func.ativo ? "Ativo" : "Inativo") : "",
+                    desde: func.dataCriacao
+                        ? new Date(func.dataCriacao).toLocaleDateString("pt-BR")
+                        : "",
                 }));
             })
             .catch(() => {
