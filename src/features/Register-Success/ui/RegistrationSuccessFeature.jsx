@@ -40,26 +40,28 @@ export default function RegistrationSuccessFeature() {
     try {
       // 1) Se houver CNPJ, garante que a empresa existe no banco antes de
       //    cadastrar o usuário (cadastrarEmpresa ignora 409 silenciosamente).
+      let empresaId = null;
       if (dadosEmpresa?.cnpj) {
         const razaoSocial = dadosEmpresa.formData?.razaoSocial ?? "";
-        await cadastrarEmpresa({
+        const resultado = await cadastrarEmpresa({
           cnpj: apenasDigitos(dadosEmpresa.cnpj),
           razaoSocial,
           nomeFantasia: razaoSocial, // backend exige @NotNull; usa razaoSocial como fallback
           email: dadosEmpresa.formData?.email,
           telefone: apenasDigitos(dadosEmpresa.formData?.phone ?? ""),
         });
+        empresaId = resultado.id;
       }
 
-      // 2) Cadastra o usuário, já com o CNPJ vinculado se aplicável.
+      // 2) Cadastra o usuário, vinculando à empresa pelo ID se aplicável.
       await cadastrarUsuario({
         nome: dadosPessoais.fullName,
         cpf: apenasDigitos(cpfSalvo),
         email: dadosPessoais.email,
         telefone: apenasDigitos(dadosPessoais.phone),
         senha: dadosPessoais.password,
-        // CNPJ é opcional — só envia se o Step 2 foi preenchido
-        ...(dadosEmpresa?.cnpj && { cnpj: apenasDigitos(dadosEmpresa.cnpj) }),
+        // empresaId é opcional — só envia se a empresa foi cadastrada/encontrada
+        ...(empresaId && { empresaId }),
       });
 
       // Notificações de boas-vindas (não bloqueia a tela de sucesso)
@@ -89,6 +91,8 @@ export default function RegistrationSuccessFeature() {
 
       if (!error.response) {
         setErrorMessage("Não foi possível conectar ao servidor. Verifique sua conexão.");
+      } else if (status === 422) {
+        setErrorMessage("CNPJ inválido. Verifique o CNPJ informado e tente novamente.");
       } else if (status === 409) {
         setErrorMessage("Este e-mail já está cadastrado.");
       } else if (status === 400) {

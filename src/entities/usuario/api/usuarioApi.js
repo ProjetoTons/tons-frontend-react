@@ -10,7 +10,7 @@ import { http } from '@/shared/api/http'
  * @param {string} payload.email
  * @param {string} payload.telefone   Apenas dígitos (11) — DDD + número
  * @param {string} payload.senha
- * @param {string} [payload.cnpj]     Opcional — vincula a uma Empresa existente
+ * @param {number} [payload.empresaId] Opcional — ID da empresa para vincular o usuário
  * @returns {Promise<{ status: number, message: string }>}
  */
 export async function cadastrarUsuario(payload) {
