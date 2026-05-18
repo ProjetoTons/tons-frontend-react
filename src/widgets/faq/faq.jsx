@@ -4,18 +4,18 @@ export default function FAQ() {
   const duvidas = [
     {
       id: 1,
-      pergunta: "PORQUE NÃO TEM VALORES NOS PRODUTOS NO SITE ?",
-      resposta: "Nossos produtos são personalizados e os valores dependem de variáveis como tiragem, material e acabamento. Cada projeto é único!"
+      pergunta: "POR QUE NÃO HÁ VALORES NOS PRODUTOS DO SITE?",
+      resposta: "Nossos produtos são personalizados, e os valores dependem de variáveis como tiragem, material e acabamento. Cada projeto é único!"
     },
     {
       id: 2,
       pergunta: "VOCÊS POSSUEM LOJA FÍSICA OU O ATENDIMENTO É APENAS ONLINE?",
-      resposta: "Nós possuimos Loja Física mas também possuimos, o site da Tons para facilitar a criação de orçamentos e visualização dos clientes."
+      resposta: "Possuímos loja física, mas também contamos com o site da Tons para facilitar a criação de orçamentos e a visualização dos produtos pelos clientes."
     },
     {
       id: 3,
-      pergunta: "QUAL DIFERENÇA PARA ITENS SALVOS PARA LISTA DE INTERESSES ?",
-      resposta: "A lista de interesses facilita o agrupamento de vários produtos para que você solicite um orçamento único de forma rápida. A lista de salvos tem a função de salvar os itens favoritos do usuário."
+      pergunta: "QUAL É A DIFERENÇA ENTRE ITENS SALVOS E A LISTA DE INTERESSES?",
+      resposta: "A lista de interesses facilita o agrupamento de vários produtos para que você solicite um orçamento único de forma rápida. Já a lista de salvos tem a função de armazenar os itens favoritos do usuário."
     }
   ];
 
@@ -28,7 +28,7 @@ export default function FAQ() {
   return (
     <section className="max-w-[800px] mx-auto my-10 px-5 font-sans">
       <h2 className="text-[28px] font-black mb-[30px] text-black">DÚVIDAS FREQUENTES</h2>
-      
+
       <div className="border-t border-[#eee]">
         {duvidas.map((item) => (
           <div key={item.id} className="border-b border-[#eee]">
