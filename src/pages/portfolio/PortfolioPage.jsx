@@ -19,6 +19,7 @@ export default function PortfolioPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [categoriaAtiva, setCategoriaAtiva] = useState("todos");
   const [mostrarDestaque, setMostrarDestaque] = useState(false);
+  const [busca, setBusca] = useState("");
 
   // ESTADO DO MODAL DE PRODUTOS
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -39,6 +40,13 @@ export default function PortfolioPage() {
 
     let listaFiltrada = produtos.filter(p => p.type === tipo);
     
+    // Filtrar por busca
+    if (busca.trim()) {
+      listaFiltrada = listaFiltrada.filter(p => 
+        p.title?.toLowerCase().includes(busca.toLowerCase())
+      );
+    }
+
     // Se destaque está ativo, filtrar apenas produtos destacados
     if (mostrarDestaque) {
       listaFiltrada = listaFiltrada.filter(p => p.destaque === true);
@@ -97,12 +105,12 @@ export default function PortfolioPage() {
       
       <SectionNomeBanner />
       <DestaqueBanner onVerColecao={handleVerColecaoDestaque} />
-      <div className="px-10 py-10">
-        <Filtros 
-          categoriaAtiva={categoriaAtiva} 
-          aoMudar={handleMudarFiltro}
-        />
-      </div>
+      <Filtros 
+        categoriaAtiva={categoriaAtiva} 
+        aoMudar={handleMudarFiltro}
+        busca={busca}
+        aoBuscar={setBusca}
+      />
 
       {/* SEÇÃO DE PRODUTOS POR CATEGORIA */}
       <section className="px-10 py-10">

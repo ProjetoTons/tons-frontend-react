@@ -51,20 +51,6 @@ function Navbar({ onOpenDrawer, onOpenMenu }) {
                     </>
                 )}
 
-                {/* Container do Input de Busca */}
-                <div className="relative flex items-center">
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        className="bg-white border border-black rounded-md px-3 py-1 pr-10 w-[200px] focus:outline-none focus:ring-1 focus:ring-yellow-400 transition-all text-sm"
-                    />
-                    <img
-                        src="/icons/search.png"
-                        alt="Buscar"
-                        className="absolute right-3 w-4 h-4 opacity-70"
-                    />
-                </div>
-
                 {/* Ícone Bookmark (Itens Salvos) — só logado */}
                 {usuario && (
                     <img
