@@ -15,8 +15,10 @@ import { useSaveDrawer } from '@/features/salvar-produto/model/useSaveDrawerFeat
 import { produtos } from '@/entities/produto/api/mockProdutos'
 
 export default function PortfolioPage() {
-  const { isDrawerOpen, itemsSalvos, openDrawer, closeDrawer, toggleSaveProduct } = useSaveDrawer()
+  const { isDrawerOpen, itemsSalvos, openDrawer, closeDrawer, toggleSaveProduct, isLoading, error } = useSaveDrawer()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [categoriaAtiva, setCategoriaAtiva] = useState("todos");
+  const [mostrarDestaque, setMostrarDestaque] = useState(false);
 
   // ESTADO DO MODAL DE PRODUTOS
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -30,7 +32,17 @@ export default function PortfolioPage() {
 
   // LÓGICA DE RENDERIZAÇÃO: Unifica a verificação de itens e a passagem de funções
   const renderizarCategoria = (titulo, tipo) => {
-    const listaFiltrada = produtos.filter(p => p.type === tipo);
+    // Se há um filtro ativo diferente de "todos", mostrar apenas essa categoria
+    if (categoriaAtiva !== "todos" && categoriaAtiva !== tipo) {
+      return null;
+    }
+
+    let listaFiltrada = produtos.filter(p => p.type === tipo);
+    
+    // Se destaque está ativo, filtrar apenas produtos destacados
+    if (mostrarDestaque) {
+      listaFiltrada = listaFiltrada.filter(p => p.destaque === true);
+    }
 
     return (
       <div className="mb-12">
@@ -55,6 +67,26 @@ export default function PortfolioPage() {
     );
   };
 
+  // Função para mudar o filtro ativo
+  const handleMudarFiltro = (filtro) => {
+    // Desativar filtro de destaque quando ativar outro filtro
+    setMostrarDestaque(false);
+    
+    // Se clicou no mesmo filtro, volta para "todos"
+    if (categoriaAtiva === filtro) {
+      setCategoriaAtiva("todos");
+    } else {
+      // Caso contrário, ativa o novo filtro
+      setCategoriaAtiva(filtro);
+    }
+  };
+
+  // Função para ativar filtro de destaque
+  const handleVerColecaoDestaque = () => {
+    setMostrarDestaque(true);
+    setCategoriaAtiva("todos");
+  };
+
   return (
     <>
       <TopbarFix />
@@ -64,11 +96,32 @@ export default function PortfolioPage() {
       />
       
       <SectionNomeBanner />
-      <DestaqueBanner />
-      <Filtros />
+      <DestaqueBanner onVerColecao={handleVerColecaoDestaque} />
+      <div className="px-10 py-10">
+        <Filtros 
+          categoriaAtiva={categoriaAtiva} 
+          aoMudar={handleMudarFiltro}
+        />
+      </div>
 
       {/* SEÇÃO DE PRODUTOS POR CATEGORIA */}
       <section className="px-10 py-10">
+        {/* Indicador de Filtro Destaque Ativo */}
+        {mostrarDestaque && (
+          <div className="mb-8 p-4 bg-[#F7D708] border-l-4 border-black">
+            <p className="text-black font-bold text-sm uppercase tracking-wide">
+              Mostrando apenas produtos destaque do mês
+              <button 
+                onClick={() => {
+                  setMostrarDestaque(false);
+                  setCategoriaAtiva("todos");
+                }}
+                className="ml-2 underline hover:no-underline font-black"
+              >              </button>
+            </p>
+          </div>
+        )}
+        
         {renderizarCategoria("Papelaria", "papelaria")}
         {renderizarCategoria("Banners", "banner")}
         {renderizarCategoria("Brindes", "brinde")}
@@ -91,6 +144,9 @@ export default function PortfolioPage() {
         isOpen={isDrawerOpen}
         onClose={closeDrawer}
         savedItems={itemsSalvos}
+        isLoading={isLoading}
+        error={error}
+        onToggleSave={toggleSaveProduct}
       />
 
       {/* Menu Mobile / Configurações */}

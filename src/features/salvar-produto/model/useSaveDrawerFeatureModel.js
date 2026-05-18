@@ -1,23 +1,112 @@
 // src/features/salvar-produto/model/useSaveDrawerFeatureModel.js
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { http } from '@/shared/api/http';
 
 export function useSaveDrawer() {
+  // 1. ESTADO PRINCIPAL
   const [itemsSalvos, setItemsSalvos] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  // 2. CONTROLE DE SINCRONIZAÇÃO
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const requestQueue = useRef([]);
+  const isProcessing = useRef(false);
 
-  const toggleSaveProduct = (product) => {
-    setItemsSalvos((prev) => {
-      const exists = prev.find(item => item.id === product.id);
-      if (exists) {
-        return prev.filter(item => item.id !== product.id);
+  // 3. CARREGAR ITENS AO INICIAR (GET)
+  useEffect(() => {
+    loadSavedItems();
+  }, []);
+
+  const loadSavedItems = async () => {
+    try {
+      setIsLoading(true);
+      const response = await http.get('/api/favorites', { skipAuth: false });
+      setItemsSalvos(response.data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Erro ao carregar itens salvos:', err);
+      setError('Falha ao carregar itens salvos');
+      // Manter itens locais mesmo se falhar
+      setItemsSalvos([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 4. ADICIONAR/REMOVER PRODUTO (POST/DELETE)
+  const toggleSaveProduct = async (product) => {
+    // Validar produto
+    if (!product || !product.id) {
+      console.error('Produto inválido:', product);
+      return;
+    }
+
+    const exists = itemsSalvos.find(item => item.id === product.id);
+    
+    if (exists) {
+      // REMOVER: Atualizar UI imediatamente (Optimistic Update)
+      setItemsSalvos(prev => prev.filter(item => item.id !== product.id));
+      addToQueue({ method: 'DELETE', productId: product.id, product });
+    } else {
+      // ADICIONAR: Atualizar UI imediatamente (Optimistic Update)
+      setItemsSalvos(prev => [...prev, product]);
+      addToQueue({ method: 'POST', product });
+    }
+  };
+
+  // 5. FILA DE REQUISIÇÕES (evita múltiplas chamadas simultâneas)
+  const addToQueue = (request) => {
+    requestQueue.current.push(request);
+    processQueue();
+  };
+
+  const processQueue = async () => {
+    if (isProcessing.current || requestQueue.current.length === 0) return;
+    
+    isProcessing.current = true;
+    const request = requestQueue.current.shift();
+
+    try {
+      if (request.method === 'POST') {
+        await http.post('/api/favorites', {
+          productId: request.product.id,
+          productData: request.product
+        });
+      } else if (request.method === 'DELETE') {
+        await http.delete(`/api/favorites/${request.productId}`);
       }
-      return [...prev, product];
-    });
+      setError(null);
+    } catch (err) {
+      console.error('Erro ao sincronizar com servidor:', err);
+      
+      // ROLLBACK: desfazer mudança local em caso de erro
+      if (request.method === 'POST') {
+        setItemsSalvos(prev => prev.filter(item => item.id !== request.product.id));
+      } else if (request.method === 'DELETE') {
+        setItemsSalvos(prev => [...prev, request.product]);
+      }
+      
+      setError('Erro ao sincronizar com servidor. Tente novamente.');
+      
+      // Re-adicionar à fila para tentar depois
+      requestQueue.current.unshift(request);
+    } finally {
+      isProcessing.current = false;
+      
+      // Processar próxima requisição da fila
+      if (requestQueue.current.length > 0) {
+        // Pequeno delay para evitar sobrecarga
+        setTimeout(processQueue, 300);
+      }
+    }
   };
 
   return {
     itemsSalvos,
     isDrawerOpen,
+    isLoading,
+    error,
     openDrawer: () => setIsDrawerOpen(true),
     closeDrawer: () => setIsDrawerOpen(false),
     toggleSaveProduct
