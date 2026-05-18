@@ -1,11 +1,9 @@
-import { useEffect } from 'react'
 import { AppRouter } from './app/router/AppRouter'
-import { initMockUser } from '@/shared/api/authToken'
+import { clearSession } from '@/shared/api/authToken'
+
+// Limpa sessão mock anterior (remover depois)
+clearSession()
 
 export default function App() {
-  useEffect(() => {
-    initMockUser()
-  }, [])
-
   return <AppRouter />
 }

@@ -1,6 +1,7 @@
 // src/features/salvar-produto/model/useSaveDrawerFeatureModel.js
 import { useState, useEffect, useRef } from 'react';
 import { http } from '@/shared/api/http';
+import { getToken } from '@/shared/api/authToken';
 
 export function useSaveDrawer() {
   // 1. ESTADO PRINCIPAL
@@ -13,9 +14,11 @@ export function useSaveDrawer() {
   const requestQueue = useRef([]);
   const isProcessing = useRef(false);
 
-  // 3. CARREGAR ITENS AO INICIAR (GET)
+  // 3. CARREGAR ITENS AO INICIAR (GET) — apenas se logado
   useEffect(() => {
-    loadSavedItems();
+    if (getToken()) {
+      loadSavedItems();
+    }
   }, []);
 
   const loadSavedItems = async () => {
