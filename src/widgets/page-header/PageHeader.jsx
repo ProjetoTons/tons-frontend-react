@@ -17,10 +17,10 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
   const etapas = ["Design", "Produção", "Embalagem", "Logística", "Finalizados"];
 
   return (
-    <div className="p-24 pt-10 pb-10">
+    <div>
       {/* Título e Descrição */}
       <div className="mb-[24px]">
-        <h1 className="font-['Inter:Bold',sans-serif] font-bold text-[36px] text-[#161616] tracking-[-0.9px] uppercase mb-[8px]">
+        <h1 className="font-['Inter:Bold',sans-serif] font-bold text-[32px] text-[#161616] tracking-[-0.9px] uppercase mb-[8px]">
           Gerenciamento de Pedidos
         </h1>
         <p className="font-['Inter:Medium',sans-serif] font-medium text-[16px] text-[#5f5f5f]">
