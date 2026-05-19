@@ -25,8 +25,8 @@ export default function EmployeeTable({ funcionarios, onEdit, onDelete }) {
             {/* Usuário (Avatar + Nome + ID) */}
             <div className="w-[25%] flex items-center gap-3">
               <img
-                src={func.avatar ?? `https://i.pravatar.cc/150?u=${func.id}`}
-                alt={func.nome}
+                src={func.fotoUrl ?? `https://i.pravatar.cc/150?u=${func.id}`}
+                alt={`Foto de perfil de ${func.nome}`}
                 className="w-10 h-10 object-cover border border-gray-200 shadow-sm"
               />
               <div className="flex flex-col">

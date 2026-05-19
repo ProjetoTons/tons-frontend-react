@@ -5,6 +5,7 @@ import { aplicarMascaraNomeCompleto, aplicarMascaraEmail, aplicarMascaraTelefone
 import { acessoApi, acessoToOption } from "@/entities/employee/api/acessoApi";
 import { employeeApi, toFuncionarioRequest } from "@/entities/employee/api/employeeApi";
 import { http } from "@/shared/api/http";
+import { uploadImagem } from "@/shared/api/cloudnaryUpload";
 
 export default function useRegisterEmployeFeature() {
     const navigate = useNavigate();
@@ -16,10 +17,11 @@ export default function useRegisterEmployeFeature() {
         telefone: "",
         dataNascimento: "",
         cargo: [],
-        foto: null,
+        fotoUrl: null,
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     // Lista de cargos/acessos vinda do backend (GET /acessos)
@@ -84,10 +86,14 @@ export default function useRegisterEmployeFeature() {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
- 
-    const handleFileChange = (e) => {
-        setFormData((prev) => ({ ...prev, foto: e.target.files[0] }));
-           console.log(e.target.files[0])
+
+    const handleFileChange = (file) => {
+        setFormData((prev) => ({
+            ...prev,
+            foto: file,
+            nomeFotoVisivel: file.name
+        }));
+        console.log("[DEBUG] Foto guardada no estado:", file.name);
     };
 
     const handleClear = () => {
@@ -98,15 +104,18 @@ export default function useRegisterEmployeFeature() {
             telefone: "",
             dataNascimento: "",
             cargo: [],
-            foto: null,
+            foto: null, // Guardará o objeto File para enviar no final
+            nomeFotoVisivel: "", // Guardará o nome para mostrar no ecrã
         });
         setErrorMessage("");
     };
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
 
+        // ==========================================
+        // 1. VALIDAÇÕES LOCAIS
+        // ==========================================
         const erroNome = obterErroNomeCompleto(formData.nome);
         if (erroNome) return setErrorMessage(erroNome);
 
@@ -117,30 +126,54 @@ export default function useRegisterEmployeFeature() {
         if (erroTelefone) return setErrorMessage(erroTelefone);
 
         if (!formData.dataNascimento) return setErrorMessage("Por favor, informe a data de nascimento.");
-
         if (!formData.cargo || formData.cargo.length === 0) return setErrorMessage("Por favor, selecione ao menos um cargo para o funcionário.");
 
+        // Ativa o estado de carregamento (mostra o spinner no botão, por exemplo)
         setIsLoading(true);
-        console.log("[DEBUG] handleSubmit disparado, payload:", formData);
+        console.log("[DEBUG] handleSubmit disparado, payload inicial:", formData);
 
         try {
-            const payload = toFuncionarioRequest(formData);
+            let linkDaFotoNaNuvem = null;
+
+            if (formData.foto) {
+                // Ativa a animação de spinner APENAS no input da foto
+                setIsUploadingPhoto(true); 
+                try {
+                    console.log("[DEBUG] Iniciando upload da foto para o Cloudinary...");
+                    linkDaFotoNaNuvem = await uploadImagem(formData.foto);
+                    console.log("[DEBUG] Upload concluído! URL gerada:", linkDaFotoNaNuvem);
+                } finally {
+                    // Desliga o spinner da foto mal termine (com sucesso ou erro)
+                    setIsUploadingPhoto(false); 
+                }
+            }
+
+            const dadosParaEnviar = {
+                ...formData,
+                fotoUrl: linkDaFotoNaNuvem // Aqui colocamos o link gerado (ou null se não houver foto)
+            };
+
+            // Converte para o formato que o Spring Boot exige
+            const payload = toFuncionarioRequest(dadosParaEnviar);
+
+            // Envia para a base de dados
             await employeeApi.criar(payload);
 
-            // Dispara notificações e aguarda antes de navegar
+            // ==========================================
+            // 4. NOTIFICAÇÕES E REDIRECIONAMENTO (Mantidos)
+            // ==========================================
             const primeiroNome = formData.nome.trim().split(" ")[0];
             const telefoneComDDI = "55" + String(formData.telefone).replace(/\D/g, "");
 
             console.log("[DEBUG] Enviando notificações para:", formData.email.trim(), telefoneComDDI);
 
             const results = await Promise.allSettled([
-                // E-mail de boas-vindas (rota pública — skipAuth para evitar issue com token)
                 http.post("/notificacao/enviar-email", {
                     destinatario: formData.email.trim(),
                     assunto: "Cadastro confirmado - Tons Personalizados",
                     corpo: `Olá ${primeiroNome}!\n\nSeu cadastro na Tons foi confirmado.`,
                 }, { skipAuth: true }),
-                // WhatsApp de boas-vindas (template confirmar-cadastro)
+
                 http.post(`/whatsapp/confirmar-cadastro/${telefoneComDDI}?nome=${encodeURIComponent(primeiroNome)}`, null, { skipAuth: true }),
             ]);
 
@@ -153,8 +186,11 @@ export default function useRegisterEmployeFeature() {
                 }
             });
 
+            // Vai para a tela de lista de funcionários
             navigate("/funcionario");
+
         } catch (error) {
+            console.error("[DEBUG] Erro no processo de cadastro:", error);
             const msg = error?.response?.data;
             setErrorMessage(
                 typeof msg === "string" && msg.length
@@ -162,6 +198,7 @@ export default function useRegisterEmployeFeature() {
                     : "Ocorreu um erro ao tentar salvar o funcionário."
             );
         } finally {
+            // Desativa o carregamento, independentemente de dar erro ou sucesso
             setIsLoading(false);
         }
     };
@@ -169,6 +206,7 @@ export default function useRegisterEmployeFeature() {
     return {
         formData,
         isLoading,
+        isUploadingPhoto,
         errorMessage,
         opcoesCargo,
         carregandoAcessos,

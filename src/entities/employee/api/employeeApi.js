@@ -32,10 +32,9 @@ export const employeeApi = {
 };
 
 /**
- * Converte o estado do formulário em FuncionarioRequestDto aceito pelo backend.
- * - telefone: somente dígitos (back valida tamanho 11)
- * - dataNascimento: já vem em yyyy-MM-dd do <input type="date">
- * - acessos: lista de IDs numéricos (ex.: [1, 3])
+ * Converte o estado do formulário React num formato (DTO) que o Backend em Spring Boot entende.
+ * @param {Object} form - Os dados provenientes do estado do formulário React.
+ * @returns {Object} payload - O objeto formatado pronto a ser enviado pela API.
  */
 export function toFuncionarioRequest(form) {
   return {
@@ -45,5 +44,6 @@ export function toFuncionarioRequest(form) {
     senha: form.senha,
     dataNascimento: form.dataNascimento,
     acessos: (form.cargo ?? []).map((v) => Number(v)),
-  };
-}
+    fotoUrl: form.fotoUrl ? form.fotoUrl : null
+  }
+};

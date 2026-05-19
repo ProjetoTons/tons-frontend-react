@@ -72,8 +72,8 @@ export const validarCNPJ = (cnpjParaValidar) => {
 
 export const obterErroComplexidadeSenha = (senhaParaValidar) => {
 
-    if (senhaParaValidar.length < 12) {
-        return "A senha deve ter no mínimo 12 caracteres.";
+    if (senhaParaValidar.length < 6) {
+        return "A senha deve ter no mínimo 6 caracteres.";
     }
 
     // 2. Verifica se tem pelo menos uma letra maiúscula (A-Z)

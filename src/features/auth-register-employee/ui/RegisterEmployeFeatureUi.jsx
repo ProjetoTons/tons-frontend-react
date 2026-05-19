@@ -1,15 +1,16 @@
 import React from "react";
 import InputForm from "@/shared/ui/molecules/FormField/FormField";
 import useRegisterEmployeFeature from "@/features/auth-register-employee/model/RegisterEmployeFeatureModel";
-import FileInputForm from "@/shared/ui/molecules/FormField/fileInputform";
+import FileInputForm from "@/shared/ui/molecules/FormField/FileInputform";
 import SelectForm from "@/shared/ui/molecules/FormField/SelectForm";
 import { Link } from "react-router-dom";
 
 export default function RegisterEmployeeFeature() {
 
     const {
-        formData,
+     formData,
         isLoading,
+        isUploadingPhoto,
         errorMessage,
         opcoesCargo,
         carregandoAcessos,
@@ -42,7 +43,7 @@ export default function RegisterEmployeeFeature() {
 
                 {/* CARTÃO PRINCIPAL BRANCO */}
                 <div className="bg-white p-6 sm:p-8 shadow-sm border border-gray-100 relative">
-                
+
                     {/* BOTÃO DE VOLTAR COM LINK (A melhor prática!) */}
                     <Link
                         to="/funcionario"
@@ -142,10 +143,9 @@ export default function RegisterEmployeeFeature() {
                             <FileInputForm
                                 label="Foto do Perfil"
                                 name="foto"
-                                onChange={handleFileChange}
-                                fileName={formData.foto?.name}
-                                accept="image/*"
-                                disabled={isLoading}
+                                fileName={formData.nomeFotoVisivel}
+                                isUploading={isUploadingPhoto}
+                                onFileSelect={handleFileChange}
                             />
                         </div>
 
