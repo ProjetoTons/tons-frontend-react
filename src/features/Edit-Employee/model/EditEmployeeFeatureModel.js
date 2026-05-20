@@ -4,6 +4,7 @@ import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraNomeCompleto
 import { obterErroEmail, obterErroNomeCompleto, obterErroTelefone } from "@/shared/lib/dataValidation";
 import { acessoApi, acessoToOption } from "@/entities/employee/api/acessoApi";
 import { employeeApi, toFuncionarioRequest } from "@/entities/employee/api/employeeApi";
+import { uploadImagem } from "@/shared/api/cloudnaryUpload";
 
 export default function useEditEmployeeFeature() {
     const navigate = useNavigate();
@@ -21,10 +22,14 @@ export default function useEditEmployeeFeature() {
         senha: "",
         dataNascimento: "",
         status: "",
-        desde: ""
+        desde: "",
+        fotoUrl: "",
+        novaFoto: null,
+        nomeFotoVisivel: ""
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     // Carrega acessos + dados do funcionário em paralelo
@@ -52,6 +57,7 @@ export default function useEditEmployeeFeature() {
                     desde: func.dataCriacao
                         ? new Date(func.dataCriacao).toLocaleDateString("pt-BR")
                         : "",
+                    fotoUrl: func.fotoUrl ?? ""
                 }));
             })
             .catch(() => {
@@ -94,6 +100,14 @@ export default function useEditEmployeeFeature() {
         setFormData((prev) => ({ ...prev, telefone: aplicarMascaraTelefone(cleanTelefone) }));
     };
 
+    const handleFileChange = (file) => {
+        setFormData((prev) => ({
+            ...prev,
+            novaFoto: file,
+            nomeFotoVisivel: file.name
+        }));
+    };
+
     const handleDeactivate = async () => {
         if (!window.confirm("Tem certeza que deseja excluir este funcionário?")) return;
         setIsLoading(true);
@@ -132,9 +146,27 @@ export default function useEditEmployeeFeature() {
 
         setIsLoading(true);
         try {
-            const payload = toFuncionarioRequest(formData);
+            let linkDaFotoNaNuvem = formData.fotoUrl;
+
+            if (formData.novaFoto) {
+                setIsUploadingPhoto(true);
+                try {
+                    linkDaFotoNaNuvem = await uploadImagem(formData.novaFoto);
+                } catch (error) {
+                    setErrorMessage("Erro ao editar foto de perfil.");
+                } finally {
+                    setIsUploadingPhoto(false);
+                }
+            }
+
+            const dadosParaEnviar = {
+                ...formData,
+                fotoUrl: linkDaFotoNaNuvem
+            };
+
+            const payload = toFuncionarioRequest(dadosParaEnviar);
             await employeeApi.atualizar(id, payload);
-            navigate("/funcionario");
+            // navigate("/funcionario");
         } catch (error) {
             const msg = error?.response?.data;
             setErrorMessage(
@@ -149,6 +181,7 @@ export default function useEditEmployeeFeature() {
         id,
         formData,
         isLoading,
+        isUploadingPhoto,
         errorMessage,
         opcoesCargo,
         carregandoAcessos,
@@ -157,6 +190,7 @@ export default function useEditEmployeeFeature() {
         handleChange,
         handlePhone,
         handleDeactivate,
-        handleSubmit
+        handleSubmit,
+        handleFileChange
     };
 }
