@@ -12,7 +12,7 @@ import KpiCard from "./KpiCard";
 
 function StatsGrid({ stats }) {
   return (
-    <div className="gap-x-[24px] gap-y-[24px] grid grid-cols-4 grid-rows-[160px] w-full">
+    <div className="gap-x-[24px] gap-y-[24px] grid grid-cols-4 w-full">
       {/* Card Total Hoje - Dark Variant */}
       <div>
         <KpiCard

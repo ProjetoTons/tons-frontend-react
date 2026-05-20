@@ -20,8 +20,8 @@ function KpiCard({ title, value, variant = "light", isCurrency = false }) {
 
   // Classes base para o container
   const containerClasses = `
-    flex flex-col h-[160px] items-start justify-between
-    p-[24px] relative shrink-0
+    flex flex-col h-[116px] items-start gap-[16px]
+    p-[16px] relative shrink-0
     ${isDark 
       ? "bg-[#161616] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" 
       : "bg-[#fcfcfc] border border-[#e4e2e2] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]"

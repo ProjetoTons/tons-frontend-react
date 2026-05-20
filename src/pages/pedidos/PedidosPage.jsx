@@ -97,9 +97,9 @@ export default function PedidosPage() {
           etapaAtiva={etapaFilter}
         />
 
-        <div>
+        
           <StatsGrid stats={stats} />
-        </div>
+        
 
         <div className="bg-white rounded shadow-sm">
           <OrderTable

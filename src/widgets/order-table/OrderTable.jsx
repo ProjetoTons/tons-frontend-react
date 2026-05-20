@@ -15,18 +15,18 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
   return (
     <div className="bg-white w-full overflow-hidden rounded">
       {/* Table Header */}
-      <div className="flex items-center justify-between bg-[#161616] border-b border-[#e4e2e2] px-[130px]">
+      <div className="flex items-center justify-between bg-[#161616] border-b border-[#e4e2e2] pl-32">
         <div className="py-[16px] px-[5px] min-w-[86px]">
           <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
             N° Pedido
           </span>
         </div>
-        <div className="py-[16px] px-[24px] min-w-[150px]">
+        <div className="py-[16px] px-[70px] min-w-[150px]">
           <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
             Status
           </span>
         </div>
-        <div className="py-[16px] px-[24px] min-w-[149px]">
+        <div className="py-[16px] px-[24px] min-w-[120px]">
           <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
             Vendedor
           </span>
@@ -54,6 +54,12 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
         <div className="py-[16px] px-[24px] min-w-[117px] text-right">
           <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
             Valor R$
+          </span>
+        </div>
+
+        <div className="py-[16px] px-[24px] min-w-[117px] text-right">
+          <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
+            Ações
           </span>
         </div>
       </div>
