@@ -4,7 +4,8 @@ export const produtos = [
     image: "/product/foto-card.png",
     category: "Papelaria Premium",
     title: "Cartões de Visita",
-    type: "papelaria"
+    type: "papelaria",
+    destaque: true
   },
   {
     id: 2,
@@ -18,7 +19,8 @@ export const produtos = [
     image: "/product/banner.png",
     category: "Brindes Corporativos",
     title: "Canecas Custom",
-    type: "papelaria"
+    type: "papelaria",
+    destaque: true
   },
   {
     id: 4,
@@ -31,7 +33,8 @@ export const produtos = [
     image: "/product/foto-card.png",
     category: "Papelaria Premium",
     title: "Cartões de Visita",
-    type: "banner"
+    type: "banner",
+    destaque: true
   },
   {
     id: 6,

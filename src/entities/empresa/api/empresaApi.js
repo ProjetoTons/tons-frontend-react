@@ -45,15 +45,18 @@ export async function consultarCnpj(cnpj) {
  * @param {string} [payload.nomeFantasia]
  * @param {string} [payload.email]
  * @param {string} [payload.telefone]   Apenas dígitos
- * @returns {Promise<{ created: boolean }>}
+ * @returns {Promise<{ created: boolean, id: number|null }>}
  */
 export async function cadastrarEmpresa(payload) {
   try {
-    await http.post('/empresas', payload, { skipAuth: true })
-    return { created: true }
+    const response = await http.post('/empresas', payload, { skipAuth: true })
+    return { created: true, id: response.data.id }
   } catch (error) {
-    // Empresa já existe — segue o fluxo normalmente
-    if (error.response?.status === 409) return { created: false }
+    // Empresa já existe — tenta extrair o id do response de conflito
+    if (error.response?.status === 409) {
+      const id = error.response.data?.id ?? null
+      return { created: false, id }
+    }
     throw error
   }
 }

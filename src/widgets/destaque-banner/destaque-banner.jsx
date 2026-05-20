@@ -1,4 +1,4 @@
-function DestaqueBanner() {
+function DestaqueBanner({ onVerColecao = () => {} }) {
 
     return (
         <section className='flex justify-center mt-[50px]'>
@@ -22,7 +22,10 @@ function DestaqueBanner() {
                         definindo o padrão visual desta temporada.
                     </p>
 
-                    <button className="font-[family-name:var(--fonte-space)] bg-white text-black border-none py-3 px-[22px] font-bold cursor-pointer inline-flex items-center gap-[10px] transition-colors duration-300 hover:bg-[#eaeaea]">
+                    <button 
+                        onClick={onVerColecao}
+                        className="font-[family-name:var(--fonte-space)] bg-white text-black border-none py-3 px-[22px] font-bold cursor-pointer inline-flex items-center gap-[10px] transition-colors duration-300 hover:bg-[#eaeaea] active:scale-95"
+                    >
                         VER COLEÇÃO <span className="text-lg">→</span>
                     </button>
                 </div>
