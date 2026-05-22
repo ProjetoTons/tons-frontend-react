@@ -14,6 +14,8 @@ import EmployeeEditPage from '@/pages/employee/EmployeeEditPage'
 import GraficaRoute from '@/app/router/GraficaRoute'
 import EmBrevePage from '@/pages/em-breve/EmBrevePage'
 import ListaInteressePage from '@/pages/lista-interesse/ListaInteressePage'
+import MeusPedidosPage from '@/pages/meus-pedidos/MeusPedidosPage'
+import HistoricoPedidosPage from '@/pages/historico-pedidos/HistoricoPedidosPage'
 
 export function AppRouter() {
   return (
@@ -34,7 +36,8 @@ export function AppRouter() {
         <Route path="/funcionario/cadastro" element={<RegisterEmployeePage />} />
         {/* Páginas do cliente */}
         <Route path="/lista-interesse" element={<ListaInteressePage />} />
-        <Route path="/meus-pedidos" element={<EmBrevePage />} />
+        <Route path="/meus-pedidos" element={<MeusPedidosPage />} />
+        <Route path="/historico-pedidos" element={<HistoricoPedidosPage />} />
         <Route path="/configuracoes" element={<EmBrevePage />} />
         {/* Painel kanban — acesso restrito ao CNPJ da gráfica */}
         <Route path="/pedidos" element={<GraficaRoute><PedidosPage /></GraficaRoute>} />

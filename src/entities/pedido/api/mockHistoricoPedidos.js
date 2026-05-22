@@ -1,0 +1,32 @@
+export const mockHistoricoPedidos = [
+  {
+    id_pedido: 1,
+    id_pedido_display: "#00254",
+    titulo: "Cartões de Visita - Premium Soft Touch",
+    image: "/product/foto-card.png",
+    status: "Concluído",
+    quantidade: "500 Unid.",
+    total: "R$ 450,00",
+    data: "12 OUT, 2023",
+  },
+  {
+    id_pedido: 2,
+    id_pedido_display: "#00231",
+    titulo: "Plotagem Técnica - Projeto Residencial",
+    image: "/product/musc-cup.png",
+    status: "Concluído",
+    quantidade: "12 Folhas A0",
+    total: "R$ 1.280,00",
+    data: "05 SET, 2023",
+  },
+  {
+    id_pedido: 3,
+    id_pedido_display: "#00231",
+    titulo: "Plotagem Técnica - Projeto Residencial",
+    image: "/product/musc-cup.png",
+    status: "Em Produção",
+    quantidade: "12 Folhas A0",
+    total: "R$ 1.280,00",
+    data: "05 SET, 2023",
+  },
+];
