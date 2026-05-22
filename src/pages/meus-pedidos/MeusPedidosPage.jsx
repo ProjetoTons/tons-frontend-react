@@ -8,7 +8,7 @@ export default function MeusPedidosPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="bg-white min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar compact hideBookmark onOpenMenu={() => setIsMenuOpen(true)} />
 
       <main className="flex-1 px-10 py-12">

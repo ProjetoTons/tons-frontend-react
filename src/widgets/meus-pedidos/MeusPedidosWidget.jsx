@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { mockPedidosCliente } from "@/entities/pedido/api/mockPedidosCliente";
+import ProductModal from "@/features/modal-produto/modal-produto.jsx";
 
 const ETAPAS = ["Arte", "Produção", "Embalagem", "Logística", "Entrega"];
 
@@ -60,7 +61,23 @@ function TimelineEtapas({ etapaAtual }) {
 
 export default function MeusPedidosWidget() {
   const [busca, setBusca] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const pedidos = mockPedidosCliente;
+
+  const handleOpenModal = (pedido) => {
+    setSelectedProduct({
+      title: pedido.titulo,
+      image: pedido.image,
+      description: pedido.descricao,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   const pedidosFiltrados = busca.trim()
     ? pedidos.filter(p =>
@@ -73,10 +90,10 @@ export default function MeusPedidosWidget() {
     <div className="w-full flex gap-10 flex-wrap lg:flex-nowrap">
       {/* Coluna Esquerda */}
       <section className="flex-1 min-w-0">
-        <h1 className="text-[40px] font-bold uppercase tracking-tight text-black mb-2" style={{ fontFamily: "var(--fonte-space)" }}>
+        <h1 className="text-[48px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
           Meus Pedidos
         </h1>
-        <p className="text-sm text-gray-600 mb-8">
+        <p className="text-sm text-gray-600 mt-3 mb-8">
           Gestão centralizada de solicitações e logística industrial.
         </p>
 
@@ -94,11 +111,14 @@ export default function MeusPedidosWidget() {
                 {/* Esquerda: Imagem + Info + Timeline */}
                 <div className="flex-1 min-w-0 flex gap-8">
                   {/* Imagem */}
-                  <div className="w-[200px] h-[200px] bg-gray-100 flex-shrink-0 overflow-hidden">
+                  <div
+                    className="w-[200px] h-[200px] bg-gray-100 flex-shrink-0 overflow-hidden cursor-pointer group"
+                    onClick={() => handleOpenModal(pedido)}
+                  >
                     <img
                       src={pedido.image || "/product/placeholder.png"}
                       alt={pedido.titulo}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
 
@@ -162,7 +182,7 @@ export default function MeusPedidosWidget() {
               placeholder="Insira o ID do Pedido"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="w-full border border-black px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--amarelo-base)]"
+              className="w-full bg-[#E5E5E5] border border-gray-300 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--amarelo-base)]"
             />
             <img
               src="/icons/search.png"
@@ -173,11 +193,17 @@ export default function MeusPedidosWidget() {
 
           <div className="mt-6">
             <h2 className="text-[12px] font-bold uppercase tracking-wider text-black mb-2">
-              Histórico de Pedidos
+              
             </h2>
           </div>
         </div>
       </aside>
+
+      <ProductModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        produto={selectedProduct}
+      />
     </div>
   );
 }

@@ -1,11 +1,24 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockItensSalvos } from "@/entities/produto/api/mockItensSalvos";
+import ProductModal from "@/features/modal-produto/modal-produto.jsx";
 
 export default function ListaInteresseWidget() {
   const navigate = useNavigate();
   const [itemsSalvos, setItemsSalvos] = useState(mockItensSalvos);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isLoading = false;
+
+  const handleOpenModal = (item) => {
+    setSelectedProduct(item);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   const handleRemoveItem = (item) => {
     setItemsSalvos((prev) => prev.filter((i) => i.id !== item.id));
@@ -30,10 +43,10 @@ export default function ListaInteresseWidget() {
     <div className="w-full flex gap-10 flex-wrap lg:flex-nowrap">
       {/* Coluna Esquerda: Lista de Produtos */}
       <section className="flex-1 min-w-0">
-        <h1 className="text-[32px] font-bold uppercase tracking-tight text-black mb-2" style={{ fontFamily: "var(--fonte-space)" }}>
+        <h1 className="text-[48px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
           Lista de Interesses
         </h1>
-        <p className="text-sm text-gray-600 mb-8">
+        <p className="text-sm text-gray-600 mt-3 mb-8">
           Revise seus produtos selecionados antes de prosseguir com o orçamento.
         </p>
 
@@ -58,11 +71,14 @@ export default function ListaInteresseWidget() {
                 key={item.id}
                 className="flex items-center gap-5 p-5 border border-gray-200 rounded-sm bg-white hover:shadow-sm transition-shadow"
               >
-                <div className="w-[80px] h-[80px] bg-gray-100 flex-shrink-0 rounded-sm overflow-hidden">
+                <div
+                  className="w-[80px] h-[80px] bg-gray-100 flex-shrink-0 rounded-sm overflow-hidden cursor-pointer group"
+                  onClick={() => handleOpenModal(item)}
+                >
                   <img
                     src={item.image || "/product/placeholder.png"}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
 
@@ -129,6 +145,12 @@ export default function ListaInteresseWidget() {
           </p>
         </div>
       </aside>
+
+      <ProductModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        produto={selectedProduct}
+      />
     </div>
   );
 }
