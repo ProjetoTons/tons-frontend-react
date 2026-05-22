@@ -2,18 +2,18 @@ import { useNavigate } from "react-router-dom"
 import { getUsuario } from "@/shared/api/authToken"
 import "../navbar-cliente/navbar.css"
 
-function Navbar({ onOpenDrawer, onOpenMenu }) {
+function Navbar({ onOpenDrawer, onOpenMenu, compact, hideBookmark }) {
     const navigate = useNavigate();
     const usuario = getUsuario();
     const primeiroNome = usuario?.nome?.trim().split(" ")[0];
 
     return (
-        <nav className="w-full font-inter flex items-center justify-between px-10 py-4 bg-[#F2F2F2]">
+        <nav className={`w-full font-inter flex items-center justify-between px-10 bg-[#F2F2F2] ${compact ? "py-2" : "py-4"}`}>
 
             {/* Lado Esquerdo: Logo e Saudação */}
             <div className="flex items-center gap-8">
                 <img
-                    className="w-[150px] cursor-pointer"
+                    className={`${compact ? "w-[100px]" : "w-[150px]"} cursor-pointer`}
                     src="/logo-tons/Logo Hefestos Nome.png"
                     alt="Logo Ton's"
                     onClick={() => navigate("/portfolio")}
@@ -52,7 +52,7 @@ function Navbar({ onOpenDrawer, onOpenMenu }) {
                 )}
 
                 {/* Ícone Bookmark (Itens Salvos) — só logado */}
-                {usuario && (
+                {usuario && !hideBookmark && (
                     <img
                         className="w-7 cursor-pointer hover:scale-110 transition-transform"
                         src="/icons/bookmark.png"
