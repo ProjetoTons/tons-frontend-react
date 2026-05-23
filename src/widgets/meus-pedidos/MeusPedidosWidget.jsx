@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { mockPedidosCliente } from "@/entities/pedido/api/mockPedidosCliente";
 import ProductModal from "@/features/modal-produto/modal-produto.jsx";
 
-const ETAPAS = ["Arte", "Produção", "Embalagem", "Logística", "Entrega"];
+const ETAPAS = ["Arte", "Produção", "Embalagem", "Logística", "Entrega", "Concluído"];
 
 function getEtapaIndex(etapa) {
   const map = {
@@ -12,7 +12,8 @@ function getEtapaIndex(etapa) {
     "Embalagem": 2,
     "Logística": 3,
     "Entrega": 4,
-    "Finalizados": 4,
+    "Concluído": 5,
+    "Finalizados": 5,
   };
   return map[etapa] ?? 0;
 }

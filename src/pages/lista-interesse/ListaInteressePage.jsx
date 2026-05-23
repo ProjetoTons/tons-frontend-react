@@ -10,6 +10,7 @@ export default function ListaInteressePage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar compact hideBookmark onOpenMenu={() => setIsMenuOpen(true)} />
+      <div className="h-1 bg-[#F7D708]" />
 
       <main className="flex-1 px-10 py-12">
         <ListaInteresseWidget />
