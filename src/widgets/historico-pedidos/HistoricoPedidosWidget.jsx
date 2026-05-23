@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { mockHistoricoPedidos } from "@/entities/pedido/api/mockHistoricoPedidos";
-import ProductModal from "@/features/modal-produto/modal-produto.jsx";
+import DetalhesPedidoModal from "@/features/detalhes-pedido/DetalhesPedidoModal";
 
-const FILTROS = ["Todos", "Em Produção", "Finalizados"];
 
 function StatusBadge({ status }) {
   const isProducao = status === "Em Produção";
@@ -15,16 +14,11 @@ function StatusBadge({ status }) {
 }
 
 export default function HistoricoPedidosWidget() {
-  const [filtroAtivo, setFiltroAtivo] = useState("Todos");
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = (pedido) => {
-    setSelectedPedido({
-      title: pedido.titulo,
-      image: pedido.image,
-      description: pedido.descricao,
-    });
+    setSelectedPedido(pedido);
     setIsModalOpen(true);
   };
 
@@ -33,12 +27,7 @@ export default function HistoricoPedidosWidget() {
     setSelectedPedido(null);
   };
 
-  const pedidosFiltrados = mockHistoricoPedidos.filter((pedido) => {
-    if (filtroAtivo === "Todos") return true;
-    if (filtroAtivo === "Em Produção") return pedido.status === "Em Produção";
-    if (filtroAtivo === "Finalizados") return pedido.status === "Concluído";
-    return true;
-  });
+  const pedidosFiltrados = mockHistoricoPedidos.filter((pedido) => pedido.status === "Concluído");
 
   return (
     <div className="w-full">
@@ -47,25 +36,9 @@ export default function HistoricoPedidosWidget() {
         Histórico de Pedidos
       </h1>
 
-      {/* Subtítulo + Filtros na mesma linha */}
-      <div className="flex items-center justify-between mt-3 mb-8 flex-wrap gap-4">
+      {/* Subtítulo */}
+      <div className="mt-3 mb-8">
         <p className="text-sm text-gray-500">Visualize seus pedidos</p>
-
-        <div className="inline-flex bg-[#F5F5F5] p-1 gap-1">
-          {FILTROS.map((filtro) => (
-            <button
-              key={filtro}
-              onClick={() => setFiltroAtivo(filtro)}
-              className={`px-6 py-2.5 text-[12px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                filtroAtivo === filtro
-                  ? "bg-white text-black shadow-sm"
-                  : "text-gray-500 hover:text-black"
-              }`}
-            >
-              {filtro}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Lista de Pedidos */}
@@ -129,7 +102,10 @@ export default function HistoricoPedidosWidget() {
                 <button className="bg-[#F7D708] text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-yellow-400 transition-colors cursor-pointer">
                   Pedir Novamente
                 </button>
-                <button className="border border-black bg-white text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-black hover:text-white transition-colors cursor-pointer">
+                <button
+                  onClick={() => handleOpenModal(pedido)}
+                  className="border border-black bg-white text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-black hover:text-white transition-colors cursor-pointer"
+                >
                   Detalhes
                 </button>
               </div>
@@ -138,10 +114,10 @@ export default function HistoricoPedidosWidget() {
         )}
       </div>
 
-      <ProductModal
+      <DetalhesPedidoModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        produto={selectedPedido}
+        pedido={selectedPedido}
       />
     </div>
   );

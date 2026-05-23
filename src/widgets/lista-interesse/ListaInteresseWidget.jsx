@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockItensSalvos } from "@/entities/produto/api/mockItensSalvos";
 import ProductModal from "@/features/modal-produto/modal-produto.jsx";
+import WhatsAppConfirmModal from "@/features/whatsapp-confirm/WhatsAppConfirmModal.jsx";
+import { enviarListaWhatsApp } from "@/shared/lib/whatsapp";
 
 export default function ListaInteresseWidget() {
   const navigate = useNavigate();
   const [itemsSalvos, setItemsSalvos] = useState(mockItensSalvos);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const isLoading = false;
 
   const handleOpenModal = (item) => {
@@ -26,17 +29,12 @@ export default function ListaInteresseWidget() {
 
   const handleEnviarWhatsApp = () => {
     if (itemsSalvos.length === 0) return;
+    setIsConfirmOpen(true);
+  };
 
-    const numero = import.meta.env.VITE_WHATSAPP_NUMERO || "5511999999999";
-    const mensagem = itemsSalvos
-      .map((item, i) => `${i + 1}. ${item.title} - ${item.category || "Produto"}`)
-      .join("\n");
-
-    const texto = encodeURIComponent(
-      `Olá! Tenho interesse nos seguintes produtos:\n\n${mensagem}\n\nGostaria de solicitar um orçamento.`
-    );
-
-    window.open(`https://wa.me/${numero}?text=${texto}`, "_blank");
+  const handleConfirmEnvio = () => {
+    enviarListaWhatsApp(itemsSalvos);
+    setIsConfirmOpen(false);
   };
 
   return (
@@ -150,6 +148,14 @@ export default function ListaInteresseWidget() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         produto={selectedProduct}
+      />
+
+      <WhatsAppConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmEnvio}
+        contexto="LISTA DE INTERESSE"
+        totalItens={itemsSalvos.length}
       />
     </div>
   );
