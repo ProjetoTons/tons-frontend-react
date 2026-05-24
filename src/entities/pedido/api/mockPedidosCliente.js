@@ -1,0 +1,28 @@
+export const mockPedidosCliente = [
+  {
+    id_pedido: 1,
+    id_pedido_display: "#TON-4829-X",
+    titulo: "Cartões de Visita Premium - 500 Unid.",
+    descricao: "Acabamento Soft Touch + Verniz Localizado",
+    image: "/product/foto-card.png",
+    etapa_pedido: "Produção",
+    etapa_label: "Em Produção",
+    concluido: false,
+    responsavel: "Ricardo Silva",
+    data_inicio: "12 NOV 2023",
+    data_fim: "15 NOV 2023",
+  },
+  {
+    id_pedido: 2,
+    id_pedido_display: "#TON-2105-B",
+    titulo: "Caneca Personalizada - Coleção Workshop",
+    descricao: "Cerâmica Fosca + Gravação a Laser",
+    image: "/product/musc-cup.png",
+    etapa_pedido: "Finalizados",
+    etapa_label: "Concluído",
+    concluido: true,
+    responsavel: "Ana Beatriz",
+    data_inicio: "01 NOV 2023",
+    data_fim: "05 NOV 2023",
+  },
+];

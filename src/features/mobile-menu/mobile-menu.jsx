@@ -52,6 +52,17 @@ export default function MobileMenu({ isOpen, onClose }) {
             <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/parcel.png" alt="" />
           </div>
 
+          {/* Link Histórico de Pedidos */}
+          <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
+            <Link to="/historico-pedidos" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
+              HISTÓRICO DE PEDIDOS
+            </Link>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+
            <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
             <Link to="/configuracoes" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#F7D708]">
               CONFIGURAÇÕES

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { getUsuario } from "@/shared/api/authToken"
 import "../navbar-cliente/navbar.css"
 
-function Navbar({ onOpenDrawer, onOpenMenu, compact }) {
+function Navbar({ onOpenDrawer, onOpenMenu, compact, hideBookmark }) {
     const navigate = useNavigate();
     const usuario = getUsuario();
     const primeiroNome = usuario?.nome?.trim().split(" ")[0];
@@ -52,7 +52,7 @@ function Navbar({ onOpenDrawer, onOpenMenu, compact }) {
                 )}
 
                 {/* Ícone Bookmark (Itens Salvos) — só logado */}
-                {usuario && (
+                {usuario && !hideBookmark && (
                     <img
                         className="w-7 cursor-pointer hover:scale-110 transition-transform"
                         src="/icons/bookmark.png"

@@ -1,7 +1,16 @@
 // src/features/salvar-produto/ui/SaveDrawerFeatureUi.jsx
-import React from "react";
+import React, { useState } from "react";
+import { enviarListaWhatsApp } from "@/shared/lib/whatsapp";
+import WhatsAppConfirmModal from "@/features/whatsapp-confirm/WhatsAppConfirmModal.jsx";
 
 export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading = false, error = null, onToggleSave = () => {} }) {
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  const handleConfirmEnvio = () => {
+    enviarListaWhatsApp(savedItems);
+    setIsConfirmOpen(false);
+  };
+
   return (
     <>
       {/* Overlay */}
@@ -89,13 +98,28 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading
         {/* Footer */}
         <div className="p-8 pt-4 border-t border-gray-300">
           <button
+            onClick={() => setIsConfirmOpen(true)}
             disabled={savedItems.length === 0 || isLoading}
-            className="w-full py-4 bg-[#F7D708] hover:bg-[#e5c607] disabled:bg-gray-300 disabled:cursor-not-allowed text-black font-black text-[12px] tracking-[2px] transition-colors uppercase shadow-md"
+            className="w-full py-4 bg-[#25D366] hover:bg-[#1DA851] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-black text-[12px] tracking-[2px] transition-colors uppercase shadow-md flex items-center justify-center gap-2"
           >
-            {isLoading ? "SINCRONIZANDO..." : "ENVIAR PARA LISTA DE INTERESSE"}
+            <img
+              src="/icons/whatsapp.png"
+              alt=""
+              className="w-5 h-5"
+              onError={(e) => { e.target.style.display = "none"; }}
+            />
+            {isLoading ? "SINCRONIZANDO..." : "ENVIAR LISTA VIA WHATSAPP"}
           </button>
         </div>
       </aside>
+
+      <WhatsAppConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmEnvio}
+        contexto="ITENS SALVOS"
+        totalItens={savedItems.length}
+      />
     </>
   );
 }
