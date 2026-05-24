@@ -63,28 +63,28 @@ export function EmployeePerformanceChart() {
             {
                 label: 'Design',
                 data: dadosGrafico.map(d => d.tarefas.design),
-                backgroundColor: '#c8d526', // Verde
+                backgroundColor: '#d4c91a', // Amarelo mostarda
                 stack: 'Stack0',
                 borderRadius: 2
             },
             {
                 label: 'Produção',
                 data: dadosGrafico.map(d => d.tarefas.producao),
-                backgroundColor: '#111111', // Preto
+                backgroundColor: '#161616', // Preto marca
                 stack: 'Stack0',
                 borderRadius: 2
             },
             {
                 label: 'Embalagem',
                 data: dadosGrafico.map(d => d.tarefas.embalagem),
-                backgroundColor: '#444444', // Cinza Chumbo
+                backgroundColor: '#8a8a8a', // Cinza médio
                 stack: 'Stack0',
                 borderRadius: 2
             },
             {
                 label: 'Logística',
                 data: dadosGrafico.map(d => d.tarefas.logistica),
-                backgroundColor: '#888888', // Cinza Médio
+                backgroundColor: '#6b6606', // Verde-oliva escuro
                 stack: 'Stack0',
                 borderRadius: 2
             }
@@ -136,11 +136,11 @@ export function EmployeePerformanceChart() {
         }
     };
 
-    if (isLoading) return <div className="h-[400px] w-full bg-gray-50 animate-pulse rounded"></div>;
-    if (dadosGrafico.length === 0) return <div className="h-[400px] w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
+    if (isLoading) return <div className="flex-1 w-full bg-gray-50 animate-pulse rounded"></div>;
+    if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
 
     return (
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-full flex-1 min-h-0 flex flex-col gap-3">
             
             <div className="flex justify-between items-center pr-4">
                 <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800">
@@ -150,25 +150,25 @@ export function EmployeePerformanceChart() {
                 {/* Legenda Customizada Expandida para 4 Itens */}
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-sm bg-[#c8d526]"></div>
+                        <div className="w-3 h-3 rounded-sm bg-[#d4c91a]"></div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Design</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-sm bg-[#111111]"></div>
+                        <div className="w-3 h-3 rounded-sm bg-[#161616]"></div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Produção</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-sm bg-[#444444]"></div>
+                        <div className="w-3 h-3 rounded-sm bg-[#8a8a8a]"></div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Embalagem</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-sm bg-[#888888]"></div>
+                        <div className="w-3 h-3 rounded-sm bg-[#6b6606]"></div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Logística</span>
                     </div>
                 </div>
             </div>
 
-            <div className="w-full h-[400px] relative">
+            <div className="w-full flex-1 min-h-0 relative">
                 <Bar data={data} options={options} />
             </div>
         </div>

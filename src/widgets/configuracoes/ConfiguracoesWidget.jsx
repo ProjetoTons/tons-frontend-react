@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   aplicarMascaraCpf,
@@ -19,6 +19,12 @@ import {
 import axios from "axios";
 import { consultarCnpj } from "@/entities/empresa/api/empresaApi";
 import RedefinirSenhaModal from "@/features/redefinir-senha/RedefinirSenhaModal";
+import { getUsuario } from "@/shared/api/authToken";
+import {
+  buscarUsuarioPorId,
+  atualizarUsuario,
+  alterarSenhaUsuario,
+} from "@/entities/usuario/api/usuarioApi";
 
 export default function ConfiguracoesWidget() {
   const navigate = useNavigate();
@@ -53,6 +59,67 @@ export default function ConfiguracoesWidget() {
     telefoneComercial: "",
     emailCorporativo: "",
   });
+
+  const [userId, setUserId] = useState(null);
+  const [empresaId, setEmpresaId] = useState(null);
+  const [enderecoExiste, setEnderecoExiste] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+
+  // Carregar dados do usuário ao montar
+  useEffect(() => {
+    async function carregarDados() {
+      const usuario = getUsuario();
+      if (!usuario?.id) {
+        setIsLoadingData(false);
+        return;
+      }
+      setUserId(usuario.id);
+
+      try {
+        const dados = await buscarUsuarioPorId(usuario.id);
+
+        if (dados) {
+          setForm((prev) => ({
+            ...prev,
+            nomeCompleto: dados.nome ? aplicarMascaraNomeCompleto(dados.nome) : "",
+            email: dados.email ?? "",
+            cpf: dados.cpf ? aplicarMascaraCpf(dados.cpf) : "",
+            telefone: dados.telefone ? aplicarMascaraTelefone(dados.telefone) : "",
+            dataNascimento: dados.dataNascimento ?? "",
+            // Endereço
+            cep: dados.endereco?.cep
+              ? (dados.endereco.cep.length > 5
+                ? `${dados.endereco.cep.slice(0, 5)}-${dados.endereco.cep.slice(5)}`
+                : dados.endereco.cep)
+              : "",
+            logradouro: dados.endereco?.logradouro ?? "",
+            numero: dados.endereco?.numero ?? "",
+            complemento: dados.endereco?.complemento ?? "",
+            bairro: dados.endereco?.bairro ?? "",
+            cidade: dados.endereco?.cidade ?? "",
+            estado: dados.endereco?.estado ?? "",
+            // Empresa
+            razaoSocial: dados.empresa?.razaoSocial ? aplicarMascaraRazaoSocial(dados.empresa.razaoSocial) : "",
+            cnpj: dados.empresa?.cnpj ? aplicarMascaraCnpj(dados.empresa.cnpj) : "",
+            telefoneComercial: dados.empresa?.telefone ? aplicarMascaraTelefone(dados.empresa.telefone) : "",
+            emailCorporativo: dados.empresa?.email ?? "",
+          }));
+
+          if (dados.endereco) setEnderecoExiste(true);
+          if (dados.empresa?.id) setEmpresaId(dados.empresa.id);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar configurações:", err);
+      } finally {
+        setIsLoadingData(false);
+      }
+    }
+
+    carregarDados();
+  }, []);
 
   const handleChange = (field) => (e) => {
     let value = e.target.value;
@@ -164,10 +231,20 @@ export default function ConfiguracoesWidget() {
   // Modal redefinir senha
   const [isRedefinirSenhaOpen, setIsRedefinirSenhaOpen] = useState(false);
 
-  const handleRedefinirSenha = (dados) => {
-    // TODO: integrar com API de redefinição de senha
-    console.log("Redefinir senha:", dados);
-    setIsRedefinirSenhaOpen(false);
+  const handleRedefinirSenha = async (dados) => {
+    try {
+      await alterarSenhaUsuario(userId, dados.senhaAtual, dados.novaSenha);
+      setIsRedefinirSenhaOpen(false);
+      setSaveSuccess(true);
+      setSaveError(null);
+      setTimeout(() => setSaveSuccess(false), 4000);
+    } catch (err) {
+      console.error("Erro ao alterar senha:", err);
+      const msg = err.response?.data || "Erro ao alterar senha.";
+      setSaveError(typeof msg === "string" ? msg : "Erro ao alterar senha.");
+      setIsRedefinirSenhaOpen(false);
+      setTimeout(() => setSaveError(null), 5000);
+    }
   };
 
   const validarFormulario = () => {
@@ -217,10 +294,53 @@ export default function ConfiguracoesWidget() {
     return Object.keys(novosErros).length === 0;
   };
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
     if (!validarFormulario()) return;
-    // TODO: integrar com API de atualização do perfil
-    console.log("Salvando configurações:", form);
+    if (!userId) {
+      setErrors((prev) => ({ ...prev, geral: "Sessão expirada. Faça login novamente." }));
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveSuccess(false);
+    setSaveError(null);
+    setErrors((prev) => ({ ...prev, geral: null }));
+
+    try {
+      const telefoneLimpo = form.telefone.replace(/\D/g, "");
+      const cepLimpo = form.cep.replace(/\D/g, "");
+
+      const payload = {
+        nome: form.nomeCompleto.trim(),
+        email: form.email.trim(),
+        telefone: telefoneLimpo,
+        idEmpresa: empresaId || null,
+      };
+
+      // Incluir endereço se CEP preenchido
+      if (cepLimpo) {
+        payload.endereco = {
+          logadouro: form.logradouro.trim(),
+          numero: form.numero.trim(),
+          cep: cepLimpo,
+          complemento: form.complemento.trim() || null,
+          bairro: form.bairro.trim() || null,
+          cidade: form.cidade.trim() || null,
+          estado: form.estado.trim() || null,
+        };
+      }
+
+      await atualizarUsuario(userId, payload);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 4000);
+    } catch (err) {
+      console.error("Erro ao salvar configurações:", err);
+      const msg = err.response?.data || "Erro ao salvar. Tente novamente.";
+      setSaveError(typeof msg === "string" ? msg : "Erro ao salvar.");
+      setTimeout(() => setSaveError(null), 5000);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const inputClass =
@@ -260,6 +380,55 @@ export default function ConfiguracoesWidget() {
 
       {/* Yellow divider */}
       <div className="w-14 h-[3px] bg-[#F7D708] mb-10" />
+
+      {isLoadingData ? (
+        <p className="text-gray-500 text-sm">Carregando suas informações...</p>
+      ) : (
+      <>
+
+      {errors.geral && (
+        <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
+          {errors.geral}
+        </div>
+      )}
+
+      {/* Popup toast de sucesso/erro */}
+      {(saveSuccess || saveError) && (
+        <div className="fixed top-6 right-6 z-50 animate-fade-in">
+          <div
+            className={`px-6 py-4 rounded-lg shadow-lg text-sm font-medium flex items-center gap-3 ${
+              saveSuccess
+                ? "bg-green-600 text-white"
+                : "bg-red-600 text-white"
+            }`}
+          >
+            {saveSuccess ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                Alterações salvas com sucesso!
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="15" y1="9" x2="9" y2="15" />
+                  <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+                {saveError}
+              </>
+            )}
+            <button
+              onClick={() => { setSaveSuccess(false); setSaveError(null); }}
+              className="ml-2 opacity-70 hover:opacity-100"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ===== DADOS PESSOAIS ===== */}
       <Section
@@ -314,11 +483,10 @@ export default function ConfiguracoesWidget() {
               <input
                 type="text"
                 value={form.cpf}
-                onChange={handleChange("cpf")}
+                disabled
                 placeholder="000.000.000-00"
-                className={getInputClass("cpf")}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
               />
-              {errors.cpf && <p className="text-[11px] text-red-500 mt-1">{errors.cpf}</p>}
             </div>
             <div>
               <label className={labelClass}>Telefone</label>
@@ -523,15 +691,19 @@ export default function ConfiguracoesWidget() {
           </button>
           <button
             onClick={handleSalvar}
-            className="px-6 py-3 bg-[#F7D708] hover:brightness-95 text-black font-bold text-[12px] uppercase tracking-[1px] transition-all"
+            disabled={isSaving}
+            className="px-6 py-3 bg-[#F7D708] hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-[12px] uppercase tracking-[1px] transition-all"
           >
-            Salvar Alterações
+            {isSaving ? "Salvando..." : "Salvar Alterações"}
           </button>
         </div>
       </div>
 
       {/* Spacer for fixed footer */}
       <div className="h-20" />
+
+      </>
+      )}
 
       {/* Modal Redefinir Senha */}
       <RedefinirSenhaModal

@@ -1,17 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockItensSalvos } from "@/entities/produto/api/mockItensSalvos";
 import ProductModal from "@/features/modal-produto/modal-produto.jsx";
 import WhatsAppConfirmModal from "@/features/whatsapp-confirm/WhatsAppConfirmModal.jsx";
 import { enviarListaWhatsApp } from "@/shared/lib/whatsapp";
+import { getToken } from "@/shared/api/authToken";
+import {
+  listarProdutosInteresse,
+  removerProdutoInteresse,
+} from "@/entities/produto/api/produtoInteresseApi";
 
 export default function ListaInteresseWidget() {
   const navigate = useNavigate();
-  const [itemsSalvos, setItemsSalvos] = useState(mockItensSalvos);
+  const [itemsSalvos, setItemsSalvos] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const isLoading = false;
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [removingId, setRemovingId] = useState(null);
+  const isLogado = Boolean(getToken());
+
+  useEffect(() => {
+    let cancelado = false;
+
+    async function carregar() {
+      if (!getToken()) {
+        setItemsSalvos([]);
+        setIsLoading(false);
+        return;
+      }
+      try {
+        setIsLoading(true);
+        setError(null);
+        const itens = await listarProdutosInteresse();
+        if (!cancelado) setItemsSalvos(itens);
+      } catch (err) {
+        console.error("Erro ao carregar lista de interesse:", err);
+        if (!cancelado) setError("Não foi possível carregar a lista de interesse.");
+      } finally {
+        if (!cancelado) setIsLoading(false);
+      }
+    }
+
+    carregar();
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   const handleOpenModal = (item) => {
     setSelectedProduct(item);
@@ -23,8 +58,19 @@ export default function ListaInteresseWidget() {
     setSelectedProduct(null);
   };
 
-  const handleRemoveItem = (item) => {
+  const handleRemoveItem = async (item) => {
+    const anteriores = itemsSalvos;
     setItemsSalvos((prev) => prev.filter((i) => i.id !== item.id));
+    setRemovingId(item.id);
+    try {
+      await removerProdutoInteresse(item.id);
+    } catch (err) {
+      console.error("Erro ao remover item da lista de interesse:", err);
+      setItemsSalvos(anteriores);
+      setError("Não foi possível remover o item. Tente novamente.");
+    } finally {
+      setRemovingId(null);
+    }
   };
 
   const handleEnviarWhatsApp = () => {
@@ -48,8 +94,26 @@ export default function ListaInteresseWidget() {
           Revise seus produtos selecionados antes de prosseguir com o orçamento.
         </p>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
+            {error}
+          </div>
+        )}
+
         {isLoading ? (
           <p className="text-gray-500 text-sm">Carregando itens...</p>
+        ) : !isLogado ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-sm mb-4">
+              Faça login para visualizar sua lista de interesses.
+            </p>
+            <button
+              onClick={() => navigate("/login")}
+              className="px-6 py-3 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors"
+            >
+              Entrar
+            </button>
+          </div>
         ) : itemsSalvos.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-500 text-sm mb-4">
@@ -94,7 +158,8 @@ export default function ListaInteresseWidget() {
 
                 <button
                   onClick={() => handleRemoveItem(item)}
-                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  disabled={removingId === item.id}
+                  className="p-2 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Remover item"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

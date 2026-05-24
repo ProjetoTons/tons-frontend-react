@@ -10,14 +10,14 @@ export default function FilterTabsFeature() {
     ];
 
     return (
-        <div className="flex bg-[#EEEDE9] p-1 rounded font-bold text-[10px] text-gray-500 gap-1">
+        <div className="flex bg-gray-100 p-1 rounded-lg font-bold text-[10px] text-gray-500 gap-1">
             {opcoes.map((opt) => (
                 <button
                     key={opt.id}
                     onClick={() => setPeriodo(opt.id)}
-                    className={`px-3 py-1.5 rounded uppercase transition-all ${periodo === opt.id
+                    className={`px-4 py-2 rounded-md uppercase transition-all duration-200 ${periodo === opt.id
                             ? 'bg-[#6b7214] text-white shadow-sm'
-                            : 'hover:text-gray-800'
+                            : 'hover:bg-gray-200 hover:text-gray-700'
                         }`}
                 >
                     {opt.label}

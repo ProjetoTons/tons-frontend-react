@@ -20,11 +20,11 @@ function KpiCard({ title, value, variant = "light", isCurrency = false, subtitle
 
   // Classes base para o container
   const containerClasses = `
-    flex flex-col h-[160px] items-start justify-between
-    p-[24px] relative shrink-0
+    flex flex-col h-[110px] items-start justify-between
+    p-4 relative shrink-0 rounded-xl transition-shadow
     ${isDark 
-      ? "bg-[#161616] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" 
-      : "bg-[#fcfcfc] border border-[#e4e2e2] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]"
+      ? "bg-[#161616] shadow-md" 
+      : "bg-white border border-gray-200 shadow-sm hover:shadow-md"
     }
   `;
 
@@ -38,8 +38,8 @@ function KpiCard({ title, value, variant = "light", isCurrency = false, subtitle
 
   // Classes para o valor
   const valueClasses = `
-    font-['Space_Grotesk:Bold',sans-serif] font-bold
-    text-[36px] leading-[40px]
+    font-['Space_Grotesk',sans-serif] font-bold
+    text-[26px] leading-[30px]
     ${isDark ? "text-[#fdf210]" : "text-[#161616]"}
   `;
 
