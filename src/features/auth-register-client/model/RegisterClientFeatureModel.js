@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { validarCPF, obterErroComplexidadeSenha, obterErroSenhaIgualConfirmarSenha, obterErroNomeCompleto, obterErroEmail, obterErroTelefone } from "@/shared/lib/dataValidation";
-import { aplicarMascaraCpf, aplicarMascaraNomeCompleto, aplicarMascaraEmail, aplicarMascaraTelefone } from "@/shared/lib/masked";
+import { validarCPF, obterErroComplexidadeSenha, obterErroSenhaIgualConfirmarSenha, obterErroNomeCompleto, obterErroEmail, obterErroTelefone } from "@/shared/lib/utils/dataValidation";
+import { aplicarMascaraCpf, aplicarMascaraNomeCompleto, aplicarMascaraEmail, aplicarMascaraTelefone } from "@/shared/lib/utils/masked";
 
 export const useRegisterClient = () => {
 

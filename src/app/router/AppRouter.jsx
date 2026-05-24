@@ -16,6 +16,7 @@ import EmBrevePage from '@/pages/em-breve/EmBrevePage'
 import ListaInteressePage from '@/pages/lista-interesse/ListaInteressePage'
 import MeusPedidosPage from '@/pages/meus-pedidos/MeusPedidosPage'
 import HistoricoPedidosPage from '@/pages/historico-pedidos/HistoricoPedidosPage'
+import DashboardPedidosPage from '@/pages/dashboards/DashboardPedidosPage'
 import ConfiguracoesPage from '@/pages/configuracoes/ConfiguracoesPage'
 
 export function AppRouter() {
@@ -42,6 +43,7 @@ export function AppRouter() {
         <Route path="/configuracoes" element={<ConfiguracoesPage />} />
         {/* Painel kanban — acesso restrito ao CNPJ da gráfica */}
         <Route path="/pedidos" element={<GraficaRoute><PedidosPage /></GraficaRoute>} />
+        <Route path='/pedidos/dashboard' element={<GraficaRoute><DashboardPedidosPage/></GraficaRoute>}/>
         <Route path="/funcionario" element={<GraficaRoute><EmployeePage/></GraficaRoute>}/>
         <Route path='/funcionario/editar/:id' element={<GraficaRoute><EmployeeEditPage/></GraficaRoute>}/>
       </Routes>

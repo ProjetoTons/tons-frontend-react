@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraNomeCompleto } from "@/shared/lib/masked";
-import { obterErroEmail, obterErroNomeCompleto, obterErroTelefone } from "@/shared/lib/dataValidation";
+import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraNomeCompleto } from "@/shared/lib/utils/masked";
+import { obterErroEmail, obterErroNomeCompleto, obterErroTelefone } from "@/shared/lib/utils/dataValidation";
 import { acessoApi, acessoToOption } from "@/entities/employee/api/acessoApi";
 import { employeeApi, toFuncionarioRequest } from "@/entities/employee/api/employeeApi";
 import { uploadImagem } from "@/shared/api/cloudnaryUpload";
@@ -166,7 +166,7 @@ export default function useEditEmployeeFeature() {
 
             const payload = toFuncionarioRequest(dadosParaEnviar);
             await employeeApi.atualizar(id, payload);
-            // navigate("/funcionario");
+            navigate("/funcionario");
         } catch (error) {
             const msg = error?.response?.data;
             setErrorMessage(

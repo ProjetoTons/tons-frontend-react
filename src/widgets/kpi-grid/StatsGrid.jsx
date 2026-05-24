@@ -1,56 +1,66 @@
-import KpiCard from "./KpiCard";
+import { useState, useEffect } from 'react';
+import KpiCard from "@/shared/ui/molecules/Kpi/KpiCard";
+import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
+import { fetchKpisDashboard } from "@/entities/pedido/api/mockPedidosEstatisticas";
+import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
 
-/**
- * StatsGrid - Grid de 4 cards com estatísticas
- * 
- * Props:
- * - stats: object com { totalHoje, emAvaliacao, emAndamento, concluido }
- * 
- * Exemplo:
- * <StatsGrid stats={{ totalHoje: 4290, emAvaliacao: 24, emAndamento: 2, concluido: 52 }} />
- */
+export default function StatsGrid() {
+  const { periodo } = useDashboardFilters();
+  const [stats, setStats] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
-function StatsGrid({ stats }) {
+  useEffect(() => {
+    const carregarKpis = async () => {
+      setIsLoading(true);
+      try {
+        const { startDate, endDate } = obterDatasDoFiltro(periodo);
+        const dadosKpi = await fetchKpisDashboard(startDate, endDate);
+        setStats(dadosKpi);
+      } catch (error) {
+        console.error("Erro ao buscar KPIs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    carregarKpis();
+  }, [periodo]);
+
+  const total = stats.totalPedidos || 0;
+
   return (
-    <div className="gap-x-[24px] gap-y-[24px] grid grid-cols-4 grid-rows-[160px] w-full">
-      {/* Card Total Hoje - Dark Variant */}
-      <div>
-        <KpiCard
-          title="Total Hoje"
-          value={stats.totalHoje.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          variant="dark"
-          isCurrency
-        />
-      </div>
+    <div className={`w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px] transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
+      <KpiCard
+        title="Total (R$) no período"
+        value={(stats.totalHoje || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        subtitle={`Em ${total} pedidos`}
+        variant="dark"
+        isCurrency
+      />
+      <KpiCard
+        title="Aguardando Arte"
+        value={stats.aguardandoArte || 0}
+        subtitle={`de ${total} pedidos`}
+        variant="light"
+      />
 
-      {/* Card Em Avaliação - Light Variant */}
-      <div>
-        <KpiCard
-          title="Aguardando Arte"
-          value={stats.aguardandoArte}
-          variant="light"
-        />
-      </div>
-
-      {/* Card Enviado - Light Variant */}
       <div>
         <KpiCard
           title="Enviado / Aguardando Retirada"
-          value={stats.enviadoAguardandoRetirada}
+          value={stats.enviadoAguardandoRetirada || 0}
+          subtitle={`de ${total} pedidos`}
           variant="light"
         />
       </div>
 
-      {/* Card Concluído - Light Variant */}
       <div>
         <KpiCard
           title="Concluído"
-          value={stats.concluido}
+          value={stats.concluido || 0}
+          subtitle={`de ${total} pedidos`}
           variant="light"
         />
       </div>
     </div>
   );
 }
-
-export default StatsGrid;
