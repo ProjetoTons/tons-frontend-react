@@ -23,9 +23,9 @@ ChartJS.register(
     Legend
 );
 
-// Paletas
-const TONS_QUANTIDADE = ['#4d520e', '#6b7214', '#8a931a', '#a9b420', '#c8d526'];
-const TONS_FINANCEIRO = ['#111111', '#222222', '#444444', '#666666', '#888888'];
+// Paletas - Cores da marca Ton's (gradiente harmônico)
+const TONS_QUANTIDADE = ['#d4c91a', '#a8a00a', '#6b6606', '#3d3a04', '#1f1d02'];
+const TONS_FINANCEIRO = ['#161616', '#3a3a3a', '#5f5f5f', '#8a8a8a', '#b5b5b5'];
 
 // 🔥 ORDEM OFICIAL DAS MACRO-ETAPAS
 const ORDEM_ETAPAS = ["Design", "Produção", "Embalagem", "Logística", "Finalizados"];
@@ -221,15 +221,15 @@ export function StageAllocationChart() {
         },
     };
 
-    if (isLoading) return <div className="h-[400px] w-full bg-gray-50 animate-pulse rounded"></div>;
-    if (dadosGrafico.length === 0) return <div className="h-[400px] w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
+    if (isLoading) return <div className="flex-1 w-full bg-gray-50 animate-pulse rounded"></div>;
+    if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
 
     return (
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-full flex-1 min-h-0 flex flex-col gap-3">
            
             {/* 🔥 TÍTULO DO GRÁFICO */}
             <div className="flex flex-col">
-                <h2 className="text-lg font-bold text-gray-900 uppercase tracking-tight">
+                <h2 className="text-base font-bold text-gray-900 uppercase tracking-tight">
                     Fluxo de Produção
                 </h2>
                 <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
@@ -255,18 +255,18 @@ export function StageAllocationChart() {
                 {/* Legenda */}
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-sm bg-[#c8d526]"></div>
+                        <div className="w-3 h-3 rounded-sm bg-[#d4c91a]"></div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Qtd. Pedidos</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-sm bg-[#111111]"></div>
+                        <div className="w-3 h-3 rounded-sm bg-[#161616]"></div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Valor (R$)</span>
                     </div>
                 </div>
             </div>
 
-            <div className="w-full h-[400px] relative">
+            <div className="w-full flex-1 min-h-0 relative">
                 <Bar data={data} options={options} />
             </div>
         </div>

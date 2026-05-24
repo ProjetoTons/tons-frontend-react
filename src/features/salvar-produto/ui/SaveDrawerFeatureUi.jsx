@@ -1,14 +1,44 @@
 // src/features/salvar-produto/ui/SaveDrawerFeatureUi.jsx
 import React, { useState } from "react";
-import { enviarListaWhatsApp } from "@/shared/lib/whatsapp";
-import WhatsAppConfirmModal from "@/features/whatsapp-confirm/WhatsAppConfirmModal.jsx";
+import { useNavigate } from "react-router-dom";
+import { adicionarProdutoInteresse } from "@/entities/produto/api/produtoInteresseApi";
+import { getToken } from "@/shared/api/authToken";
 
 export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading = false, error = null, onToggleSave = () => {} }) {
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const navigate = useNavigate();
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
 
-  const handleConfirmEnvio = () => {
-    enviarListaWhatsApp(savedItems);
-    setIsConfirmOpen(false);
+  const handleEnviarParaListaInteresse = async () => {
+    if (savedItems.length === 0 || isSending) return;
+
+    if (!getToken()) {
+      onClose();
+      navigate("/login");
+      return;
+    }
+
+    setIsSending(true);
+    setSendError(null);
+    try {
+      // Envia cada item em paralelo; ignora 200/204 e segue mesmo se algum falhar
+      const resultados = await Promise.allSettled(
+        savedItems.map((item) => adicionarProdutoInteresse(item.id))
+      );
+      const falhas = resultados.filter((r) => r.status === "rejected");
+      if (falhas.length > 0) {
+        console.error("Falhas ao enviar para lista de interesse:", falhas);
+        setSendError(`${falhas.length} item(ns) não puderam ser enviados.`);
+        return;
+      }
+      onClose();
+      navigate("/lista-interesse");
+    } catch (err) {
+      console.error("Erro ao enviar para lista de interesse:", err);
+      setSendError("Erro ao enviar. Tente novamente.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -97,29 +127,22 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading
 
         {/* Footer */}
         <div className="p-8 pt-4 border-t border-gray-300">
+          {sendError && (
+            <p className="mb-3 text-[11px] text-red-600 text-center">{sendError}</p>
+          )}
           <button
-            onClick={() => setIsConfirmOpen(true)}
-            disabled={savedItems.length === 0 || isLoading}
-            className="w-full py-4 bg-[#25D366] hover:bg-[#1DA851] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-black text-[12px] tracking-[2px] transition-colors uppercase shadow-md flex items-center justify-center gap-2"
+            onClick={handleEnviarParaListaInteresse}
+            disabled={savedItems.length === 0 || isLoading || isSending}
+            className="w-full py-4 bg-black hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-black text-[12px] tracking-[2px] transition-colors uppercase shadow-md flex items-center justify-center gap-2"
           >
-            <img
-              src="/icons/whatsapp.png"
-              alt=""
-              className="w-5 h-5"
-              onError={(e) => { e.target.style.display = "none"; }}
-            />
-            {isLoading ? "SINCRONIZANDO..." : "ENVIAR LISTA VIA WHATSAPP"}
+            {isSending
+              ? "ENVIANDO..."
+              : isLoading
+              ? "SINCRONIZANDO..."
+              : "ENVIAR PARA LISTA DE INTERESSE"}
           </button>
         </div>
       </aside>
-
-      <WhatsAppConfirmModal
-        isOpen={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-        onConfirm={handleConfirmEnvio}
-        contexto="ITENS SALVOS"
-        totalItens={savedItems.length}
-      />
     </>
   );
 }

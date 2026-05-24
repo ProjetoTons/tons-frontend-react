@@ -1,46 +1,77 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 
 // Importações de componentes FSD
 import StatsGrid from '@/widgets/kpi-grid/StatsGrid';
 import FilterTabsFeature from '@/features/filter-tabs/ui/FilterTabsFeature';
 import { StageAllocationChart } from '@/widgets/order-charts/StageAllocationChart';
 import { EmployeePerformanceChart } from '@/widgets/order-charts/EmployeePerformanceChart';
-import { DelayedOrdersList } from '@/widgets/delayed-orders-list/DelayedOrdersList';
+import { DelayedOrdersCompact } from '@/widgets/delayed-orders-list/DelayedOrdersCompact';
+import { ServiceStatusModal } from '@/widgets/service-status-sidebar/ServiceStatusModal';
 import TopNavBar from '@/widgets/topnav-grafica/TopNavBar';
-// import { ServiceStatusSidebar } from '@/widgets/service-status-sidebar';
 
 export default function DashboardPedidosPage() {
+    const [showServiceStatus, setShowServiceStatus] = useState(false);
 
     const handleNavClick = (page) => {
         console.log("Navegando para:", page);
     };
 
     return (
-        <div className="min-h-screen bg-[#F8F9FA] p-8 font-sans text-gray-800">
+        <div className="h-screen flex flex-col bg-[#F5F5F0] font-sans text-gray-800 overflow-hidden">
 
             <TopNavBar onNavClick={handleNavClick} currentPage="dashboard" />
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-9 flex flex-col gap-6">
 
-                    <div className="flex justify-between items-center mb-2">
-                        <h1 className="text-2xl font-bold uppercase tracking-wide">
-                            Visão Geral de Pedidos
-                        </h1>
-                        <FilterTabsFeature />
-                    </div>
+            <div className="flex-1 min-h-0 max-w-[1440px] w-full mx-auto px-6 lg:px-10 py-4 flex flex-col gap-3">
 
-                    <StatsGrid />
-
-                    <StageAllocationChart />
-
-
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                     <div>
-                        <EmployeePerformanceChart />
-                        <DelayedOrdersList />
+                        <h1 className="text-xl font-bold uppercase tracking-wide text-gray-900">
+                            Dashboard
+                        </h1>
+                        <p className="text-xs text-gray-500">
+                            Acompanhe a produção e performance da operação
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <FilterTabsFeature />
+                        <button
+                            onClick={() => setShowServiceStatus(true)}
+                            className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-xs font-bold uppercase tracking-wide text-gray-600"
+                        >
+                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                            Status
+                        </button>
+                    </div>
+                </div>
+
+                {/* KPIs */}
+                <StatsGrid />
+
+                {/* Gráficos + Atrasados */}
+                <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-3">
+
+                    {/* Coluna esquerda: 2 gráficos empilhados */}
+                    <div className="lg:col-span-2 flex flex-col gap-3 min-h-0">
+                        <section className="flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col">
+                            <StageAllocationChart />
+                        </section>
+                        <section className="flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col">
+                            <EmployeePerformanceChart />
+                        </section>
                     </div>
 
+                    {/* Coluna direita: Pedidos Atrasados */}
+                    <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col min-h-0">
+                        <DelayedOrdersCompact />
+                    </section>
                 </div>
             </div>
+
+            {/* Modal Status dos Serviços */}
+            {showServiceStatus && (
+                <ServiceStatusModal onClose={() => setShowServiceStatus(false)} />
+            )}
         </div>
     );
 }

@@ -24,13 +24,21 @@ export function useSaveDrawer() {
   const loadSavedItems = async () => {
     try {
       setIsLoading(true);
-      const response = await http.get('/api/favorites', { skipAuth: false });
-      setItemsSalvos(response.data || []);
+      const response = await http.get('/produtos/favoritos');
+      // Backend retorna List<Produto> com { id, nome, descricao, tipoMaterial, categoriaProduto }
+      const mapped = (response.data || []).map(p => ({
+        id: p.id,
+        title: p.nome ?? 'Produto',
+        category: p.categoriaProduto?.nome ?? p.tipoMaterial ?? 'Produto',
+        description: p.descricao ?? '',
+        image: p.urlImagem ?? '/product/placeholder.png',
+        type: p.tipoMaterial ?? '',
+      }));
+      setItemsSalvos(mapped);
       setError(null);
     } catch (err) {
       console.error('Erro ao carregar itens salvos:', err);
       setError('Falha ao carregar itens salvos');
-      // Manter itens locais mesmo se falhar
       setItemsSalvos([]);
     } finally {
       setIsLoading(false);
@@ -72,12 +80,9 @@ export function useSaveDrawer() {
 
     try {
       if (request.method === 'POST') {
-        await http.post('/api/favorites', {
-          productId: request.product.id,
-          productData: request.product
-        });
+        await http.post(`/produtos/${request.product.id}/favorito`);
       } else if (request.method === 'DELETE') {
-        await http.delete(`/api/favorites/${request.productId}`);
+        await http.delete(`/produtos/${request.productId}/favorito`);
       }
       setError(null);
     } catch (err) {
@@ -91,9 +96,6 @@ export function useSaveDrawer() {
       }
       
       setError('Erro ao sincronizar com servidor. Tente novamente.');
-      
-      // Re-adicionar à fila para tentar depois
-      requestQueue.current.unshift(request);
     } finally {
       isProcessing.current = false;
       
