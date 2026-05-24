@@ -7,7 +7,7 @@ import {
   aplicarMascaraEmail,
   aplicarMascaraCnpj,
   aplicarMascaraRazaoSocial,
-} from "@/shared/lib/masked";
+} from "@/shared/lib/utils/masked";
 import {
   validarCPF,
   validarCNPJ,
@@ -15,7 +15,7 @@ import {
   obterErroEmail,
   obterErroTelefone,
   obterErroRazaoSocial,
-} from "@/shared/lib/dataValidation";
+} from "@/shared/lib/utils/dataValidation";
 import axios from "axios";
 import { consultarCnpj } from "@/entities/empresa/api/empresaApi";
 import RedefinirSenhaModal from "@/features/redefinir-senha/RedefinirSenhaModal";

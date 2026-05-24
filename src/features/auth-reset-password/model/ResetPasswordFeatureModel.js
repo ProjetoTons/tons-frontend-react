@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { http } from "@/shared/api/http";
-import { obterErroComplexidadeSenha, obterErroSenhaIgualConfirmarSenha } from "@/shared/lib/dataValidation";
+import { obterErroComplexidadeSenha, obterErroSenhaIgualConfirmarSenha } from "@/shared/lib/utils/dataValidation";
 
 export const useResetPassword = () => {
     const [searchParams] = useSearchParams();

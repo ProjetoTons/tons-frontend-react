@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { http } from "@/shared/api/http";
-import { obterErroEmail } from "@/shared/lib/dataValidation";
+import { obterErroEmail } from "@/shared/lib/utils/dataValidation";
 
 export const useForgotPassword = () => {
     const [email, setEmail] = useState("");

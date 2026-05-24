@@ -13,6 +13,7 @@ const NAV_ROUTES = {
   portfolio: "/portfolio",
   pedidos: "/pedidos",
   funcionarios: "/funcionario",
+  dashboard: "/pedidos/dashboard"
 };
 
 function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
@@ -55,8 +56,8 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         <button
           onClick={() => handleNav("portfolio")}
           className={`font-['Inter:Medium',sans-serif] font-medium text-[16px] pb-[8px] transition-colors cursor-pointer ${currentPage === "portfolio"
-              ? "text-[#161616] border-b-2 border-[#fdf210]"
-              : "text-[#6b7280] hover:text-[#161616]"
+            ? "text-[#161616] border-b-2 border-[#fdf210]"
+            : "text-[#6b7280] hover:text-[#161616]"
             }`}
         >
           Portifólio
@@ -66,8 +67,8 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         <button
           onClick={() => handleNav("pedidos")}
           className={`font-['Inter:Bold',sans-serif] font-bold text-[16px] pb-[10px] transition-colors ${currentPage === "pedidos"
-              ? "text-[#161616] border-b-2 border-[#fdf210]"
-              : "text-[#6b7280] hover:text-[#161616]"
+            ? "text-[#161616] border-b-2 border-[#fdf210]"
+            : "text-[#6b7280] hover:text-[#161616]"
             }`}
         >
           Gerenciamento Pedidos
@@ -77,11 +78,22 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         <button
           onClick={() => handleNav("funcionarios")}
           className={`font-['Inter:Medium',sans-serif] font-medium text-[16px] pb-[8px] transition-colors cursor-pointer ${currentPage === "funcionarios"
-              ? "text-[#161616] border-b-2 border-[#fdf210]"
-              : "text-[#6b7280] hover:text-[#161616]"
+            ? "text-[#161616] border-b-2 border-[#fdf210]"
+            : "text-[#6b7280] hover:text-[#161616]"
             }`}
         >
           Funcionários
+        </button>
+
+        {/* Dashboard Link */}
+        <button
+          onClick={() => handleNav("dashboard")}
+          className={`font-['Inter:Medium',sans-serif] font-medium text-[16px] pb-[8px] transition-colors cursor-pointer ${currentPage === "dashboard"
+            ? "text-[#161616] border-b-2 border-[#fdf210]"
+            : "text-[#6b7280] hover:text-[#161616]"
+            }`}
+        >
+          Dashboard
         </button>
       </div>
     </nav>
