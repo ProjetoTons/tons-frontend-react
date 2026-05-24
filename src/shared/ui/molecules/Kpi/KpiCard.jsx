@@ -15,7 +15,7 @@
  * <KpiCard title="Em Avaliação" value="24" variant="light" />
  */
 
-function KpiCard({ title, value, variant = "light", isCurrency = false }) {
+function KpiCard({ title, value, variant = "light", isCurrency = false, subtitle}) {
   const isDark = variant === "dark";
 
   // Classes base para o container
@@ -59,6 +59,12 @@ function KpiCard({ title, value, variant = "light", isCurrency = false }) {
             {isCurrency && "R$ "}
             {value}
           </p>
+
+          {subtitle && (
+            <span className={`text-[12px] font-medium mt-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+              {subtitle}
+            </span>
+          )}
         </div>
         <div className="h-[16px] shrink-0 w-full" />
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { obterErroEmail, obterErroTelefone, validarCNPJ, obterErroRazaoSocial } from "@/shared/lib/dataValidation";
-import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraCnpj, aplicarMascaraRazaoSocial } from "@/shared/lib/masked";
+import { obterErroEmail, obterErroTelefone, validarCNPJ, obterErroRazaoSocial } from "@/shared/lib/utils/dataValidation";
+import { aplicarMascaraEmail, aplicarMascaraTelefone, aplicarMascaraCnpj, aplicarMascaraRazaoSocial } from "@/shared/lib/utils/masked";
 import { useNavigate, useLocation } from "react-router-dom";
 import { consultarCnpj } from "@/entities/empresa/api/empresaApi";
 

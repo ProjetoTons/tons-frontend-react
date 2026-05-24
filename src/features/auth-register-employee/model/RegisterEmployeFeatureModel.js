@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { obterErroComplexidadeSenha, obterErroNomeCompleto, obterErroEmail, obterErroTelefone } from "@/shared/lib/dataValidation";
-import { aplicarMascaraNomeCompleto, aplicarMascaraEmail, aplicarMascaraTelefone } from "@/shared/lib/masked";
+import { obterErroComplexidadeSenha, obterErroNomeCompleto, obterErroEmail, obterErroTelefone } from "@/shared/lib/utils/dataValidation";
+import { aplicarMascaraNomeCompleto, aplicarMascaraEmail, aplicarMascaraTelefone } from "@/shared/lib/utils/masked";
 import { acessoApi, acessoToOption } from "@/entities/employee/api/acessoApi";
 import { employeeApi, toFuncionarioRequest } from "@/entities/employee/api/employeeApi";
 import { http } from "@/shared/api/http";

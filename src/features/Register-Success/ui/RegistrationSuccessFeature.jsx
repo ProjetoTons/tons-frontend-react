@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cadastrarUsuario } from "@/entities/usuario/api/usuarioApi";
 import { cadastrarEmpresa } from "@/entities/empresa/api/empresaApi";
-import { apenasDigitos } from "@/shared/lib/masked";
+import { apenasDigitos } from "@/shared/lib/utils/masked";
 import { http } from "@/shared/api/http";
 
 export default function RegistrationSuccessFeature() {

@@ -4,7 +4,7 @@ import InputForm from "@/shared/ui/molecules/FormField/FormField";
 import FileInputForm from "@/shared/ui/molecules/FormField/fileInputform";
 import SelectForm from "@/shared/ui/molecules/FormField/SelectForm";
 import useEditEmployeeFeature from "@/features/Edit-Employee/model/EditEmployeeFeatureModel";
-import { aplicarMascaraTelefone } from "@/shared/lib/masked";
+import { aplicarMascaraTelefone } from "@/shared/lib/utils/masked";
 
 export default function EditEmployeeFeature() {
     const {

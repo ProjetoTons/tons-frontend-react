@@ -1,4 +1,4 @@
-import { aplicarMascaraData } from "@/shared/lib/masked";
+import { aplicarMascaraData } from "@/shared/lib/utils/masked";
 import React from "react";
 
 export default function EmployeeTable({ funcionarios, onEdit, onDelete }) {
