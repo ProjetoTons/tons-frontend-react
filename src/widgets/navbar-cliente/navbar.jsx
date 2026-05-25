@@ -1,23 +1,25 @@
 import { useNavigate } from "react-router-dom"
 import { getUsuario } from "@/shared/api/authToken"
+import { useScrollDirection } from "@/shared/lib/useScrollDirection"
 import "../navbar-cliente/navbar.css"
 
 function Navbar({ onOpenDrawer, onOpenMenu, compact, hideBookmark }) {
     const navigate = useNavigate();
     const usuario = getUsuario();
     const primeiroNome = usuario?.nome?.trim().split(" ")[0];
+    const isScrollVisible = useScrollDirection();
 
     return (
-        <nav className={`w-full font-inter flex items-center justify-between px-10 bg-[#F2F2F2] ${compact ? "py-2" : "py-4"}`}>
+        <nav className={`w-full font-inter flex items-center justify-between px-10 bg-[#F2F2F2] border-b-4 border-[#F7D708] ${compact ? "py-2" : "py-4"} navbar-scroll-animation ${isScrollVisible ? 'navbar-visible' : 'navbar-hidden'}`}>
 
             {/* Lado Esquerdo: Logo e Saudação */}
             <div className="flex items-center gap-8">
                 <img
-                    className={`${compact ? "w-[100px]" : "w-[150px]"} cursor-pointer`}
+                    className={`${compact ? "w-[50px]" : "w-[100px]"} cursor-pointer`}
                     src="/logo-tons/Logo Hefestos Nome.png"
                     alt="Logo Ton's"
                     onClick={() => navigate("/portfolio")}
-                />
+                />  
 
                 <div className="flex items-center gap-6">
                     {primeiroNome && (

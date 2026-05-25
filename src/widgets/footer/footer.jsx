@@ -13,19 +13,19 @@ function Footer() {
                         <h2 className="text-[var(--amarelo-base)] text-sm tracking-[1px] mb-5">CONTATO</h2>
                         <div className="flex items-center gap-3 mb-3">
                             <img className='w-[18px] h-[18px]' style={{ filter: 'brightness(0) saturate(100%) invert(85%) sepia(61%) saturate(2331%) hue-rotate(354deg) brightness(103%) contrast(94%)' }} src="/icons/phone-call.png" alt="" />
-                            <p className="text-sm text-[var(--branco)]">(11) 9999-9999</p>
+                            <p className="text-sm text-[var(--branco)]">(11) 95385-8339</p>
                         </div>
                         <div className="flex items-center gap-3 mb-3">
                             <img className='w-[18px] h-[18px]' style={{ filter: 'brightness(0) saturate(100%) invert(85%) sepia(61%) saturate(2331%) hue-rotate(354deg) brightness(103%) contrast(94%)' }} src="/icons/email.png" alt="" />
-                            <p className="text-sm text-[var(--branco)]">email@email.com</p>
+                            <p className="text-sm text-[var(--branco)]">tonspersonalizados@gmail.com</p>
                         </div>
                         <div className="flex items-center gap-3 mb-3">
                             <img className='w-[18px] h-[18px]' style={{ filter: 'brightness(0) saturate(100%) invert(85%) sepia(61%) saturate(2331%) hue-rotate(354deg) brightness(103%) contrast(94%)' }} src="/icons/illed-point.png" alt="" />
-                            <p className="text-sm text-[var(--branco)]">endereco</p>
+                            <p className="text-sm text-[var(--branco)]">Rua Adolfo Appia, 177 - Jardim Cibele, São Paulo - SP, 08260-210</p>
                         </div>
                         <div className="flex items-center gap-3 mb-3">
                             <img className='w-[18px] h-[18px]' style={{ filter: 'brightness(0) saturate(100%) invert(85%) sepia(61%) saturate(2331%) hue-rotate(354deg) brightness(103%) contrast(94%)' }} src="/icons/time.png" alt="" />
-                            <p className="text-sm text-[var(--branco)]">Seg. a Sex das 08h às 18h</p>
+                            <p className="text-sm text-[var(--branco)]">Seg. a Sex das 09:00 às 17:30.</p>
                         </div>
 
                     </div>
