@@ -27,14 +27,14 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
   };
 
   return (
-    <nav className="bg-[#fcfcfc] border-b border-[#e4e2e2] px-[24px] py-[15px] flex items-center justify-between sticky top-0 z-50 h-[64px]">
+    <nav className="bg-[#fcfcfc] border-b border-[#e4e2e2] px-4 lg:px-6 py-2 flex items-center justify-between gap-4 sticky top-0 z-50 h-[52px] lg:h-[60px] flex-shrink-0">
       {/* Left: Logo + Brand */}
-      <div className="flex items-center gap-[32px]">
+      <div className="flex items-center gap-4 lg:gap-6 xl:gap-8 min-w-0">
         {/* Logo */}
         <button
           type="button"
           onClick={() => handleNav("portfolio")}
-          className="w-[83px] flex-shrink-0 cursor-pointer bg-transparent border-0 p-0"
+          className="w-[56px] lg:w-[72px] xl:w-[83px] flex-shrink-0 cursor-pointer bg-transparent border-0 p-0"
           aria-label="Ir para portfólio"
         >
           <img
@@ -45,17 +45,17 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         </button>
 
         {/* Brand Name */}
-        <h1 className="font-[family-name:var(--fonte-space)] font-bold text-[20px] text-[#161616] tracking-[-1px] uppercase">
+        <h1 className="hidden md:block font-[family-name:var(--fonte-space)] font-bold text-sm lg:text-base xl:text-[20px] text-[#161616] tracking-[-1px] uppercase truncate">
           Ton's personalizados
         </h1>
       </div>
 
       {/* Center: Navigation Links */}
-      <div className="flex items-center gap-[24px] mr-30">
+      <div className="flex items-center gap-3 lg:gap-5 xl:gap-6 flex-wrap justify-end">
         {/* Portfolio Link */}
         <button
           onClick={() => handleNav("portfolio")}
-          className={`font-['Inter:Medium',sans-serif] font-medium text-[16px] pb-[8px] transition-colors cursor-pointer ${currentPage === "portfolio"
+          className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${currentPage === "portfolio"
             ? "text-[#161616] border-b-2 border-[#fdf210]"
             : "text-[#6b7280] hover:text-[#161616]"
             }`}
@@ -66,7 +66,7 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         {/* Gerenciamento Pedidos Link - Active */}
         <button
           onClick={() => handleNav("pedidos")}
-          className={`font-['Inter:Bold',sans-serif] font-bold text-[16px] pb-[10px] transition-colors ${currentPage === "pedidos"
+          className={`font-['Inter:Bold',sans-serif] font-bold text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors ${currentPage === "pedidos"
             ? "text-[#161616] border-b-2 border-[#fdf210]"
             : "text-[#6b7280] hover:text-[#161616]"
             }`}
@@ -77,7 +77,7 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         {/* Funcionários Link */}
         <button
           onClick={() => handleNav("funcionarios")}
-          className={`font-['Inter:Medium',sans-serif] font-medium text-[16px] pb-[8px] transition-colors cursor-pointer ${currentPage === "funcionarios"
+          className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${currentPage === "funcionarios"
             ? "text-[#161616] border-b-2 border-[#fdf210]"
             : "text-[#6b7280] hover:text-[#161616]"
             }`}
@@ -88,7 +88,7 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         {/* Dashboard Link */}
         <button
           onClick={() => handleNav("dashboard")}
-          className={`font-['Inter:Medium',sans-serif] font-medium text-[16px] pb-[8px] transition-colors cursor-pointer ${currentPage === "dashboard"
+          className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${currentPage === "dashboard"
             ? "text-[#161616] border-b-2 border-[#fdf210]"
             : "text-[#6b7280] hover:text-[#161616]"
             }`}

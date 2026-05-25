@@ -29,7 +29,7 @@ export default function StatsGrid() {
   const total = stats.totalPedidos || 0;
 
   return (
-    <div className={`w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
+    <div className={`w-full grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 xl:gap-5 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
       <KpiCard
         title="Total (R$) no período"
         value={(stats.totalHoje || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

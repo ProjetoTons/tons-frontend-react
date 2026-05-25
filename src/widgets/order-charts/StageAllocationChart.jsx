@@ -225,43 +225,50 @@ export function StageAllocationChart() {
     if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
 
     return (
-        <div className="w-full flex-1 min-h-0 flex flex-col gap-3">
-           
-            {/* 🔥 TÍTULO DO GRÁFICO */}
-            <div className="flex flex-col">
-                <h2 className="text-base font-bold text-gray-900 uppercase tracking-tight">
-                    Fluxo de Produção
-                </h2>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                    Distribuição de volume e receita por etapa
-                </p>
-            </div>
-            
-            {/* CABEÇALHO DO GRÁFICO: INDICADOR + LEGENDA */}
-            <div className="flex justify-between items-end pr-4">
+        <div className="w-full flex-1 min-h-0 flex flex-col gap-1.5 lg:gap-2">
 
-                {/* Indicador de Ordem */}
-                <div className="flex items-center gap-2 border-l-2 border-[#e4e2e2] pl-2">
-                    <div className="flex flex-col items-center justify-center text-[#9ca3af] text-[8px] leading-[8px]">
-                        <span>▲</span>
-                        <span>▼</span>
-                    </div>
-                    <div className="flex flex-col text-[9px] font-bold text-gray-400 tracking-widest uppercase">
-                        <span>Topo = Primeira Sub-Etapa da área</span>
-                        <span>Base = Última Sub-Etapa da área</span>
-                    </div>
+            {/* CABEÇALHO UNIFICADO: TÍTULO + INDICADOR + LEGENDA */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 pr-2">
+
+                {/* Título */}
+                <div className="flex flex-col">
+                    <h2 className="text-sm lg:text-base font-bold text-gray-900 uppercase tracking-tight leading-tight">
+                        Fluxo de Produção
+                    </h2>
+                    <p className="text-[9px] lg:text-[10px] text-gray-400 uppercase tracking-widest font-medium">
+                        Distribuição de volume e receita por etapa
+                    </p>
                 </div>
 
-                {/* Legenda */}
-                <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-sm bg-[#d4c91a]"></div>
-                        <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Qtd. Pedidos</span>
+                {/* Indicador + Legenda agrupados à direita */}
+                <div className="flex items-center gap-4 lg:gap-6 flex-wrap">
+
+                    {/* Indicador de Ordem */}
+                    <div className="flex items-center gap-2 border-l-2 border-[#e4e2e2] pl-2">
+                        <div className="flex flex-col items-center justify-center text-[#9ca3af] text-[8px] leading-[8px]">
+                            <span>▲</span>
+                            <span>▼</span>
+                        </div>
+                        <div className="flex flex-col text-[8px] lg:text-[9px] font-bold text-gray-400 tracking-widest uppercase leading-tight">
+                            <span>Topo = Primeira Sub-Etapa</span>
+                            <span>Base = Última Sub-Etapa</span>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-sm bg-[#161616]"></div>
-                        <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Valor (R$)</span>
+                    {/* Separador visual */}
+                    <div className="hidden lg:block h-6 w-px bg-gray-200"></div>
+
+                    {/* Legenda */}
+                    <div className="flex items-center gap-3 lg:gap-4">
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded-sm bg-[#d4c91a]"></div>
+                            <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Qtd. Pedidos</span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded-sm bg-[#161616]"></div>
+                            <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Valor (R$)</span>
+                        </div>
                     </div>
                 </div>
             </div>

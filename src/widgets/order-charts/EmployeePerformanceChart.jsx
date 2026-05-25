@@ -140,15 +140,15 @@ export function EmployeePerformanceChart() {
     if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
 
     return (
-        <div className="w-full flex-1 min-h-0 flex flex-col gap-3">
+        <div className="w-full flex-1 min-h-0 flex flex-col gap-1.5 lg:gap-2">
             
-            <div className="flex justify-between items-center pr-4">
-                <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-1.5 pr-2">
+                <h3 className="text-xs lg:text-sm font-bold uppercase tracking-wide text-gray-800 leading-tight">
                     QUANTIDADE DE TAREFAS POR FUNCIONÁRIO
                 </h3>
                 
                 {/* Legenda Customizada Expandida para 4 Itens */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 lg:gap-4 flex-wrap">
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 rounded-sm bg-[#d4c91a]"></div>
                         <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Design</span>
