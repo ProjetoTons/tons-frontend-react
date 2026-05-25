@@ -14,6 +14,7 @@
  * <StatusBadge status="aguardando-arte" etapa_pedido="Design" onStatusChange={handleStatusChange} />
  */
 
+import Swal from 'sweetalert2'
 import { getNextStatus, getPreviousStatus } from '@/entities/pedido/api/statusFlowConfig';
 
 function StatusBadge({ status, etapa_pedido, onStatusChange, usuarioLogado }) {
@@ -152,8 +153,21 @@ function StatusBadge({ status, etapa_pedido, onStatusChange, usuarioLogado }) {
       {/* Botão retroceder status */}
       {statusAnterior && (
         <button
-          onClick={() => handleClick(statusAnterior)}
-          className="text-[#9ca3af] hover:text-[#6b7280] transition-colors text-xs"
+          onClick={() => Swal.fire({
+            title: 'Confirmar Retroceder Status',
+            text: 'Tem certeza que deseja retroceder o status do pedido para ' + statusConfig[statusAnterior]?.label + '?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, retroceder!',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              handleClick(statusAnterior);
+            }
+          })}
+          className="text-[#9ca3af] hover:text-[#6b7280] transition-colors"
           title="Status anterior"
         >
           ◀
@@ -176,7 +190,20 @@ function StatusBadge({ status, etapa_pedido, onStatusChange, usuarioLogado }) {
       {/* Botão avançar status */}
       {proximoStatus && (
         <button
-          onClick={() => handleClick(proximoStatus)}
+          onClick={() => Swal.fire({
+            title: 'Confirmar Avançar Status',
+            text: 'Tem certeza que deseja avançar o status do pedido para ' + statusConfig[proximoStatus]?.label + '?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, avançar!',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              handleClick(proximoStatus);
+            }
+          })}
           className="text-[#9ca3af] hover:text-[#6b7280] transition-colors text-xs"
           title="Próximo status"
         >

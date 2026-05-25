@@ -1,5 +1,6 @@
 import { useState } from "react";
 import StatusBadge from "./StatusBadge";
+import OrderDetailModal from "./OrderDetailModal";
 import {
   canAdvanceToNextEtapa,
   getPreviousEtapa,
@@ -20,6 +21,7 @@ import {
 
 function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado = { id: 1, nome: "Usuário" } }) {
   const [pedidoLocal, setPedidoLocal] = useState(pedido);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Verifica se pode avançar para a próxima etapa
   const podeAvancar = canAdvanceToNextEtapa(pedidoLocal.etapa_pedido, pedidoLocal.status);
@@ -68,15 +70,32 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
     onStatusChange && onStatusChange(pedidoLocal.id_pedido, pedidoAtualizado);
   };
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleEditPedido = (pedido) => {
+    console.log("Editar pedido:", pedido);
+    // TODO: Navegue para página de edição ou abra um modal de edição
+  };
+
   // Determina qual responsável mostrar
   const responsavelExibicao = pedidoLocal.responsavel_fase_atual?.nome || "-";
 
   return (
-    <div className="content-stretch flex items-center justify-between px-[2px] relative w-full border-b border-[#e4e2e2] bg-white hover:bg-[#f9f9f9] transition-colors">
+    <>
+      <div 
+        onClick={handleOpenModal}
+        className="content-stretch flex items-center justify-between px-[2px] relative w-full border-b border-[#e4e2e2] bg-white hover:bg-[#f9f9f9] transition-colors cursor-pointer"
+      >
 
       <img
         src={`https://i.pravatar.cc/150?u=${pedidoLocal.id_pedido}`}
-        className="w-30 h-30 object-cover border border-gray-200 shadow-sm"
+        className="w-30 h-30 m-2.5 object-cover border border-gray-200 shadow-sm"
       />
       {/* N° Pedido */}
       <div className="flex-col items-start px-[5px] py-[16px] text-left min-w-[86px]">
@@ -86,7 +105,10 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
       </div>
 
       {/* Status */}
-      <div className="flex-col items-start px-[24px] min-w-[150px]">
+      <div 
+        className="flex-col items-start px-[24px] min-w-[150px]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <StatusBadge
           status={pedidoLocal.status}
           etapa_pedido={pedidoLocal.etapa_pedido}
@@ -137,13 +159,16 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
         </span>
       </div>
 
-      <div className="flex flex-col gap-[8px] items-center justify-center">
+      <div className="flex flex-col gap-[8px] items-center justify-center m-2.5">
         {/* Botão Retornar */}
         <button
-          onClick={handleRetornar}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleRetornar();
+          }}
           disabled={!podeRetornar}
           className={`flex items-center justify-center px-[12px] py-[8px] rounded transition-colors ${podeRetornar
-            ? 'bg-[#e4e3e2] hover:bg-[#d4d3d2] cursor-pointer'
+            ? 'bg-[#161616] hover:bg-[#474747] transition-colors text-white cursor-pointer'
             : 'bg-[#e4e3e2] text-[#b0b0b0] cursor-not-allowed opacity-50'
             }`}
           title={podeRetornar ? "Retornar para etapa anterior" : "Não é possível retornar"}
@@ -155,7 +180,10 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
 
         {/* Botão Avançar */}
         <button
-          onClick={handleAvancar}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAvancar;
+          }}
           disabled={!podeAvancar}
           className={`flex items-center justify-center px-[12px] py-[8px] rounded transition-colors ${podeAvancar
             ? 'bg-[#fdf210] hover:bg-[#e6d800] cursor-pointer'
@@ -168,7 +196,18 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
           </span>
         </button>
       </div>
-    </div>
+      </div>
+
+      {/* Modal de Detalhes */}
+      <OrderDetailModal
+        isOpen={isModalOpen}
+        pedido={pedidoLocal}
+        onClose={handleCloseModal}
+        onEdit={handleEditPedido}
+        onStatusChange={handleStatusChange}
+        usuarioLogado={usuarioLogado}
+      />
+    </>
   );
 }
 
