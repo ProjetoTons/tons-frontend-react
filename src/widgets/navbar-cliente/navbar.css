@@ -107,3 +107,43 @@
     font-size: 30px;
     font-weight: 500;
 }
+
+/* Animações de Scroll Direction */
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.navbar-scroll-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar-scroll-animation.navbar-visible {
+    animation: slideUp 0.3s ease-in-out forwards;
+}
+
+.navbar-scroll-animation.navbar-hidden {
+    animation: slideDown 0.3s ease-in-out forwards;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useState, useRef } from 'react'; 
 import TopbarFix from '@/widgets/topbar-cliente/topbar-fix.jsx'
 import Navbar from '@/widgets/navbar-cliente/navbar.jsx'
 import SectionNomeBanner from '@/widgets/section-nome-banner/section-nome-banner.jsx'
@@ -16,6 +16,7 @@ import { produtos } from '@/entities/produto/api/mockProdutos'
 
 export default function PortfolioPage() {
   const { isDrawerOpen, itemsSalvos, openDrawer, closeDrawer, toggleSaveProduct, isLoading, error } = useSaveDrawer()
+  const produtosRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [categoriaAtiva, setCategoriaAtiva] = useState("todos");
   const [mostrarDestaque, setMostrarDestaque] = useState(false);
@@ -93,15 +94,23 @@ export default function PortfolioPage() {
   const handleVerColecaoDestaque = () => {
     setMostrarDestaque(true);
     setCategoriaAtiva("todos");
+    
+    // Scroll suave para a seção de produtos
+    setTimeout(() => {
+      if (produtosRef.current) {
+        produtosRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 0);
   };
 
   return (
     <>
-      <TopbarFix />
       <Navbar 
         onOpenDrawer={openDrawer} 
         onOpenMenu={() => setIsMenuOpen(true)} 
       />
+      {/* Espaçador para compensar navbar fixa */}
+      <div className="h-[80px]"></div>
       
       <SectionNomeBanner />
       <DestaqueBanner onVerColecao={handleVerColecaoDestaque} />
@@ -113,7 +122,7 @@ export default function PortfolioPage() {
       />
 
       {/* SEÇÃO DE PRODUTOS POR CATEGORIA */}
-      <section className="px-10 py-10">
+      <section className="px-10 py-10" ref={produtosRef}>
         {/* Indicador de Filtro Destaque Ativo */}
         {mostrarDestaque && (
           <div className="mb-8 p-4 bg-[#F7D708] border-l-4 border-black">
@@ -130,9 +139,56 @@ export default function PortfolioPage() {
           </div>
         )}
         
-        {renderizarCategoria("Papelaria", "papelaria")}
-        {renderizarCategoria("Banners", "banner")}
-        {renderizarCategoria("Brindes", "brinde")}
+        {renderizarCategoria("Copa do Mundo", "copa-do-mundo")}
+        {renderizarCategoria("Verão", "verao")}
+        {renderizarCategoria("Acessórios p/ Celular", "acessorios-celular")}
+        {renderizarCategoria("Acessórios para Carros", "acessorios-carros")}
+        {renderizarCategoria("Bar e Bebidas", "bar-bebidas")}
+        {renderizarCategoria("Blocos e Cadernetas", "blocos-cadernetas")}
+        {renderizarCategoria("Bolsas Térmicas", "bolsas-termicas")}
+        {renderizarCategoria("Brinquedos", "brinquedos")}
+        {renderizarCategoria("Caixas de Som", "caixas-som")}
+        {renderizarCategoria("Canecas", "canecas")}
+        {renderizarCategoria("Canetas", "canetas")}
+        {renderizarCategoria("Carregadores", "carregadores")}
+        {renderizarCategoria("Casa", "casa")}
+        {renderizarCategoria("Chaveiros", "chaveiros")}
+        {renderizarCategoria("Conjuntos Executivos", "conjuntos-executivos")}
+        {renderizarCategoria("Copos", "copos")}
+        {renderizarCategoria("Cozinha", "cozinha")}
+        {renderizarCategoria("Cuidados Pessoais", "cuidados-pessoais")}
+        {renderizarCategoria("Escritório", "escritorio")}
+        {renderizarCategoria("Espelhos", "espelhos")}
+        {renderizarCategoria("Esporte e Jogos", "esporte-jogos")}
+        {renderizarCategoria("Estojos", "estojos")}
+        {renderizarCategoria("Ferramentas", "ferramentas")}
+        {renderizarCategoria("Fones de Ouvido", "fones-ouvido")}
+        {renderizarCategoria("Guarda-Chuva", "guarda-chuva")}
+        {renderizarCategoria("Informática e Telefonia", "informatica-telefonia")}
+        {renderizarCategoria("Kit Churrasco", "kit-churrasco")}
+        {renderizarCategoria("Kit Queijo", "kit-queijo")}
+        {renderizarCategoria("Lanternas e Luminárias", "lanternas-luminarias")}
+        {renderizarCategoria("Lápis e Lapiseiras", "lapis-lapiseiras")}
+        {renderizarCategoria("Linha Ecológica", "linha-ecologica")}
+        {renderizarCategoria("Linha Feminina", "linha-feminina")}
+        {renderizarCategoria("Linha Masculina", "linha-masculina")}
+        {renderizarCategoria("Linha Pet", "linha-pet")}
+        {renderizarCategoria("Malas Mochilas Bolsas", "malas-mochilas-bolsas")}
+        {renderizarCategoria("Microfones", "microfones")}
+        {renderizarCategoria("Moda e Estilo", "moda-estilo")}
+        {renderizarCategoria("Necessaires", "necessaires")}
+        {renderizarCategoria("Pastas", "pastas")}
+        {renderizarCategoria("Pen Drives", "pen-drives")}
+        {renderizarCategoria("Petisqueiras", "petisqueiras")}
+        {renderizarCategoria("Plaquinhas", "plaquinhas")}
+        {renderizarCategoria("Porta Canetas", "porta-canetas")}
+        {renderizarCategoria("Porta Retratos", "porta-retratos")}
+        {renderizarCategoria("Porta-Documentos e ID", "porta-documentos-id")}
+        {renderizarCategoria("Relógios", "relogios")}
+        {renderizarCategoria("Sacolas e Sacochillas", "sacolas-sacochillas")}
+        {renderizarCategoria("Squeezes e Garrafas", "squeezes-garrafas")}
+        {renderizarCategoria("Tábuas", "tabuas")}
+        {renderizarCategoria("Umidificadores", "umidificadores")}
       </section>
 
       <FAQ />
