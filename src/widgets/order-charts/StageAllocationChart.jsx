@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
 import { fetchGraficoEtapas } from "@/entities/pedido/api/mockPedidosEstatisticas";
 import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
@@ -27,10 +27,10 @@ ChartJS.register(
 const TONS_QUANTIDADE = ['#d4c91a', '#a8a00a', '#6b6606', '#3d3a04', '#1f1d02'];
 const TONS_FINANCEIRO = ['#161616', '#3a3a3a', '#5f5f5f', '#8a8a8a', '#b5b5b5'];
 
-// 🔥 ORDEM OFICIAL DAS MACRO-ETAPAS
+// ORDEM OFICIAL DAS MACRO-ETAPAS
 const ORDEM_ETAPAS = ["Design", "Produção", "Embalagem", "Logística", "Finalizados"];
 
-// 🔥 ORDEM OFICIAL DAS SUB-ETAPAS
+// ORDEM OFICIAL DAS SUB-ETAPAS
 const ORDEM_SUB_ETAPAS = [
     "aguardando-arte", "criando-mockup", "aguardando-aprovacao", "impressao-fotolito",
     "conferindo", "personalizando",
@@ -39,7 +39,7 @@ const ORDEM_SUB_ETAPAS = [
 ];
 
 export function StageAllocationChart() {
-    const { periodo } = useDashboardFilters();
+    const { periodo, dataInicio } = useDashboardFilters();
     const [dadosGrafico, setDadosGrafico] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -47,7 +47,7 @@ export function StageAllocationChart() {
         const carregarDados = async () => {
             setIsLoading(true);
             try {
-                const { startDate, endDate } = obterDatasDoFiltro(periodo);
+                const { startDate, endDate } = obterDatasDoFiltro(periodo, dataInicio);
                 const dados = await fetchGraficoEtapas(startDate, endDate);
 
                 // Ordena as Macro-Etapas (Eixo X)
@@ -69,70 +69,74 @@ export function StageAllocationChart() {
             }
         };
         carregarDados();
-    }, [periodo]);
+    }, [periodo, dataInicio]);
 
-    const labelsMacro = dadosGrafico.map(d => d.etapa);
+    const data = useMemo(() => {
+        if (dadosGrafico.length === 0) return { labels: [], datasets: [] };
 
-    // Extrai as sub-etapas únicas do período
-    const subEtapasUnicas = new Set();
-    dadosGrafico.forEach(macro => {
-        macro.subEtapas.forEach(sub => subEtapasUnicas.add(sub.nome));
-    });
+        const labelsMacro = dadosGrafico.map(d => d.etapa);
 
-    // 🔥 Ordena as sub-etapas e inverte para o Chart.js desenhar a 1ª no topo
-    const subEtapasArray = Array.from(subEtapasUnicas)
-        .sort((a, b) => {
-            let indexA = ORDEM_SUB_ETAPAS.indexOf(a);
-            let indexB = ORDEM_SUB_ETAPAS.indexOf(b);
-            if (indexA === -1) indexA = 999;
-            if (indexB === -1) indexB = 999;
-            return indexA - indexB;
-        })
-        .reverse();
-
-    const datasets = [];
-
-    subEtapasArray.forEach((subNome, index) => {
-
-        // --- DATASET: QUANTIDADE ---
-        const dataQuantidade = dadosGrafico.map(macro => {
-            const subEncontrada = macro.subEtapas.find(s => s.nome === subNome);
-            return subEncontrada ? subEncontrada.quantidadePedidos : 0;
+        // Extrai as sub-etapas únicas do período
+        const subEtapasUnicas = new Set();
+        dadosGrafico.forEach(macro => {
+            macro.subEtapas.forEach(sub => subEtapasUnicas.add(sub.nome));
         });
 
-        if (dataQuantidade.some(val => val > 0)) {
-            datasets.push({
-                label: `Qtd: ${subNome.replace('-', ' ')}`,
-                data: dataQuantidade,
-                backgroundColor: TONS_QUANTIDADE[index % TONS_QUANTIDADE.length],
-                stack: 'StackQuantidade',
-                yAxisID: 'y1',
-                borderRadius: 2
-            });
-        }
+        // Ordena as sub-etapas e inverte para o Chart.js desenhar a 1ª no topo
+        const subEtapasArray = Array.from(subEtapasUnicas)
+            .sort((a, b) => {
+                let indexA = ORDEM_SUB_ETAPAS.indexOf(a);
+                let indexB = ORDEM_SUB_ETAPAS.indexOf(b);
+                if (indexA === -1) indexA = 999;
+                if (indexB === -1) indexB = 999;
+                return indexA - indexB;
+            })
+            .reverse();
 
-        // --- DATASET: FINANCEIRO ---
-        const dataFinanceiro = dadosGrafico.map(macro => {
-            const subEncontrada = macro.subEtapas.find(s => s.nome === subNome);
-            return subEncontrada ? subEncontrada.valorTotalArrecadado : 0;
+        const datasets = [];
+
+        subEtapasArray.forEach((subNome, index) => {
+
+            // --- DATASET: QUANTIDADE ---
+            const dataQuantidade = dadosGrafico.map(macro => {
+                const subEncontrada = macro.subEtapas.find(s => s.nome === subNome);
+                return subEncontrada ? subEncontrada.quantidadePedidos : 0;
+            });
+
+            if (dataQuantidade.some(val => val > 0)) {
+                datasets.push({
+                    label: `Qtd: ${subNome.replace('-', ' ')}`,
+                    data: dataQuantidade,
+                    backgroundColor: TONS_QUANTIDADE[index % TONS_QUANTIDADE.length],
+                    stack: 'StackQuantidade',
+                    yAxisID: 'y1',
+                    borderRadius: 2
+                });
+            }
+
+            // --- DATASET: FINANCEIRO ---
+            const dataFinanceiro = dadosGrafico.map(macro => {
+                const subEncontrada = macro.subEtapas.find(s => s.nome === subNome);
+                return subEncontrada ? subEncontrada.valorTotalArrecadado : 0;
+            });
+
+            if (dataFinanceiro.some(val => val > 0)) {
+                datasets.push({
+                    label: `R$: ${subNome.replace('-', ' ')}`,
+                    data: dataFinanceiro,
+                    backgroundColor: TONS_FINANCEIRO[index % TONS_FINANCEIRO.length],
+                    stack: 'StackFinanceiro',
+                    yAxisID: 'y',
+                    borderRadius: 2
+                });
+            }
         });
 
-        if (dataFinanceiro.some(val => val > 0)) {
-            datasets.push({
-                label: `R$: ${subNome.replace('-', ' ')}`,
-                data: dataFinanceiro,
-                backgroundColor: TONS_FINANCEIRO[index % TONS_FINANCEIRO.length],
-                stack: 'StackFinanceiro',
-                yAxisID: 'y',
-                borderRadius: 2
-            });
-        }
-    });
-
-    const data = {
-        labels: labelsMacro,
-        datasets: datasets
-    };
+        return {
+            labels: labelsMacro,
+            datasets: datasets
+        };
+    }, [dadosGrafico]); // O recalculo só acontece se dadosGrafico mudar
 
     const options = {
         responsive: true,
@@ -222,7 +226,7 @@ export function StageAllocationChart() {
     };
 
     if (isLoading) return <div className="flex-1 w-full bg-gray-50 animate-pulse rounded"></div>;
-    if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
+    if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center text-xs text-gray-400 uppercase">Sem dados no período</div>;
 
     return (
         <div className="w-full flex-1 min-h-0 flex flex-col gap-1.5 lg:gap-2">
