@@ -20,7 +20,7 @@
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.1",
     "sweetalert2": "^11.26.25",
-    "sweetalert2-react-content": "github:sweetalert2/sweetalert2-react-content",
+    "sweetalert2-react-content": "^5.1.2",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
