@@ -1,12 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import TopNavBar from "@/widgets/topnav-grafica/TopNavBar";
 import PageHeader from "@/widgets/page-header/PageHeader";
 import StatsGrid from "@/widgets/kpi-grid/StatsGrid";
 import OrderTable from "@/widgets/order-table/OrderTable";
-import { mockPedidos, calcularEstatisticas } from "@/entities/pedido/api/mockPedidos";
+import { calcularEstatisticas } from "@/entities/pedido/api/mockPedidos";
+import { fetchPedidos, updatePedido } from "@/entities/pedido/api/pedidosApi";
 
 export default function PedidosPage() {
+  const [pedidos, setPedidos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState("pedidos");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,8 +21,25 @@ export default function PedidosPage() {
     nome: "Gustavo",
   };
 
+  // Carrega pedidos do "backend" no mount
+  useEffect(() => {
+    let ativo = true;
+    setCarregando(true);
+    fetchPedidos()
+      .then((data) => {
+        if (ativo) setPedidos(data);
+      })
+      .catch((err) => console.error("Erro ao buscar pedidos:", err))
+      .finally(() => {
+        if (ativo) setCarregando(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
   const pedidosFiltrados = useMemo(() => {
-    let filtered = mockPedidos;
+    let filtered = pedidos;
 
     // Filtrar por etapa
     if (etapaFilter) {
@@ -38,9 +58,9 @@ export default function PedidosPage() {
     }
 
     return filtered;
-  }, [searchTerm, etapaFilter]);
+  }, [pedidos, searchTerm, etapaFilter]);
 
-  const stats = useMemo(() => calcularEstatisticas(mockPedidos), []);
+  const stats = useMemo(() => calcularEstatisticas(pedidos), [pedidos]);
 
   const handleSearch = (value) => {
     setSearchTerm(value);
@@ -51,8 +71,8 @@ export default function PedidosPage() {
   };
 
   const handleEtapaFilter = (etapa) => {
-    if (etapaFilter === etapa) {
-      // Remove o filtro se clicar no mesmo botão
+    if (!etapa || etapaFilter === etapa) {
+      // "Todos" ou clicar no mesmo botão limpa o filtro
       setSearchParams({});
     } else {
       // Define o novo filtro
@@ -64,19 +84,31 @@ export default function PedidosPage() {
     console.log("Novo pedido clicado");
   };
 
+  const atualizarPedido = async (pedidoId, pedidoAtualizado) => {
+    // Atualização otimista — UI reflete imediatamente
+    setPedidos((prev) =>
+      prev.map((p) => (p.id_pedido === pedidoId ? pedidoAtualizado : p))
+    );
+    try {
+      await updatePedido(pedidoId, pedidoAtualizado);
+    } catch (err) {
+      console.error("Erro ao atualizar pedido:", err);
+      // Em caso de erro real, recarregaria do servidor para reverter
+      const dados = await fetchPedidos();
+      setPedidos(dados);
+    }
+  };
+
   const handleAvancar = (pedidoId, pedidoAtualizado) => {
-    console.log("Avançar pedido:", pedidoId, pedidoAtualizado);
-    // Aqui você atualizaria o estado ou faria uma requisição à API
+    atualizarPedido(pedidoId, pedidoAtualizado);
   };
 
   const handleRetornar = (pedidoId, pedidoAtualizado) => {
-    console.log("Retornar pedido:", pedidoId, pedidoAtualizado);
-    // Aqui você atualizaria o estado ou faria uma requisição à API
+    atualizarPedido(pedidoId, pedidoAtualizado);
   };
 
   const handleStatusChange = (pedidoId, pedidoAtualizado) => {
-    console.log("Status alterado:", pedidoId, pedidoAtualizado);
-    // Aqui você atualizaria o estado ou faria uma requisição à API
+    atualizarPedido(pedidoId, pedidoAtualizado);
   };
 
   const handleNavClick = (page) => {
@@ -102,13 +134,19 @@ export default function PedidosPage() {
 
 
         <div className="bg-white rounded shadow-sm">
-          <OrderTable
-            pedidos={pedidosFiltrados}
-            onAvancar={handleAvancar}
-            onRetornar={handleRetornar}
-            onStatusChange={handleStatusChange}
-            usuarioLogado={usuarioLogado}
-          />
+          {carregando ? (
+            <div className="p-8 text-center text-[#5f5f5f]">
+              Carregando pedidos...
+            </div>
+          ) : (
+            <OrderTable
+              pedidos={pedidosFiltrados}
+              onAvancar={handleAvancar}
+              onRetornar={handleRetornar}
+              onStatusChange={handleStatusChange}
+              usuarioLogado={usuarioLogado}
+            />
+          )}
         </div>
       </main>
     </div>

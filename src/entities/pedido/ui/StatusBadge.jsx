@@ -14,10 +14,7 @@
  * <StatusBadge status="aguardando-arte" etapa_pedido="Design" onStatusChange={handleStatusChange} />
  */
 
-import Swal from 'sweetalert2'
-import { getNextStatus, getPreviousStatus } from '@/entities/pedido/api/statusFlowConfig';
-
-function StatusBadge({ status, etapa_pedido, onStatusChange, usuarioLogado }) {
+function StatusBadge({ status }) {
   // Configuração de status com cores, rótulos e etapas
   const statusConfig = {
     'nao-iniciado': {
@@ -134,52 +131,15 @@ function StatusBadge({ status, etapa_pedido, onStatusChange, usuarioLogado }) {
   // Pega a configuração do status, ou usa um padrão se não existir
   const config = statusConfig[status] || statusConfig['aguardando-arte'];
 
-  // Verifica se pode avançar ou retroceder o status
-  const proximoStatus = getNextStatus(etapa_pedido, status);
-  const statusAnterior = getPreviousStatus(etapa_pedido, status);
-
-  const handleClick = (novoStatus) => {
-    if (onStatusChange) {
-      onStatusChange(novoStatus, usuarioLogado);
-    }
-  };
-
   return (
     <div
-      className="flex items-center justify-center gap-[6px] w-full"
+      className="flex items-center justify-center w-full"
       data-test-id="status-badge"
       data-stage={config.stage}
     >
-      {/* Botão retroceder status - largura fixa */}
-      <div className="w-[16px] flex items-center justify-center shrink-0">
-        {statusAnterior && (
-          <button
-            onClick={() => Swal.fire({
-              title: 'Confirmar Retroceder Status',
-              text: 'Tem certeza que deseja retroceder o status do pedido para ' + statusConfig[statusAnterior]?.label + '?',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Sim, retroceder!',
-              cancelButtonText: 'Cancelar'
-            }).then((result) => {
-              if (result.isConfirmed) {
-                handleClick(statusAnterior);
-              }
-            })}
-            className="text-[#9ca3af] hover:text-[#6b7280] transition-colors text-xs"
-            title="Status anterior"
-          >
-            ◀
-          </button>
-        )}
-      </div>
-
-      {/* Card de status - largura fixa para padronizar */}
+      {/* Card de status */}
       <div 
-        onClick={() => proximoStatus && handleClick(proximoStatus)}
-        className={`${config.bgColor} px-[8px] py-[5px] rounded-[20px] flex items-center justify-center w-[110px] ${proximoStatus ? 'cursor-pointer hover:opacity-80' : ''} transition-opacity`}
+        className={`${config.bgColor} px-[8px] py-[5px] rounded-[20px] flex items-center justify-center w-[110px] transition-opacity`}
       >
         <span
           className={`font-['Inter:Bold',sans-serif] font-bold text-[10px] tracking-[-0.4px] uppercase text-center leading-tight ${config.textColor}`}
@@ -187,32 +147,6 @@ function StatusBadge({ status, etapa_pedido, onStatusChange, usuarioLogado }) {
         >
           {config.label}
         </span>
-      </div>
-
-      {/* Botão avançar status - largura fixa */}
-      <div className="w-[16px] flex items-center justify-center shrink-0">
-        {proximoStatus && (
-          <button
-            onClick={() => Swal.fire({
-              title: 'Confirmar Avançar Status',
-              text: 'Tem certeza que deseja avançar o status do pedido para ' + statusConfig[proximoStatus]?.label + '?',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Sim, avançar!',
-              cancelButtonText: 'Cancelar'
-            }).then((result) => {
-              if (result.isConfirmed) {
-                handleClick(proximoStatus);
-              }
-            })}
-            className="text-[#9ca3af] hover:text-[#6b7280] transition-colors text-xs"
-            title="Próximo status"
-          >
-            ▶
-          </button>
-        )}
       </div>
     </div>
   );

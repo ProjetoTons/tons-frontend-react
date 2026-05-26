@@ -14,7 +14,14 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
     onSearch && onSearch(e.target.value);
   };
 
-  const etapas = ["Design", "Produção", "Embalagem", "Logística", "Finalizados"];
+  const etapas = [
+    { value: null, label: "Todos" },
+    { value: "Design", label: "Design" },
+    { value: "Produção", label: "Produção" },
+    { value: "Embalagem", label: "Embalagem" },
+    { value: "Logística", label: "Logística" },
+    { value: "Finalizados", label: "Finalizados" },
+  ];
 
   return (
     <div>
@@ -33,18 +40,21 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
 
         {/* Filtros por etapa */}
         <div className="flex items-center gap-[12px]">
-          {etapas.map((etapa) => (
-            <button
-              key={etapa}
-              onClick={() => onEtapaFilter && onEtapaFilter(etapa)}
-              className={`px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all ${etapaAtiva === etapa
-                ? "bg-[#fdf210] text-[#161616] hover:bg-[#e6d800] shadow-md cursor-pointer"
-                : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] border-2 border-transparent shadow-md cursor-pointer"
-                }`}
-            >
-              {etapa}
-            </button>
-          ))}
+          {etapas.map(({ value, label }) => {
+            const isAtiva = value === null ? !etapaAtiva : etapaAtiva === value;
+            return (
+              <button
+                key={label}
+                onClick={() => onEtapaFilter && onEtapaFilter(value)}
+                className={`px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all ${isAtiva
+                  ? "bg-[#fdf210] text-[#161616] hover:bg-[#e6d800] shadow-md cursor-pointer"
+                  : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] border-2 border-transparent shadow-md cursor-pointer"
+                  }`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex justify-end items-center w-full gap-[12px]">

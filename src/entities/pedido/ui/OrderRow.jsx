@@ -2,10 +2,12 @@ import { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import OrderDetailModal from "./OrderDetailModal";
 import {
-  canAdvanceToNextEtapa,
+  getNextStatus,
+  getPreviousStatus,
   getPreviousEtapa,
   getNextEtapa,
-  getInitialStatus
+  getInitialStatus,
+  getLastStatus,
 } from "@/entities/pedido/api/statusFlowConfig";
 
 /**
@@ -20,44 +22,72 @@ import {
  */
 
 function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado = { id: 1, nome: "Usuário" } }) {
-  const [pedidoLocal, setPedidoLocal] = useState(pedido);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Usa diretamente os dados do prop (estado controlado pelo pai)
+  const pedidoLocal = pedido;
 
-  // Verifica se pode avançar para a próxima etapa
-  const podeAvancar = canAdvanceToNextEtapa(pedidoLocal.etapa_pedido, pedidoLocal.status);
+  // Próximo status na mesma etapa (sub-etapa)
+  const proximoStatus = getNextStatus(pedidoLocal.etapa_pedido, pedidoLocal.status);
   const proximaEtapa = getNextEtapa(pedidoLocal.etapa_pedido);
 
-  // Verifica se pode retornar para a etapa anterior
-  const podeRetornar = getPreviousEtapa(pedidoLocal.etapa_pedido) !== null;
+  // Status anterior na mesma etapa
+  const statusAnterior = getPreviousStatus(pedidoLocal.etapa_pedido, pedidoLocal.status);
+  const etapaAnterior = getPreviousEtapa(pedidoLocal.etapa_pedido);
+
+  // Pode avançar se houver próxima sub-etapa OU próxima etapa
+  const podeAvancar = proximoStatus !== null || proximaEtapa !== null;
+
+  // Pode retornar se houver status anterior OU etapa anterior
+  const podeRetornar = statusAnterior !== null || etapaAnterior !== null;
 
   const handleAvancar = () => {
-    if (podeAvancar && proximaEtapa) {
-      const novoStatus = getInitialStatus(proximaEtapa);
-      const pedidoAtualizado = {
+    let pedidoAtualizado;
+
+    if (proximoStatus) {
+      // Avança sub-etapa dentro da mesma etapa -> usuário logado vira responsável
+      pedidoAtualizado = {
+        ...pedidoLocal,
+        status: proximoStatus,
+        responsavel_fase_atual: usuarioLogado,
+      };
+    } else if (proximaEtapa) {
+      // Cruza para nova etapa -> responsável = null, status = inicial da nova etapa
+      pedidoAtualizado = {
         ...pedidoLocal,
         etapa_pedido: proximaEtapa,
-        status: novoStatus,
-        responsavel_fase_atual: null, // Responsável ficará vazio até alguém mudar o status
+        status: getInitialStatus(proximaEtapa),
+        responsavel_fase_atual: null,
       };
-      setPedidoLocal(pedidoAtualizado);
-      onAvancar && onAvancar(pedidoLocal.id_pedido, pedidoAtualizado);
+    } else {
+      return;
     }
+
+    onAvancar && onAvancar(pedidoLocal.id_pedido, pedidoAtualizado);
   };
 
   const handleRetornar = () => {
-    if (podeRetornar) {
-      const etapaAnterior = getPreviousEtapa(pedidoLocal.etapa_pedido);
-      if (etapaAnterior) {
-        const pedidoAtualizado = {
-          ...pedidoLocal,
-          etapa_pedido: etapaAnterior,
-          status: 'nao-iniciado',
-          responsavel_fase_atual: null,
-        };
-        setPedidoLocal(pedidoAtualizado);
-        onRetornar && onRetornar(pedidoLocal.id_pedido, pedidoAtualizado);
-      }
+    let pedidoAtualizado;
+
+    if (statusAnterior) {
+      // Retorna sub-etapa dentro da mesma etapa -> usuário logado vira responsável
+      pedidoAtualizado = {
+        ...pedidoLocal,
+        status: statusAnterior,
+        responsavel_fase_atual: usuarioLogado,
+      };
+    } else if (etapaAnterior) {
+      // Volta para etapa anterior -> responsável = null, status = último da etapa anterior
+      pedidoAtualizado = {
+        ...pedidoLocal,
+        etapa_pedido: etapaAnterior,
+        status: getLastStatus(etapaAnterior),
+        responsavel_fase_atual: null,
+      };
+    } else {
+      return;
     }
+
+    onRetornar && onRetornar(pedidoLocal.id_pedido, pedidoAtualizado);
   };
 
   const handleStatusChange = (novoStatus, usuario) => {
@@ -66,7 +96,6 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
       status: novoStatus,
       responsavel_fase_atual: usuario,
     };
-    setPedidoLocal(pedidoAtualizado);
     onStatusChange && onStatusChange(pedidoLocal.id_pedido, pedidoAtualizado);
   };
 
