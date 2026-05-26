@@ -159,6 +159,17 @@ export function getInitialStatus(etapa) {
 }
 
 /**
+ * Obtém o último status de uma etapa
+ * @param {string} etapa - Nome da etapa
+ * @returns {string|null} - Último status da etapa ou null
+ */
+export function getLastStatus(etapa) {
+  const flow = STATUS_FLOW[etapa];
+  if (!flow) return null;
+  return flow.order[flow.order.length - 1];
+}
+
+/**
  * Verifica se um status é válido para uma etapa
  * @param {string} etapa - Nome da etapa
  * @param {string} status - Status a verificar
