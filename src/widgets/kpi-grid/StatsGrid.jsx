@@ -5,7 +5,7 @@ import { fetchKpisDashboard } from "@/entities/pedido/api/mockPedidosEstatistica
 import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
 
 export default function StatsGrid() {
-  const { periodo } = useDashboardFilters();
+  const { periodo, dataInicio } = useDashboardFilters();
   const [stats, setStats] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -13,7 +13,7 @@ export default function StatsGrid() {
     const carregarKpis = async () => {
       setIsLoading(true);
       try {
-        const { startDate, endDate } = obterDatasDoFiltro(periodo);
+        const { startDate, endDate } = obterDatasDoFiltro(periodo, dataInicio);
         const dadosKpi = await fetchKpisDashboard(startDate, endDate);
         setStats(dadosKpi);
       } catch (error) {
@@ -24,7 +24,7 @@ export default function StatsGrid() {
     };
 
     carregarKpis();
-  }, [periodo]);
+  }, [periodo, dataInicio]);
 
   const total = stats.totalPedidos || 0;
 

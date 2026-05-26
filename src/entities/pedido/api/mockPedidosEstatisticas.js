@@ -385,7 +385,7 @@ export const mockPedidosEstatisticas = [
     vendedor: { id: 2, nome: "João" }
   },
 
-  // 🔥 --- NOVOS PEDIDOS "SEM RESPONSÁVEL" PARA TESTE --- 🔥
+  // '' --- NOVOS PEDIDOS "SEM RESPONSÁVEL" PARA TESTE --- ''
   {
     id_pedido: 26,
     num_pedido: "ORPH01",

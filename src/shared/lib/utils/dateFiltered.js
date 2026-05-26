@@ -1,4 +1,4 @@
-export const obterDatasDoFiltro = (filtro) => {
+export const obterDatasDoFiltro = (filtro, dataInicioCustom) => {
     const hoje = new Date();
     let startDate = new Date();
     let endDate = new Date(hoje);
@@ -10,8 +10,8 @@ export const obterDatasDoFiltro = (filtro) => {
         startDate = new Date(hoje.getFullYear(), 0, 1);
     } else if (filtro === 'mes') {
         startDate = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    } else if (filtro === 'semana') {
-        startDate.setDate(hoje.getDate() - 7);
+    } else if (filtro === 'custom' && dataInicioCustom) {
+        startDate = new Date(`${dataInicioCustom}T00:00:00`);
     }
 
     return { startDate, endDate };
