@@ -10,26 +10,7 @@ export default function RegistrationSuccessFeature() {
   const navigate = useNavigate();
 
   // Dados acumulados pelos steps anteriores (Step 1 e Step 2).
-  // DADOS MOCK para visualização sem passar pelo fluxo de registro
-  const mockData = {
-    dadosPessoais: {
-      fullName: "João Silva Santos",
-      email: "joao@example.com",
-      phone: "(11) 98765-4321",
-      password: "Senha123!"
-    },
-    cpfSalvo: "123.456.789-10",
-    dadosEmpresa: {
-      cnpj: "12.345.678/0001-90",
-      formData: {
-        razaoSocial: "Empresa Test Ltda",
-        email: "empresa@example.com",
-        phone: "(11) 3456-7890"
-      }
-    }
-  };
-
-  const { dadosPessoais, cpfSalvo, dadosEmpresa } = location.state || mockData;
+  const { dadosPessoais, cpfSalvo, dadosEmpresa } = location.state || {};
 
   // Estados para controlar a transição da tela
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,12 +19,11 @@ export default function RegistrationSuccessFeature() {
 
   // Guard: se cair direto em /cadastro/sucesso sem ter passado pelos steps,
   // volta para o início do fluxo.
-  // DESABILITADO TEMPORARIAMENTE PARA TESTES
-  // useEffect(() => {
-  //   if (!dadosPessoais || !cpfSalvo) {
-  //     navigate("/cadastro/cliente", { replace: true });
-  //   }
-  // }, [dadosPessoais, cpfSalvo, navigate]);
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/cadastro/cliente", { replace: true });
+    }
+  }, [location.state, navigate]);
 
   // Auto-clear da mensagem de erro após 8s
   useEffect(() => {

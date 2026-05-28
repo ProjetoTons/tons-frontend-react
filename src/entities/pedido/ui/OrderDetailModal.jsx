@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StatusBadge from "./StatusBadge";
+import { fetchPedidoById } from "@/entities/pedido/api/pedidosApi";
 
 /**
  * OrderDetailModal - Modal com detalhes completos do pedido
@@ -13,7 +14,24 @@ import StatusBadge from "./StatusBadge";
  */
 
 function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usuarioLogado }) {
+  const [pedidoCompleto, setPedidoCompleto] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && pedido?.id_pedido) {
+      setLoading(true);
+      fetchPedidoById(pedido.id_pedido)
+        .then((data) => setPedidoCompleto(data))
+        .catch(() => setPedidoCompleto(pedido))
+        .finally(() => setLoading(false));
+    } else {
+      setPedidoCompleto(null);
+    }
+  }, [isOpen, pedido?.id_pedido]);
+
   if (!isOpen || !pedido) return null;
+
+  const dadosPedido = pedidoCompleto || pedido;
 
   // Mapeia status para label mais legível
   const statusMap = {
@@ -34,12 +52,22 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
   };
 
   const handleStatusChange = (novoStatus, usuario) => {
-    onStatusChange && onStatusChange(pedido.id_pedido, {
-      ...pedido,
+    onStatusChange && onStatusChange(dadosPedido.id_pedido, {
+      ...dadosPedido,
       status: novoStatus,
       responsavel_fase_atual: usuario,
     });
   };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-gray-800/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <p className="text-[#5f5f5f]">Carregando detalhes do pedido...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-gray-800/50 bg-opacity-0 flex items-center justify-center z-50 p-4">
@@ -50,11 +78,11 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
         <div className="flex items-center justify-between p-6 border-b border-[#e4e2e2] sticky top-0 bg-white">
           <div className="flex items-center gap-4">
             <h2 className="text-2xl font-bold text-[#161616]">
-              Pedido {pedido.num_pedido}
+              Pedido {dadosPedido.num_pedido}
             </h2>
             <StatusBadge 
-              status={pedido.status}
-              etapa_pedido={pedido.etapa_pedido}
+              status={dadosPedido.status}
+              etapa_pedido={dadosPedido.etapa_pedido}
               onStatusChange={handleStatusChange}
               usuarioLogado={usuarioLogado}
             />
@@ -75,9 +103,9 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
             {/* Preview da Produção */}
             <div className="col-span-1">
               <div className="bg-[#f3f3f3] rounded p-4 flex items-center justify-center min-h-[280px]">
-                {pedido.url_foto_arte ? (
+                {dadosPedido.url_foto_arte ? (
                   <img
-                    src={pedido.url_foto_arte}
+                    src={dadosPedido.url_foto_arte}
                     alt="Preview do pedido"
                     className="w-full h-full object-cover rounded"
                   />
@@ -98,7 +126,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Status
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {statusMap[pedido.status] || pedido.status}
+                    {statusMap[dadosPedido.status] || dadosPedido.status}
                   </p>
                 </div>
                 <div>
@@ -106,7 +134,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Etapa Atual
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {pedido.etapa_pedido}
+                    {dadosPedido.etapa_pedido}
                   </p>
                 </div>
               </div>
@@ -118,7 +146,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Número do Pedido
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    #{pedido.num_pedido}
+                    #{dadosPedido.num_pedido}
                   </p>
                 </div>
                 <div>
@@ -126,7 +154,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Nome Cliente
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {pedido.cliente.nome}
+                    {dadosPedido.cliente?.nome || "-"}
                   </p>
                 </div>
               </div>
@@ -138,7 +166,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Responsável
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {pedido.responsavel_fase?.nome || "-"}
+                    {dadosPedido.responsavel_fase_atual?.nome || dadosPedido.responsavel?.nome || "-"}
                   </p>
                 </div>
                 <div>
@@ -146,7 +174,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Data Início
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {pedido.data_pedido}
+                    {dadosPedido.data_pedido}
                   </p>
                 </div>
               </div>
@@ -158,7 +186,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Tipo de Envio
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {pedido.tipo_envio || "-"}
+                    {dadosPedido.tipo_envio || "-"}
                   </p>
                 </div>
                 <div>
@@ -166,7 +194,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Data Fim
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {pedido.data_finalizacao}
+                    {dadosPedido.data_finalizacao || "-"}
                   </p>
                 </div>
               </div>
@@ -177,28 +205,28 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                   Valor Total do Pedido
                 </p>
                 <p className="text-[24px] font-bold text-[#161616]">
-                  R$ {pedido.valor_total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  R$ {(dadosPedido.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Seção 2: Descrição do Pedido */}
-          {pedido.descricao && (
+          {dadosPedido.descricao && (
             <div>
               <h3 className="text-[14px] font-bold text-[#161616] uppercase tracking-[1px] mb-3">
                 Descrição do Pedido
               </h3>
               <div className="bg-yellow-50 border-l-4 border-[#fdf210] p-4 rounded">
                 <p className="text-[14px] text-[#323233] leading-relaxed">
-                  {pedido.descricao}
+                  {dadosPedido.descricao}
                 </p>
               </div>
             </div>
           )}
 
           {/* Seção 3: Itens e Composição */}
-          {pedido.itens_pedido && pedido.itens_pedido.length > 0 && (
+          {dadosPedido.itens_pedido && dadosPedido.itens_pedido.length > 0 && (
             <div>
               <h3 className="text-[14px] font-bold text-[#161616] uppercase tracking-[1px] mb-3">
                 Itens e Composição
@@ -225,7 +253,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     </tr>
                   </thead>
                   <tbody>
-                    {pedido.itens_pedido.map((item, index) => (
+                    {dadosPedido.itens_pedido.map((item, index) => (
                       <tr key={index} className="border-b border-[#e4e2e2] hover:bg-[#f9f9f9]">
                         <td className="px-4 py-3 text-[14px] text-[#323233]">
                           {item.produto.nome}
@@ -251,18 +279,18 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
           )}
 
           {/* Seção 4: Endereço de Entrega */}
-          {pedido.endereco && (
+          {dadosPedido.endereco && (
             <div>
               <h3 className="text-[14px] font-bold text-[#161616] uppercase tracking-[1px] mb-3">
                 Endereço de Entrega
               </h3>
               <div className="bg-[#f9f9f9] p-4 rounded border border-[#e4e2e2]">
                 <p className="text-[14px] text-[#323233]">
-                  {pedido.endereco.logradouro}, {pedido.endereco.numero}
-                  {pedido.endereco.complemento && ` - ${pedido.endereco.complemento}`}
+                  {dadosPedido.endereco.logradouro}, {dadosPedido.endereco.numero}
+                  {dadosPedido.endereco.complemento && ` - ${dadosPedido.endereco.complemento}`}
                 </p>
                 <p className="text-[14px] text-[#323233]">
-                  {pedido.endereco.cep}
+                  {dadosPedido.endereco.cep}
                 </p>
               </div>
             </div>
@@ -279,7 +307,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
           </button>
           <button
             onClick={() => {
-              onEdit && onEdit(pedido);
+              onEdit && onEdit(dadosPedido);
               onClose();
             }}
             className="px-6 py-2 rounded font-bold text-[14px] bg-[#161616] text-white hover:bg-[#0a0a0a] transition-colors"

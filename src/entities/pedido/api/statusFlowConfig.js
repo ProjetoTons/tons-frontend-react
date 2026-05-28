@@ -46,7 +46,7 @@ export const STATUS_FLOW = {
     canAdvanceFrom: 'emitir-etiqueta',
   },
 
-  // LOGÍSTICA - Etapa 4
+  // LOGÍSTICA - Etapa 4 (status único por pedido, depende do tipo_envio)
   Logística: {
     order: [
       'enviado',
@@ -55,6 +55,7 @@ export const STATUS_FLOW = {
     displayName: 'Logística',
     previousEtapa: 'Embalagem',
     nextEtapa: 'Finalizados',
+    canAdvanceFrom: ['enviado', 'aguardando-retirada'],
   },
 
   // FINALIZADOS - Etapa 5
@@ -88,6 +89,9 @@ export function getStatusIndex(etapa, status) {
 export function getNextStatus(etapa, currentStatus) {
   const flow = STATUS_FLOW[etapa];
   if (!flow) return null;
+
+  // Logística: cada pedido tem só um status (baseado em tipo_envio), não avança internamente
+  if (Array.isArray(flow.canAdvanceFrom)) return null;
   
   const currentIndex = flow.order.indexOf(currentStatus);
   if (currentIndex === -1 || currentIndex === flow.order.length - 1) {
@@ -106,6 +110,9 @@ export function getNextStatus(etapa, currentStatus) {
 export function getPreviousStatus(etapa, currentStatus) {
   const flow = STATUS_FLOW[etapa];
   if (!flow) return null;
+
+  // Logística: cada pedido tem só um status (baseado em tipo_envio), não retrocede internamente
+  if (Array.isArray(flow.canAdvanceFrom)) return null;
   
   const currentIndex = flow.order.indexOf(currentStatus);
   if (currentIndex <= 0) {
@@ -124,6 +131,9 @@ export function getPreviousStatus(etapa, currentStatus) {
 export function canAdvanceToNextEtapa(etapa, status) {
   const flow = STATUS_FLOW[etapa];
   if (!flow || !flow.canAdvanceFrom) return false;
+  if (Array.isArray(flow.canAdvanceFrom)) {
+    return flow.canAdvanceFrom.includes(status);
+  }
   return status === flow.canAdvanceFrom;
 }
 

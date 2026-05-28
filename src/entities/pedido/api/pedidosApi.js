@@ -1,67 +1,185 @@
 /**
  * pedidosApi - Camada de acesso a dados de pedidos
  *
- * Emula chamadas HTTP ao backend Spring MVC com latência simulada.
- * Mantém um "banco" em memória dentro do módulo: as alterações sobrevivem
- * a re-renders e navegação, mas são resetadas ao recarregar a página
- * (igual ao comportamento de uma sessão real contra um backend).
+ * Integra com o backend Spring (PedidoController em /pedidos).
+ * Mantém adapters internos para converter a estrutura da API (camelCase)
+ * para o formato esperado pela UI (snake_case) e vice-versa.
  *
- * Quando o backend real existir, basta substituir o corpo destas funções
- * por chamadas `fetch`/`axios` mantendo a mesma assinatura.
+ * Endpoints utilizados:
+ *  - GET    /pedidos
+ *  - GET    /pedidos/{id}
+ *  - POST   /pedidos/{id}/etapas        (avançar/voltar etapa)
+ *  - PATCH  /pedidos/{id}/responsavel?idResponsavel=X
+ *  - GET    /pedidos/{id}/etapas        (histórico)
  */
 
-import { mockPedidos } from "./mockPedidos";
+import { http } from "@/shared/api/http";
 
-// "Banco" em memória — clone profundo do mock inicial
-let pedidosDb = JSON.parse(JSON.stringify(mockPedidos));
+// ---------------------------------------------------------------------------
+// Mapeamento de status: backend usa labels humanos, frontend usa slugs
+// ---------------------------------------------------------------------------
 
-// Latência simulada (ms) para imitar uma requisição de rede
-const LATENCIA_MS = 250;
+// Frontend slug -> Backend label
+const STATUS_FRONT_TO_BACK = {
+  "nao-iniciado": "Não Iniciado",
+  "aguardando-arte": "Aguardando arte",
+  "criando-mockup": "Criando Mockup",
+  "aguardando-aprovacao": "Aguardando aprovação",
+  "impressao-fotolito": "Impressão fotolito",
+  "conferindo": "Conferindo",
+  "personalizando": "Personalizando",
+  "quality-check": "Quality check",
+  "embalagem": "Embalagem",
+  "medicao": "Medição",
+  "emitir-etiqueta": "Emitir etiqueta",
+  "enviado": "Enviado",
+  "aguardando-retirada": "Aguardando retirada",
+};
 
-function delay(ms = LATENCIA_MS) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+// Backend label -> Frontend slug (gerado invertendo o mapa acima)
+const STATUS_BACK_TO_FRONT = Object.fromEntries(
+  Object.entries(STATUS_FRONT_TO_BACK).map(([slug, label]) => [
+    label.toLowerCase(),
+    slug,
+  ])
+);
+
+function statusToBackend(slug) {
+  return STATUS_FRONT_TO_BACK[slug] ?? slug;
+}
+
+function statusToFrontend(label) {
+  if (!label) return label;
+  return STATUS_BACK_TO_FRONT[label.toLowerCase()] ?? label;
+}
+
+// ---------------------------------------------------------------------------
+// Adapters
+// ---------------------------------------------------------------------------
+
+/**
+ * Converte PedidoResponseDto (backend) -> objeto consumido pela UI
+ */
+function toFrontend(dto) {
+  if (!dto) return null;
+
+  const dataPedido = dto.dataPedido ? String(dto.dataPedido).substring(0, 10) : null;
+  const dataFinalizacao = dto.dataFinalizacao ? String(dto.dataFinalizacao).substring(0, 10) : null;
+
+  return {
+    id_pedido: dto.idPedido,
+    num_pedido: dto.numPedido,
+    url_foto_arte: dto.urlFotoArte,
+    etapa_pedido: dto.etapaPedido,
+    status: statusToFrontend(dto.status),
+    valor_total: dto.valorTotal != null ? Number(dto.valorTotal) : 0,
+    descricao: dto.descricao,
+    data_pedido: dataPedido,
+    data_finalizacao: dataFinalizacao,
+    tipo_envio: dto.tipoEnvio,
+    num_nota_fiscal: dto.numNotaFiscal,
+
+    cliente: dto.cliente
+      ? {
+          id_usuario: dto.cliente.id,
+          nome: dto.cliente.nome,
+          telefone: dto.cliente.telefone,
+          nome_empresa: dto.cliente.nomeEmpresa,
+        }
+      : { id_usuario: null, nome: "-" },
+
+    // Backend chama de "responsavel"; UI usa "responsavel_fase_atual"
+    responsavel_fase_atual: dto.responsavel
+      ? { id: dto.responsavel.id, nome: dto.responsavel.nome }
+      : null,
+
+    // Compatibilidade com componentes que ainda leem "responsavel"
+    responsavel: dto.responsavel
+      ? { id: dto.responsavel.id, nome: dto.responsavel.nome }
+      : { id: null, nome: "-" },
+
+    // Vendedor não vem na resposta atual — placeholder
+    vendedor: { id_usuario: null, nome: "-" },
+
+    endereco: dto.endereco || null,
+
+    itens_pedido: Array.isArray(dto.itens)
+      ? dto.itens.map((item) => ({
+          quantidade: item.quantidade,
+          valor_unitario: item.valorUnitario != null ? Number(item.valorUnitario) : 0,
+          produto: {
+            id_produto: item.idProduto,
+            nome: item.nomeProduto,
+          },
+          caracteristicas_item_pedido: item.caracteristicas
+            ? {
+                cor_estampa: item.caracteristicas.corEstampa,
+                cor_material: item.caracteristicas.corMaterial,
+                composicao: item.caracteristicas.composicao,
+                descricao_arte: item.caracteristicas.descricaoArte,
+                tamanho: item.caracteristicas.tamanho,
+                fornecedor: item.caracteristicas.fornecedor,
+              }
+            : null,
+        }))
+      : [],
+  };
 }
 
 /**
- * GET /pedidos — Retorna a lista completa de pedidos
- * @returns {Promise<Array>}
+ * Monta o payload do POST /pedidos/{id}/etapas a partir do pedido
+ * já atualizado pela UI.
  */
+function buildEtapaRequest(pedidoAtualizado, usuarioLogado) {
+  // idResponsavelEtapa = quem EXECUTOU a ação (sempre obrigatório no histórico).
+  // O backend internamente zera o responsável do pedido se a etapa mudou.
+  return {
+    idResponsavelEtapa:
+      usuarioLogado?.id ??
+      pedidoAtualizado.responsavel_fase_atual?.id ??
+      null,
+    etapa: pedidoAtualizado.etapa_pedido,
+    status: statusToBackend(pedidoAtualizado.status),
+    dataEntrada: new Date().toISOString(),
+    dataSaida: null,
+    observacoes: "",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// API pública
+// ---------------------------------------------------------------------------
+
 export async function fetchPedidos() {
-  await delay();
-  // Retorna cópia para evitar mutação externa do "banco"
-  return JSON.parse(JSON.stringify(pedidosDb));
+  const { data } = await http.get("/pedidos");
+  return Array.isArray(data) ? data.map(toFrontend) : [];
 }
 
-/**
- * GET /pedidos/:id — Retorna um pedido específico
- * @param {number} id
- * @returns {Promise<Object|null>}
- */
 export async function fetchPedidoById(id) {
-  await delay();
-  const pedido = pedidosDb.find((p) => p.id_pedido === id);
-  return pedido ? JSON.parse(JSON.stringify(pedido)) : null;
+  const { data } = await http.get(`/pedidos/${id}`);
+  return toFrontend(data);
 }
 
 /**
- * PUT /pedidos/:id — Atualiza um pedido existente
+ * Atualiza etapa/status/responsavel via POST /pedidos/{id}/etapas.
  * @param {number} id
- * @param {Object} pedidoAtualizado
- * @returns {Promise<Object>}
+ * @param {Object} pedidoAtualizado - formato da UI (snake_case)
+ * @param {Object} usuarioLogado    - { id, nome }
  */
-export async function updatePedido(id, pedidoAtualizado) {
-  await delay();
-  const index = pedidosDb.findIndex((p) => p.id_pedido === id);
-  if (index === -1) {
-    throw new Error(`Pedido ${id} não encontrado`);
-  }
-  pedidosDb[index] = JSON.parse(JSON.stringify(pedidoAtualizado));
-  return JSON.parse(JSON.stringify(pedidosDb[index]));
+export async function updatePedido(id, pedidoAtualizado, usuarioLogado) {
+  const payload = buildEtapaRequest(pedidoAtualizado, usuarioLogado);
+  const { data } = await http.post(`/pedidos/${id}/etapas`, payload);
+  return toFrontend(data);
 }
 
-/**
- * Reset do banco em memória (útil para testes)
- */
-export function resetPedidosDb() {
-  pedidosDb = JSON.parse(JSON.stringify(mockPedidos));
+export async function atribuirResponsavel(id, idResponsavel) {
+  const { data } = await http.patch(`/pedidos/${id}/responsavel`, null, {
+    params: { idResponsavel },
+  });
+  return toFrontend(data);
+}
+
+export async function fetchHistoricoEtapas(id) {
+  const { data } = await http.get(`/pedidos/${id}/etapas`);
+  return data;
 }

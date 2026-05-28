@@ -134,13 +134,16 @@ export default function useRegisterEmployeFeature() {
 
         try {
             let linkDaFotoNaNuvem = null;
+            let fotoPublicId = null;
 
             if (formData.foto) {
                 // Ativa a animação de spinner APENAS no input da foto
                 setIsUploadingPhoto(true); 
                 try {
                     console.log("[DEBUG] Iniciando upload da foto para o Cloudinary...");
-                    linkDaFotoNaNuvem = await uploadImagem(formData.foto);
+                    const resultado = await uploadImagem(formData.foto);
+                    linkDaFotoNaNuvem = resultado.url;
+                    fotoPublicId = resultado.publicId;
                     console.log("[DEBUG] Upload concluído! URL gerada:", linkDaFotoNaNuvem);
                 } finally {
                     // Desliga o spinner da foto mal termine (com sucesso ou erro)
@@ -150,7 +153,8 @@ export default function useRegisterEmployeFeature() {
 
             const dadosParaEnviar = {
                 ...formData,
-                fotoUrl: linkDaFotoNaNuvem // Aqui colocamos o link gerado (ou null se não houver foto)
+                fotoUrl: linkDaFotoNaNuvem,
+                fotoPublicId: fotoPublicId
             };
 
             // Converte para o formato que o Spring Boot exige

@@ -320,7 +320,7 @@ export default function ConfiguracoesWidget() {
       // Incluir endereço se CEP preenchido
       if (cepLimpo) {
         payload.endereco = {
-          logadouro: form.logradouro.trim(),
+          logradouro: form.logradouro.trim(),
           numero: form.numero.trim(),
           cep: cepLimpo,
           complemento: form.complemento.trim() || null,

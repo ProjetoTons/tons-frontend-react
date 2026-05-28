@@ -24,11 +24,19 @@ export default function EmployeeTable({ funcionarios, onEdit, onDelete }) {
           >
             {/* Usuário (Avatar + Nome + ID) */}
             <div className="w-[25%] flex items-center gap-3">
-              <img
-                src={func.fotoUrl ?? `https://i.pravatar.cc/150?u=${func.id}`}
-                alt={`Foto de perfil de ${func.nome}`}
-                className="w-10 h-10 object-cover border border-gray-200 shadow-sm"
-              />
+              {func.fotoUrl ? (
+                <img
+                  src={func.fotoUrl}
+                  alt={`Foto de perfil de ${func.nome}`}
+                  className="w-10 h-10 object-cover border border-gray-200 shadow-sm"
+                />
+              ) : (
+                <div className="w-10 h-10 flex items-center justify-center bg-gray-200 border border-gray-200 shadow-sm">
+                  <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                  </svg>
+                </div>
+              )}
               <div className="flex flex-col">
                 <span className="font-bold text-gray-900">{func.nome}</span>
                 <span className="text-[11px] text-gray-400 font-medium tracking-wide">ID: {func.id}</span>

@@ -1,41 +1,42 @@
 /**
  * Mock Data para Gerenciamento de Pedidos
  * Simula dados que viriam do backend Spring MVC
+ * Produtos referenciados do catálogo XBZ Brindes (IDs reais do banco)
  */
 
 export const mockPedidos = [
   {
     id_pedido: 1,
-    num_pedido: "GL20DE",
+    num_pedido: "PED-001",
     url_foto_arte: "https://picsum.photos/400/300?random=1",
     etapa_pedido: "Design",
-    status: "impressao-fotolito",
-    valor_total: 543.00,
-    descricao: "Personalizados com logo",
-    data_pedido: "2026-02-07",
-    data_finalizacao: "2026-02-10",
+    status: "aguardando-arte",
+    valor_total: 2800.00,
+    descricao: "Canecas térmicas inox para evento corporativo",
+    data_pedido: "2026-05-10",
+    data_finalizacao: null,
     tipo_envio: "Entrega",
 
     cliente: {
-      id_usuario: 1,
-      nome: "João Silva",
+      id_usuario: 9,
+      nome: "Pedro Almeida",
     },
 
     responsavel_fase: {
-      id_usuario: 2,
-      nome: "Gustavo",
+      id_usuario: 3,
+      nome: "Joao Tons",
     },
 
     vendedor: {
-      id_usuario: 3,
-      nome: "Carlos",
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
     },
 
     endereco: {
-      cep: "01234-000",
-      logradouro: "Rua das Flores",
-      numero: "120",
-      complemento: "Apto 12",
+      cep: "01310-100",
+      logradouro: "Av. Paulista",
+      numero: "1000",
+      complemento: null,
     },
 
     itens_pedido: [
@@ -43,35 +44,17 @@ export const mockPedidos = [
         quantidade: 100,
 
         produto: {
-          id_produto: 1,
-          nome: "Caneca Personalizada",
+          id_produto: 28,
+          nome: "Caneca Térmica Inox 350ml",
         },
 
         caracteristicas_item_pedido: {
           descricao_arte: "Logo centralizado em alta resolução",
-          cor_estampa: "Preto",
+          cor_estampa: "Azul Marinho",
           cor_material: "Branco",
           composicao: "Cerâmica",
           tamanho: "350ml",
-          fornecedor: "Fornecedor Alpha",
-        },
-      },
-
-      {
-        quantidade: 50,
-
-        produto: {
-          id_produto: 2,
-          nome: "Camiseta Dry Fit",
-        },
-
-        caracteristicas_item_pedido: {
-          descricao_arte: "Logo frontal e costas",
-          cor_estampa: "Azul",
-          cor_material: "Branco",
-          composicao: "Poliéster",
-          tamanho: "G",
-          fornecedor: "Malharia Brasil",
+          fornecedor: "XBZ Brindes",
         },
       },
     ],
@@ -79,35 +62,35 @@ export const mockPedidos = [
 
   {
     id_pedido: 2,
-    num_pedido: "AL45DE",
+    num_pedido: "PED-002",
     url_foto_arte: "https://picsum.photos/400/300?random=2",
     etapa_pedido: "Produção",
     status: "personalizando",
-    valor_total: 1280.50,
-    descricao: "Camisetas promocionais",
-    data_pedido: "2026-02-08",
-    data_finalizacao: "2026-02-15",
+    valor_total: 5890.00,
+    descricao: "Taças térmicas para campanha de vendas",
+    data_pedido: "2026-05-12",
+    data_finalizacao: null,
     tipo_envio: "Retirada",
 
     cliente: {
-      id_usuario: 4,
-      nome: "Maria Santos",
+      id_usuario: 10,
+      nome: "Fernanda Lima",
     },
 
     responsavel_fase: {
-      id_usuario: 5,
-      nome: "Pedro Henrique",
+      id_usuario: 4,
+      nome: "Gustavo Pimentel",
     },
 
     vendedor: {
-      id_usuario: 3,
-      nome: "Carlos",
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
     },
 
     endereco: {
-      cep: "04567-120",
-      logradouro: "Av. Paulista",
-      numero: "1500",
+      cep: "01311-200",
+      logradouro: "Rua da Consolação",
+      numero: "500",
       complemento: null,
     },
 
@@ -116,17 +99,17 @@ export const mockPedidos = [
         quantidade: 200,
 
         produto: {
-          id_produto: 3,
-          nome: "Camiseta Algodão",
+          id_produto: 39,
+          nome: "Taça Térmica 350ml",
         },
 
         caracteristicas_item_pedido: {
-          descricao_arte: "Frase motivacional nas costas",
-          cor_estampa: "Vermelho",
-          cor_material: "Preto",
-          composicao: "100% Algodão",
-          tamanho: "M",
-          fornecedor: "Textil Prime",
+          descricao_arte: "Logo em silk screen lateral",
+          cor_estampa: "Preto",
+          cor_material: "Prata",
+          composicao: "Inox 304",
+          tamanho: "350ml",
+          fornecedor: "XBZ Brindes",
         },
       },
     ],
@@ -134,54 +117,54 @@ export const mockPedidos = [
 
   {
     id_pedido: 3,
-    num_pedido: "FHJ329",
+    num_pedido: "PED-003",
     url_foto_arte: "https://picsum.photos/400/300?random=3",
-    etapa_pedido: "Embalagem",
-    status: "quality-check",
-    valor_total: 890.90,
-    descricao: "Adesivos personalizados",
-    data_pedido: "2026-02-10",
-    data_finalizacao: "2026-02-18",
-    tipo_envio: "Correios",
+    etapa_pedido: "Design",
+    status: "criando-mockup",
+    valor_total: 4820.00,
+    descricao: "Kit churrasco para premiação trimestral",
+    data_pedido: "2026-05-14",
+    data_finalizacao: null,
+    tipo_envio: "Transportadora",
 
     cliente: {
-      id_usuario: 6,
-      nome: "Ana Costa",
+      id_usuario: 11,
+      nome: "Roberto Dias",
     },
 
     responsavel_fase: {
-      id_usuario: 7,
-      nome: "Thiago Oliveira",
+      id_usuario: 3,
+      nome: "Joao Tons",
     },
 
     vendedor: {
-      id_usuario: 8,
-      nome: "Fernanda Lima",
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
     },
 
     endereco: {
-      cep: "11000-450",
-      logradouro: "Rua XV de Novembro",
-      numero: "87",
-      complemento: "Sala 3",
+      cep: "05424-020",
+      logradouro: "Rua Pio XI",
+      numero: "300",
+      complemento: null,
     },
 
     itens_pedido: [
       {
-        quantidade: 500,
+        quantidade: 40,
 
         produto: {
-          id_produto: 4,
-          nome: "Adesivo Vinil",
+          id_produto: 48,
+          nome: "Kit Churrasco 5 Peças",
         },
 
         caracteristicas_item_pedido: {
-          descricao_arte: "Logo transparente",
-          cor_estampa: "Colorido",
-          cor_material: "Transparente",
-          composicao: "Vinil",
-          tamanho: "10x10cm",
-          fornecedor: "StickerPro",
+          descricao_arte: "Logo gravado a laser na tábua de bambu",
+          cor_estampa: null,
+          cor_material: "Natural",
+          composicao: "Inox/Madeira/Bambu",
+          tamanho: null,
+          fornecedor: "XBZ Brindes",
         },
       },
     ],
@@ -189,72 +172,72 @@ export const mockPedidos = [
 
   {
     id_pedido: 4,
-    num_pedido: "AB4920",
+    num_pedido: "PED-004",
     url_foto_arte: "https://picsum.photos/400/300?random=4",
-    etapa_pedido: "Finalizados",
-    status: "finalizado",
-    valor_total: 2100.00,
-    descricao: "Kit corporativo",
-    data_pedido: "2026-02-11",
-    data_finalizacao: "2026-02-20",
-    tipo_envio: "Transportadora",
+    etapa_pedido: "Produção",
+    status: "conferindo",
+    valor_total: 4350.00,
+    descricao: "Power banks para brindes de feira",
+    data_pedido: "2026-05-15",
+    data_finalizacao: null,
+    tipo_envio: "Correios",
 
     cliente: {
-      id_usuario: 9,
-      nome: "Roberto Lima",
+      id_usuario: 12,
+      nome: "Juliana Mendes",
     },
 
     responsavel_fase: {
-      id_usuario: 10,
-      nome: "Maria Clara",
+      id_usuario: 4,
+      nome: "Gustavo Pimentel",
     },
 
     vendedor: {
-      id_usuario: 8,
-      nome: "Fernanda Lima",
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
     },
 
     endereco: {
-      cep: "22040-002",
-      logradouro: "Rua Atlântica",
-      numero: "455",
-      complemento: "Cobertura",
+      cep: "03104-000",
+      logradouro: "Rua do Gasômetro",
+      numero: "200",
+      complemento: null,
     },
 
     itens_pedido: [
       {
-        quantidade: 75,
+        quantidade: 50,
 
         produto: {
           id_produto: 5,
-          nome: "Agenda Personalizada",
+          nome: "Power Bank 5.000mAh",
         },
 
         caracteristicas_item_pedido: {
-          descricao_arte: "Logo dourado na capa",
-          cor_estampa: "Dourado",
-          cor_material: "Preto",
-          composicao: "Couro sintético",
-          tamanho: "A5",
-          fornecedor: "Papelaria Premium",
+          descricao_arte: "Logo gravado a laser na capa frontal",
+          cor_estampa: "Prata",
+          cor_material: "Branco",
+          composicao: "Plástico",
+          tamanho: null,
+          fornecedor: "XBZ Brindes",
         },
       },
 
       {
-        quantidade: 75,
+        quantidade: 50,
 
         produto: {
-          id_produto: 6,
-          nome: "Caneta Executiva",
+          id_produto: 1,
+          nome: "Power Bank 10.000mAh com Lanterna e Multissaídas",
         },
 
         caracteristicas_item_pedido: {
-          descricao_arte: null,
+          descricao_arte: "Logo gravado a laser na capa frontal",
           cor_estampa: "Prata",
-          cor_material: "Preto Fosco",
-          composicao: "Metal",
+          cor_material: "Branco",
+          composicao: "Plástico",
           tamanho: null,
-          fornecedor: "Executive Pens",
+          fornecedor: "XBZ Brindes",
         },
       },
     ],
@@ -262,54 +245,54 @@ export const mockPedidos = [
 
   {
     id_pedido: 5,
-    num_pedido: "HUIU76",
+    num_pedido: "PED-005",
     url_foto_arte: "https://picsum.photos/400/300?random=5",
-    etapa_pedido: "Logística",
-    status: "enviado",
-    valor_total: 760.30,
-    descricao: "Rótulos para embalagens",
-    data_pedido: "2026-02-15",
-    data_finalizacao: "2026-02-21",
-    tipo_envio: "Motoboy",
+    etapa_pedido: "Embalagem",
+    status: "embalando",
+    valor_total: 3200.00,
+    descricao: "Bolsas térmicas 13L personalizadas",
+    data_pedido: "2026-05-17",
+    data_finalizacao: null,
+    tipo_envio: "Entrega",
 
     cliente: {
-      id_usuario: 11,
-      nome: "Paula Oliveira",
+      id_usuario: 13,
+      nome: "Lucas Ferreira",
     },
 
     responsavel_fase: {
-      id_usuario: 12,
-      nome: "Lucas Martins",
+      id_usuario: 3,
+      nome: "Joao Tons",
     },
 
     vendedor: {
-      id_usuario: 3,
-      nome: "Carlos",
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
     },
 
     endereco: {
-      cep: "33015-250",
-      logradouro: "Rua das Acácias",
-      numero: "900",
+      cep: "02012-010",
+      logradouro: "Av. Cruzeiro do Sul",
+      numero: "800",
       complemento: null,
     },
 
     itens_pedido: [
       {
-        quantidade: 1000,
+        quantidade: 150,
 
         produto: {
-          id_produto: 7,
-          nome: "Etiqueta Adesiva",
+          id_produto: 21,
+          nome: "Bolsa Térmica 13 Litros",
         },
 
         caracteristicas_item_pedido: {
-          descricao_arte: "QR Code e logo da empresa",
-          cor_estampa: "Preto",
-          cor_material: "Branco",
-          composicao: "Papel Couchê",
-          tamanho: "5x5cm",
-          fornecedor: null,
+          descricao_arte: "Logo bordado no bolso frontal",
+          cor_estampa: "Branco",
+          cor_material: "Azul Royal",
+          composicao: "Poliéster/PEVA",
+          tamanho: "13 Litros",
+          fornecedor: "XBZ Brindes",
         },
       },
     ],
@@ -317,54 +300,72 @@ export const mockPedidos = [
 
   {
     id_pedido: 6,
-    num_pedido: "CD1001",
+    num_pedido: "PED-006",
     url_foto_arte: "https://picsum.photos/400/300?random=6",
-    etapa_pedido: "Design",
-    status: "aguardando-arte",
-    valor_total: 820.50,
-    descricao: "Camisetas personalizadas",
-    data_pedido: "2026-02-08",
-    data_finalizacao: "2026-02-15",
-    tipo_envio: "Entrega",
+    etapa_pedido: "Logística",
+    status: "enviado",
+    valor_total: 1980.00,
+    descricao: "Cadernos ecológicos com canetas para treinamento",
+    data_pedido: "2026-05-18",
+    data_finalizacao: null,
+    tipo_envio: "Motoboy",
 
     cliente: {
-      id_usuario: 2,
-      nome: "Maria Santos",
+      id_usuario: 14,
+      nome: "Camila Rocha",
     },
 
     responsavel_fase: {
-      id_usuario: 3,
-      nome: "Lucas",
+      id_usuario: 4,
+      nome: "Gustavo Pimentel",
     },
 
     vendedor: {
-      id_usuario: 1,
-      nome: "Carlos",
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
     },
 
     endereco: {
-      cep: "04512-000",
-      logradouro: "Rua Bela Cintra",
-      numero: "245",
-      complemento: "Casa",
+      cep: "04101-300",
+      logradouro: "Rua Vergueiro",
+      numero: "1200",
+      complemento: null,
     },
 
     itens_pedido: [
       {
-        quantidade: 120,
+        quantidade: 200,
 
         produto: {
-          id_produto: 8,
-          nome: "Camiseta Sublimada",
+          id_produto: 19,
+          nome: "Caderno Ecológico",
         },
 
         caracteristicas_item_pedido: {
-          descricao_arte: "Arte frontal em alta definição",
-          cor_estampa: "Azul",
-          cor_material: "Branco",
-          composicao: "Poliéster",
-          tamanho: "M",
-          fornecedor: "Textil Brasil",
+          descricao_arte: "Logo em hot stamping na capa",
+          cor_estampa: "Dourado",
+          cor_material: "Preto",
+          composicao: "Couro Sintético/Papel",
+          tamanho: null,
+          fornecedor: "XBZ Brindes",
+        },
+      },
+
+      {
+        quantidade: 200,
+
+        produto: {
+          id_produto: 68,
+          nome: "Caneta Plástica",
+        },
+
+        caracteristicas_item_pedido: {
+          descricao_arte: "Logo em tampografia no corpo",
+          cor_estampa: "Branco",
+          cor_material: "Azul",
+          composicao: "Plástico",
+          tamanho: null,
+          fornecedor: "XBZ Brindes",
         },
       },
     ],
@@ -372,35 +373,200 @@ export const mockPedidos = [
 
   {
     id_pedido: 7,
-    num_pedido: "EF1002",
+    num_pedido: "PED-007",
     url_foto_arte: "https://picsum.photos/400/300?random=7",
-    etapa_pedido: "Design",
-    status: "criando-mockup",
-    valor_total: 1200.00,
-    descricao: "Cartazes promocionais",
-    data_pedido: "2026-02-09",
-    data_finalizacao: "2026-02-20",
-    tipo_envio: "Correios",
+    etapa_pedido: "Logística",
+    status: "aguardando-retirada",
+    valor_total: 2460.00,
+    descricao: "Chaveiros metal para convenção",
+    data_pedido: "2026-05-20",
+    data_finalizacao: null,
+    tipo_envio: "Retirada",
 
     cliente: {
-      id_usuario: 3,
-      nome: "Ana Costa",
+      id_usuario: 9,
+      nome: "Pedro Almeida",
     },
 
     responsavel_fase: {
-      id_usuario: 2,
-      nome: "Pedro",
+      id_usuario: 3,
+      nome: "Joao Tons",
     },
 
     vendedor: {
       id_usuario: 2,
-      nome: "João",
+      nome: "Dennis (cnpj)",
     },
 
     endereco: {
       cep: "01310-100",
-      logradouro: "Av. Brigadeiro Luís Antônio",
-      numero: "980",
+      logradouro: "Av. Paulista",
+      numero: "1000",
+      complemento: null,
+    },
+
+    itens_pedido: [
+      {
+        quantidade: 300,
+
+        produto: {
+          id_produto: 34,
+          nome: "Chaveiro Metal",
+        },
+
+        caracteristicas_item_pedido: {
+          descricao_arte: "Logo em relevo na frente",
+          cor_estampa: "Prata",
+          cor_material: "Prata",
+          composicao: "Metal",
+          tamanho: null,
+          fornecedor: "XBZ Brindes",
+        },
+      },
+    ],
+  },
+
+  {
+    id_pedido: 8,
+    num_pedido: "PED-008",
+    url_foto_arte: "https://picsum.photos/400/300?random=8",
+    etapa_pedido: "Finalizados",
+    status: "finalizado",
+    valor_total: 5400.00,
+    descricao: "Copos térmicos inox para equipe comercial",
+    data_pedido: "2026-05-21",
+    data_finalizacao: "2026-05-25",
+    tipo_envio: "Transportadora",
+
+    cliente: {
+      id_usuario: 10,
+      nome: "Fernanda Lima",
+    },
+
+    responsavel_fase: {
+      id_usuario: 4,
+      nome: "Gustavo Pimentel",
+    },
+
+    vendedor: {
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
+    },
+
+    endereco: {
+      cep: "01311-200",
+      logradouro: "Rua da Consolação",
+      numero: "500",
+      complemento: null,
+    },
+
+    itens_pedido: [
+      {
+        quantidade: 120,
+
+        produto: {
+          id_produto: 44,
+          nome: "Copo Térmico Inox 320ml",
+        },
+
+        caracteristicas_item_pedido: {
+          descricao_arte: "Logo 360° em silk screen",
+          cor_estampa: "Branco",
+          cor_material: "Preto",
+          composicao: "Inox 304",
+          tamanho: "320ml",
+          fornecedor: "XBZ Brindes",
+        },
+      },
+    ],
+  },
+
+  {
+    id_pedido: 9,
+    num_pedido: "PED-009",
+    url_foto_arte: "https://picsum.photos/400/300?random=9",
+    etapa_pedido: "Finalizados",
+    status: "finalizado",
+    valor_total: 3250.00,
+    descricao: "Kit ferramentas para clientes VIP",
+    data_pedido: "2026-05-22",
+    data_finalizacao: "2026-05-26",
+    tipo_envio: "Entrega",
+
+    cliente: {
+      id_usuario: 11,
+      nome: "Roberto Dias",
+    },
+
+    responsavel_fase: {
+      id_usuario: 3,
+      nome: "Joao Tons",
+    },
+
+    vendedor: {
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
+    },
+
+    endereco: {
+      cep: "05424-020",
+      logradouro: "Rua Pio XI",
+      numero: "300",
+      complemento: null,
+    },
+
+    itens_pedido: [
+      {
+        quantidade: 80,
+
+        produto: {
+          id_produto: 77,
+          nome: "Kit Ferramentas 25 Peças",
+        },
+
+        caracteristicas_item_pedido: {
+          descricao_arte: "Logo na tampa da caixa plástica",
+          cor_estampa: "Branco",
+          cor_material: "Preto",
+          composicao: "Aço Carbono/Plástico",
+          tamanho: null,
+          fornecedor: "XBZ Brindes",
+        },
+      },
+    ],
+  },
+
+  {
+    id_pedido: 10,
+    num_pedido: "PED-010",
+    url_foto_arte: "https://picsum.photos/400/300?random=10",
+    etapa_pedido: "Design",
+    status: "nao-iniciado",
+    valor_total: 7800.00,
+    descricao: "Caixas de som à prova d'água para sorteio",
+    data_pedido: "2026-05-24",
+    data_finalizacao: null,
+    tipo_envio: "Correios",
+
+    cliente: {
+      id_usuario: 12,
+      nome: "Juliana Mendes",
+    },
+
+    responsavel_fase: {
+      id_usuario: 4,
+      nome: "Gustavo Pimentel",
+    },
+
+    vendedor: {
+      id_usuario: 2,
+      nome: "Dennis (cnpj)",
+    },
+
+    endereco: {
+      cep: "03104-000",
+      logradouro: "Rua do Gasômetro",
+      numero: "200",
       complemento: null,
     },
 
@@ -409,186 +575,21 @@ export const mockPedidos = [
         quantidade: 60,
 
         produto: {
-          id_produto: 9,
-          nome: "Cartaz Couchê",
+          id_produto: 25,
+          nome: "Caixa de Som Multimídia à prova D'Água",
         },
 
         caracteristicas_item_pedido: {
-          descricao_arte: "Promoção de verão",
-          cor_estampa: "Colorido",
-          cor_material: "Branco",
-          composicao: "Papel Couchê 250g",
-          tamanho: "A2",
-          fornecedor: "Gráfica Master",
+          descricao_arte: "Logo tampografia na parte superior",
+          cor_estampa: "Branco",
+          cor_material: "Preto",
+          composicao: "Plástico/Metal",
+          tamanho: null,
+          fornecedor: "XBZ Brindes",
         },
       },
     ],
   },
-
-  {
-    id_pedido: 8,
-    num_pedido: "GH1003",
-    url_foto_arte: "https://picsum.photos/400/300?random=8",
-    etapa_pedido: "Produção",
-    status: "personalizando",
-    valor_total: 650.75,
-    descricao: "Adesivos com logotipo",
-    data_pedido: "2026-02-10",
-    data_finalizacao: "2026-02-18",
-    tipo_envio: "Retirada",
-
-    cliente: {
-      id_usuario: 4,
-      nome: "Roberto Lima",
-    },
-
-    responsavel_fase: {
-      id_usuario: 3,
-      nome: "Lucas",
-    },
-
-    vendedor: {
-      id_usuario: 3,
-      nome: "Fernanda",
-    },
-
-    endereco: {
-      cep: "22040-001",
-      logradouro: "Rua Barata Ribeiro",
-      numero: "412",
-      complemento: "Loja 2",
-    },
-
-    itens_pedido: [
-      {
-        quantidade: 350,
-
-        produto: {
-          id_produto: 10,
-          nome: "Adesivo Transparente",
-        },
-
-        caracteristicas_item_pedido: {
-          descricao_arte: "Logo minimalista",
-          cor_estampa: "Preto",
-          cor_material: "Transparente",
-          composicao: "Vinil",
-          tamanho: "8x8cm",
-          fornecedor: "StickerBR",
-        },
-      },
-    ],
-  },
-
-  {
-    id_pedido: 9,
-    num_pedido: "IJ1004",
-    url_foto_arte: "https://picsum.photos/400/300?random=9",
-    etapa_pedido: "Design",
-    status: "impressao-fotolito",
-    valor_total: 1450.00,
-    descricao: "Banners para evento",
-    data_pedido: "2026-02-11",
-    data_finalizacao: "2026-02-25",
-    tipo_envio: "Transportadora",
-
-    cliente: {
-      id_usuario: 5,
-      nome: "Paula Oliveira",
-    },
-
-    responsavel_fase: {
-      id_usuario: 2,
-      nome: "Pedro",
-    },
-
-    vendedor: {
-      id_usuario: 1,
-      nome: "Carlos",
-    },
-
-    endereco: {
-      cep: "13015-500",
-      logradouro: "Rua Conceição",
-      numero: "100",
-      complemento: null,
-    },
-
-    itens_pedido: [
-      {
-        quantidade: 20,
-
-        produto: {
-          id_produto: 11,
-          nome: "Banner Lona",
-        },
-
-        caracteristicas_item_pedido: {
-          descricao_arte: "Evento corporativo",
-          cor_estampa: "Colorido",
-          cor_material: "Branco",
-          composicao: "Lona Fosca",
-          tamanho: "2x1m",
-          fornecedor: "Mega Banner",
-        },
-      },
-    ],
-  },
-
-  {
-    id_pedido: 10,
-    num_pedido: "KL1005",
-    url_foto_arte: "https://picsum.photos/400/300?random=10",
-    etapa_pedido: "Produção",
-    status: "conferindo",
-    valor_total: 780.25,
-    descricao: "Embalagens personalizadas",
-    data_pedido: "2026-02-12",
-    data_finalizacao: "2026-02-22",
-    tipo_envio: "Entrega",
-
-    cliente: {
-      id_usuario: 1,
-      nome: "João Silva",
-    },
-
-    responsavel_fase: {
-      id_usuario: 3,
-      nome: "Lucas",
-    },
-
-    vendedor: {
-      id_usuario: 2,
-      nome: "João",
-    },
-
-    endereco: {
-      cep: "04020-001",
-      logradouro: "Rua Domingos de Morais",
-      numero: "1520",
-      complemento: "Galpão",
-    },
-
-    itens_pedido: [
-      {
-        quantidade: 80,
-
-        produto: {
-          id_produto: 12,
-          nome: "Caixa Personalizada",
-        },
-
-        caracteristicas_item_pedido: {
-          descricao_arte: "Logo nas laterais",
-          cor_estampa: "Vermelho",
-          cor_material: "Kraft",
-          composicao: "Papelão reciclado",
-          tamanho: "30x20cm",
-          fornecedor: "BoxPrint",
-        },
-      },
-    ],
-  }
 ];
 
 // Estatísticas calculadas a partir dos pedidos

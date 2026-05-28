@@ -1,6 +1,7 @@
 import React from "react";
+import { adicionarProdutoInteresse } from "@/entities/produto/api/produtoInteresseApi";
 
-export default function ProductModal({ isOpen, onClose, produto }) {
+export default function ProductModal({ isOpen, onClose, produto, onInteresse }) {
   if (!isOpen || !produto) return null;
 
   return (
@@ -59,7 +60,18 @@ export default function ProductModal({ isOpen, onClose, produto }) {
             </div>
 
             {/* Botão de Ação */}
-            <button className="w-full bg-[#1A1A1A] text-white py-5 font-black text-[12px] tracking-[3px] uppercase hover:bg-[#F7D708] hover:text-black transition-all duration-300 shadow-lg">
+            <button
+              onClick={async () => {
+                try {
+                  await adicionarProdutoInteresse(produto.id);
+                  onInteresse && onInteresse(produto);
+                  onClose();
+                } catch (err) {
+                  console.error("Erro ao adicionar à lista de interesse:", err);
+                }
+              }}
+              className="w-full bg-[#1A1A1A] text-white py-5 font-black text-[12px] tracking-[3px] uppercase hover:bg-[#F7D708] hover:text-black transition-all duration-300 shadow-lg cursor-pointer"
+            >
               Enviar para Lista de Interesse
             </button>
           </div>

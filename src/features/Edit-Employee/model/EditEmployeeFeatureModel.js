@@ -147,11 +147,14 @@ export default function useEditEmployeeFeature() {
         setIsLoading(true);
         try {
             let linkDaFotoNaNuvem = formData.fotoUrl;
+            let publicId = formData.fotoPublicId || null;
 
             if (formData.novaFoto) {
                 setIsUploadingPhoto(true);
                 try {
-                    linkDaFotoNaNuvem = await uploadImagem(formData.novaFoto);
+                    const resultado = await uploadImagem(formData.novaFoto);
+                    linkDaFotoNaNuvem = resultado.url;
+                    publicId = resultado.publicId;
                 } catch (error) {
                     setErrorMessage("Erro ao editar foto de perfil.");
                 } finally {
@@ -161,7 +164,8 @@ export default function useEditEmployeeFeature() {
 
             const dadosParaEnviar = {
                 ...formData,
-                fotoUrl: linkDaFotoNaNuvem
+                fotoUrl: linkDaFotoNaNuvem,
+                fotoPublicId: publicId
             };
 
             const payload = toFuncionarioRequest(dadosParaEnviar);

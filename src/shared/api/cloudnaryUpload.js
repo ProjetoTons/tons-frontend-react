@@ -38,7 +38,7 @@ export async function uploadImagem(file, folder = "tons/funcionarios") {
     throw new Error(erro?.error?.message || "Falha no upload da imagem.");
   }
 
-  // Se der sucesso, extraímos a resposta e retornamos apenas o link da imagem
+  // Se der sucesso, extraímos a resposta e retornamos a URL e o public_id
   const data = await response.json();
-  return data.secure_url;
+  return { url: data.secure_url, publicId: data.public_id };
 }

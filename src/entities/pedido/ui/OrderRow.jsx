@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 import StatusBadge from "./StatusBadge";
 import OrderDetailModal from "./OrderDetailModal";
 import {
@@ -50,19 +51,40 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
         status: proximoStatus,
         responsavel_fase_atual: usuarioLogado,
       };
+      onAvancar && onAvancar(pedidoLocal.id_pedido, pedidoAtualizado);
     } else if (proximaEtapa) {
-      // Cruza para nova etapa -> responsável = null, status = inicial da nova etapa
-      pedidoAtualizado = {
-        ...pedidoLocal,
-        etapa_pedido: proximaEtapa,
-        status: getInitialStatus(proximaEtapa),
-        responsavel_fase_atual: null,
-      };
-    } else {
-      return;
-    }
+      // Cruza para nova etapa -> confirmar com SweetAlert
+      Swal.fire({
+        title: "Confirmar mudança de etapa",
+        text: `Deseja avançar o pedido para a etapa "${proximaEtapa}"?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sim, avançar!",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Logística: status inicial depende do tipo_envio
+          let statusInicial;
+          if (proximaEtapa === "Logística") {
+            statusInicial = pedidoLocal.tipo_envio === "Retirada"
+              ? "aguardando-retirada"
+              : "enviado";
+          } else {
+            statusInicial = getInitialStatus(proximaEtapa);
+          }
 
-    onAvancar && onAvancar(pedidoLocal.id_pedido, pedidoAtualizado);
+          pedidoAtualizado = {
+            ...pedidoLocal,
+            etapa_pedido: proximaEtapa,
+            status: statusInicial,
+            responsavel_fase_atual: null,
+          };
+          onAvancar && onAvancar(pedidoLocal.id_pedido, pedidoAtualizado);
+        }
+      });
+    }
   };
 
   const handleRetornar = () => {
@@ -75,19 +97,30 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
         status: statusAnterior,
         responsavel_fase_atual: usuarioLogado,
       };
+      onRetornar && onRetornar(pedidoLocal.id_pedido, pedidoAtualizado);
     } else if (etapaAnterior) {
-      // Volta para etapa anterior -> responsável = null, status = último da etapa anterior
-      pedidoAtualizado = {
-        ...pedidoLocal,
-        etapa_pedido: etapaAnterior,
-        status: getLastStatus(etapaAnterior),
-        responsavel_fase_atual: null,
-      };
-    } else {
-      return;
+      // Volta para etapa anterior -> confirmar com SweetAlert
+      Swal.fire({
+        title: "Confirmar retorno de etapa",
+        text: `Deseja retornar o pedido para a etapa "${etapaAnterior}"?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sim, retornar!",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          pedidoAtualizado = {
+            ...pedidoLocal,
+            etapa_pedido: etapaAnterior,
+            status: getLastStatus(etapaAnterior),
+            responsavel_fase_atual: null,
+          };
+          onRetornar && onRetornar(pedidoLocal.id_pedido, pedidoAtualizado);
+        }
+      });
     }
-
-    onRetornar && onRetornar(pedidoLocal.id_pedido, pedidoAtualizado);
   };
 
   const handleStatusChange = (novoStatus, usuario) => {

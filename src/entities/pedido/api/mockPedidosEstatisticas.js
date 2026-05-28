@@ -616,38 +616,54 @@ export const fetchGraficoEtapas = async (startDate, endDate) => {
     return d >= startDate && d <= endDate;
   });
 
-  // 2. O Backend agrupa por Etapa e Status (Simulando um GROUP BY do SQL)
+  // 2. O Backend agrupa por Etapa (consolidado geral, sem sub-etapas)
   const agrupamento = {};
 
   pedidosFiltrados.forEach((p) => {
-    // Se a etapa ainda não existe no objeto, cria
     if (!agrupamento[p.etapa_pedido]) {
-      agrupamento[p.etapa_pedido] = {};
+      agrupamento[p.etapa_pedido] = { quantidadePedidos: 0, valorTotalArrecadado: 0 };
     }
-    
-    // Se a sub-etapa (status) não existe dentro da etapa, cria
-    if (!agrupamento[p.etapa_pedido][p.status]) {
-      agrupamento[p.etapa_pedido][p.status] = { quantidadePedidos: 0, valorTotalArrecadado: 0 };
-    }
-
-    // Soma as quantidades e valores
-    agrupamento[p.etapa_pedido][p.status].quantidadePedidos += 1;
-    agrupamento[p.etapa_pedido][p.status].valorTotalArrecadado += p.valor_total;
+    agrupamento[p.etapa_pedido].quantidadePedidos += 1;
+    agrupamento[p.etapa_pedido].valorTotalArrecadado += p.valor_total;
   });
 
-  // 3. O Backend formata o objeto para o JSON Exato do nosso Contrato de API
-  const respostaJson = Object.keys(agrupamento).map((nomeDaEtapa) => {
-    return {
-      etapa: nomeDaEtapa,
-      subEtapas: Object.keys(agrupamento[nomeDaEtapa]).map((nomeDoStatus) => ({
-        nome: nomeDoStatus,
-        quantidadePedidos: agrupamento[nomeDaEtapa][nomeDoStatus].quantidadePedidos,
-        valorTotalArrecadado: agrupamento[nomeDaEtapa][nomeDoStatus].valorTotalArrecadado,
-      }))
-    };
-  });
+  // 3. Formato do contrato: array de { etapa, quantidadePedidos, valorTotalArrecadado }
+  const respostaJson = Object.keys(agrupamento).map((nomeDaEtapa) => ({
+    etapa: nomeDaEtapa,
+    quantidadePedidos: agrupamento[nomeDaEtapa].quantidadePedidos,
+    valorTotalArrecadado: agrupamento[nomeDaEtapa].valorTotalArrecadado,
+  }));
 
   return respostaJson;
+};
+
+/**
+ * Endpoint Simulado: GET /api/dashboard/grafico-etapas/{etapa}?startDate={}&endDate={}
+ * Objetivo: Retornar sub-etapas de uma macro-etapa específica (drill-down)
+ */
+export const fetchSubEtapasPorEtapa = async (etapa, startDate, endDate) => {
+  await new Promise((resolve) => setTimeout(resolve, 400));
+
+  const pedidosFiltrados = mockPedidosEstatisticas.filter((p) => {
+    const d = new Date(`${p.data_pedido}T00:00:00`);
+    return d >= startDate && d <= endDate && p.etapa_pedido === etapa;
+  });
+
+  const agrupamento = {};
+
+  pedidosFiltrados.forEach((p) => {
+    if (!agrupamento[p.status]) {
+      agrupamento[p.status] = { quantidadePedidos: 0, valorTotalArrecadado: 0 };
+    }
+    agrupamento[p.status].quantidadePedidos += 1;
+    agrupamento[p.status].valorTotalArrecadado += p.valor_total;
+  });
+
+  return Object.keys(agrupamento).map((nomeStatus) => ({
+    subEtapa: nomeStatus,
+    quantidadePedidos: agrupamento[nomeStatus].quantidadePedidos,
+    valorTotalArrecadado: agrupamento[nomeStatus].valorTotalArrecadado,
+  }));
 };
 
 /**

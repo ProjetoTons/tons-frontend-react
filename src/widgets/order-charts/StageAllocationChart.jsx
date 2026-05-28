@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
-import { fetchGraficoEtapas } from "@/entities/pedido/api/mockPedidosEstatisticas";
+import { fetchGraficoEtapas, fetchSubEtapasPorEtapa } from "@/entities/pedido/api/mockPedidosEstatisticas";
 import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
 
 import {
@@ -12,7 +12,7 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Bar, getElementAtEvent } from 'react-chartjs-2';
 
 ChartJS.register(
     CategoryScale,
@@ -23,45 +23,37 @@ ChartJS.register(
     Legend
 );
 
-// Paletas - Cores da marca Ton's (gradiente harmônico)
-const TONS_QUANTIDADE = ['#d4c91a', '#a8a00a', '#6b6606', '#3d3a04', '#1f1d02'];
-const TONS_FINANCEIRO = ['#161616', '#3a3a3a', '#5f5f5f', '#8a8a8a', '#b5b5b5'];
+// Cores da marca Ton's
+const COR_QUANTIDADE = '#d4c91a';
+const COR_FINANCEIRO = '#161616';
 
 // ORDEM OFICIAL DAS MACRO-ETAPAS
 const ORDEM_ETAPAS = ["Design", "Produção", "Embalagem", "Logística", "Finalizados"];
 
-// ORDEM OFICIAL DAS SUB-ETAPAS
-const ORDEM_SUB_ETAPAS = [
-    "aguardando-arte", "criando-mockup", "aguardando-aprovacao", "impressao-fotolito",
-    "conferindo", "personalizando",
-    "quality-check", "embalagem", "medicao", "emitir-etiqueta",
-    "enviado", "aguardando-retirada", "finalizado"
-];
-
 export function StageAllocationChart() {
-    const { periodo, dataInicio } = useDashboardFilters();
+    const { periodo } = useDashboardFilters();
     const [dadosGrafico, setDadosGrafico] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [drillDown, setDrillDown] = useState(null); // { etapa, dados }
+    const chartRef = useRef(null);
 
     useEffect(() => {
         const carregarDados = async () => {
             setIsLoading(true);
             try {
-                const { startDate, endDate } = obterDatasDoFiltro(periodo, dataInicio);
+                const { startDate, endDate } = obterDatasDoFiltro(periodo);
                 const dados = await fetchGraficoEtapas(startDate, endDate);
 
-                // Ordena as Macro-Etapas (Eixo X)
                 const dadosOrdenados = dados.sort((a, b) => {
                     let indexA = ORDEM_ETAPAS.indexOf(a.etapa);
                     let indexB = ORDEM_ETAPAS.indexOf(b.etapa);
-
                     if (indexA === -1) indexA = 999;
                     if (indexB === -1) indexB = 999;
-
                     return indexA - indexB;
                 });
 
                 setDadosGrafico(dadosOrdenados);
+                setDrillDown(null);
             } catch (error) {
                 console.error("Erro ao buscar dados:", error);
             } finally {
@@ -69,81 +61,75 @@ export function StageAllocationChart() {
             }
         };
         carregarDados();
-    }, [periodo, dataInicio]);
+    }, [periodo]);
 
-    const data = useMemo(() => {
-        if (dadosGrafico.length === 0) return { labels: [], datasets: [] };
+    const handleBarClick = async (event) => {
+        if (!chartRef.current) return;
+        const elements = getElementAtEvent(chartRef.current, event);
+        if (elements.length === 0) return;
 
-        const labelsMacro = dadosGrafico.map(d => d.etapa);
+        const index = elements[0].index;
+        const etapaClicada = dadosGrafico[index]?.etapa;
+        if (!etapaClicada) return;
 
-        // Extrai as sub-etapas únicas do período
-        const subEtapasUnicas = new Set();
-        dadosGrafico.forEach(macro => {
-            macro.subEtapas.forEach(sub => subEtapasUnicas.add(sub.nome));
-        });
+        try {
+            const { startDate, endDate } = obterDatasDoFiltro(periodo);
+            const subDados = await fetchSubEtapasPorEtapa(etapaClicada, startDate, endDate);
+            setDrillDown({ etapa: etapaClicada, dados: subDados });
+        } catch (error) {
+            console.error("Erro ao buscar sub-etapas:", error);
+        }
+    };
 
-        // Ordena as sub-etapas e inverte para o Chart.js desenhar a 1ª no topo
-        const subEtapasArray = Array.from(subEtapasUnicas)
-            .sort((a, b) => {
-                let indexA = ORDEM_SUB_ETAPAS.indexOf(a);
-                let indexB = ORDEM_SUB_ETAPAS.indexOf(b);
-                if (indexA === -1) indexA = 999;
-                if (indexB === -1) indexB = 999;
-                return indexA - indexB;
-            })
-            .reverse();
+    // --- Dados do gráfico principal (consolidado) ---
+    const labels = dadosGrafico.map(d => d.etapa);
+    const mainData = {
+        labels,
+        datasets: [
+            {
+                label: 'Qtd. Pedidos',
+                data: dadosGrafico.map(d => d.quantidadePedidos),
+                backgroundColor: COR_QUANTIDADE,
+                yAxisID: 'y1',
+                borderRadius: 4,
+            },
+            {
+                label: 'Valor (R$)',
+                data: dadosGrafico.map(d => d.valorTotalArrecadado),
+                backgroundColor: COR_FINANCEIRO,
+                yAxisID: 'y',
+                borderRadius: 4,
+            },
+        ]
+    };
 
-        const datasets = [];
-
-        subEtapasArray.forEach((subNome, index) => {
-
-            // --- DATASET: QUANTIDADE ---
-            const dataQuantidade = dadosGrafico.map(macro => {
-                const subEncontrada = macro.subEtapas.find(s => s.nome === subNome);
-                return subEncontrada ? subEncontrada.quantidadePedidos : 0;
-            });
-
-            if (dataQuantidade.some(val => val > 0)) {
-                datasets.push({
-                    label: `Qtd: ${subNome.replace('-', ' ')}`,
-                    data: dataQuantidade,
-                    backgroundColor: TONS_QUANTIDADE[index % TONS_QUANTIDADE.length],
-                    stack: 'StackQuantidade',
-                    yAxisID: 'y1',
-                    borderRadius: 2
-                });
-            }
-
-            // --- DATASET: FINANCEIRO ---
-            const dataFinanceiro = dadosGrafico.map(macro => {
-                const subEncontrada = macro.subEtapas.find(s => s.nome === subNome);
-                return subEncontrada ? subEncontrada.valorTotalArrecadado : 0;
-            });
-
-            if (dataFinanceiro.some(val => val > 0)) {
-                datasets.push({
-                    label: `R$: ${subNome.replace('-', ' ')}`,
-                    data: dataFinanceiro,
-                    backgroundColor: TONS_FINANCEIRO[index % TONS_FINANCEIRO.length],
-                    stack: 'StackFinanceiro',
-                    yAxisID: 'y',
-                    borderRadius: 2
-                });
-            }
-        });
-
-        return {
-            labels: labelsMacro,
-            datasets: datasets
-        };
-    }, [dadosGrafico]); // O recalculo só acontece se dadosGrafico mudar
+    // --- Dados do gráfico drill-down (sub-etapas) ---
+    const drillData = drillDown ? {
+        labels: drillDown.dados.map(d => d.subEtapa.replace(/-/g, ' ')),
+        datasets: [
+            {
+                label: 'Qtd. Pedidos',
+                data: drillDown.dados.map(d => d.quantidadePedidos),
+                backgroundColor: COR_QUANTIDADE,
+                yAxisID: 'y1',
+                borderRadius: 4,
+            },
+            {
+                label: 'Valor (R$)',
+                data: drillDown.dados.map(d => d.valorTotalArrecadado),
+                backgroundColor: COR_FINANCEIRO,
+                yAxisID: 'y',
+                borderRadius: 4,
+            },
+        ]
+    } : null;
 
     const options = {
         responsive: true,
         maintainAspectRatio: false,
         interaction: {
-            mode: 'nearest',
-            intersect: true,
+            mode: 'index',
+            intersect: false,
         },
         plugins: {
             legend: {
@@ -155,54 +141,29 @@ export function StageAllocationChart() {
                 bodyFont: { size: 12, family: 'Inter' },
                 padding: 12,
                 cornerRadius: 4,
-                displayColors: false,
+                displayColors: true,
                 callbacks: {
                     title: function (tooltipItems) {
-                        const item = tooltipItems[0];
-                        const rawLabel = item.dataset.label || '';
-                        const subNome = rawLabel.split(': ')[1] || '';
-                        const subNomeCapitalizado = subNome.charAt(0).toUpperCase() + subNome.slice(1);
-
-                        return `${subNomeCapitalizado} (${item.label})`;
+                        return tooltipItems[0]?.label || '';
                     },
                     label: function (context) {
-                        const rawLabel = context.dataset.label || '';
-                        const subNome = rawLabel.split(': ')[1];
-                        const dataIndex = context.dataIndex;
-                        const chartDatasets = context.chart.data.datasets;
-
-                        let qtd = 0;
-                        let valor = 0;
-
-                        chartDatasets.forEach(ds => {
-                            if (ds.label === `Qtd: ${subNome}`) {
-                                qtd = ds.data[dataIndex];
-                            }
-                            if (ds.label === `R$: ${subNome}`) {
-                                valor = ds.data[dataIndex];
-                            }
-                        });
-
-                        const valorFormatado = new Intl.NumberFormat('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL'
-                        }).format(valor);
-
-                        return [
-                            `Quantidade: ${qtd} pedidos`,
-                            `Financeiro: ${valorFormatado}`
-                        ];
+                        if (context.dataset.yAxisID === 'y') {
+                            const valor = new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            }).format(context.raw);
+                            return ` Valor: ${valor}`;
+                        }
+                        return ` Quantidade: ${context.raw} pedidos`;
                     }
                 }
             }
         },
         scales: {
             x: {
-                stacked: true,
                 grid: { display: false }
             },
             y1: {
-                stacked: true,
                 type: 'linear',
                 display: true,
                 position: 'left',
@@ -210,7 +171,6 @@ export function StageAllocationChart() {
                 ticks: { stepSize: 1 }
             },
             y: {
-                stacked: true,
                 type: 'linear',
                 display: true,
                 position: 'right',
@@ -226,59 +186,54 @@ export function StageAllocationChart() {
     };
 
     if (isLoading) return <div className="flex-1 w-full bg-gray-50 animate-pulse rounded"></div>;
-    if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center text-xs text-gray-400 uppercase">Sem dados no período</div>;
+    if (dadosGrafico.length === 0) return <div className="flex-1 w-full border border-dashed rounded flex items-center justify-center">Sem dados</div>;
 
     return (
         <div className="w-full flex-1 min-h-0 flex flex-col gap-1.5 lg:gap-2">
 
-            {/* CABEÇALHO UNIFICADO: TÍTULO + INDICADOR + LEGENDA */}
+            {/* CABEÇALHO: TÍTULO + LEGENDA */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 pr-2">
 
                 {/* Título */}
                 <div className="flex flex-col">
                     <h2 className="text-sm lg:text-base font-bold text-gray-900 uppercase tracking-tight leading-tight">
-                        Fluxo de Produção
+                        {drillDown ? `Sub-etapas: ${drillDown.etapa}` : 'Fluxo de Produção'}
                     </h2>
                     <p className="text-[9px] lg:text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                        Distribuição de volume e receita por etapa
+                        {drillDown ? 'Clique em "Voltar" para ver todas as etapas' : 'Clique em uma etapa para ver sub-etapas'}
                     </p>
                 </div>
 
-                {/* Indicador + Legenda agrupados à direita */}
-                <div className="flex items-center gap-4 lg:gap-6 flex-wrap">
-
-                    {/* Indicador de Ordem */}
-                    <div className="flex items-center gap-2 border-l-2 border-[#e4e2e2] pl-2">
-                        <div className="flex flex-col items-center justify-center text-[#9ca3af] text-[8px] leading-[8px]">
-                            <span>▲</span>
-                            <span>▼</span>
-                        </div>
-                        <div className="flex flex-col text-[8px] lg:text-[9px] font-bold text-gray-400 tracking-widest uppercase leading-tight">
-                            <span>Topo = Primeira Sub-Etapa</span>
-                            <span>Base = Última Sub-Etapa</span>
-                        </div>
-                    </div>
-
-                    {/* Separador visual */}
-                    <div className="hidden lg:block h-6 w-px bg-gray-200"></div>
+                <div className="flex items-center gap-3 lg:gap-4">
+                    {/* Botão Voltar */}
+                    {drillDown && (
+                        <button
+                            onClick={() => setDrillDown(null)}
+                            className="text-[10px] font-bold uppercase tracking-wider bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition-colors cursor-pointer"
+                        >
+                            ← Voltar
+                        </button>
+                    )}
 
                     {/* Legenda */}
-                    <div className="flex items-center gap-3 lg:gap-4">
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded-sm bg-[#d4c91a]"></div>
-                            <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Qtd. Pedidos</span>
-                        </div>
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-3 h-3 rounded-sm bg-[#d4c91a]"></div>
+                        <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Qtd. Pedidos</span>
+                    </div>
 
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded-sm bg-[#161616]"></div>
-                            <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Valor (R$)</span>
-                        </div>
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-3 h-3 rounded-sm bg-[#161616]"></div>
+                        <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Valor (R$)</span>
                     </div>
                 </div>
             </div>
 
             <div className="w-full flex-1 min-h-0 relative">
-                <Bar data={data} options={options} />
+                {drillDown ? (
+                    <Bar data={drillData} options={options} />
+                ) : (
+                    <Bar ref={chartRef} data={mainData} options={options} onClick={handleBarClick} />
+                )}
             </div>
         </div>
     );

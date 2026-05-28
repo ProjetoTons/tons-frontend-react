@@ -6,30 +6,33 @@ import StatsGrid from "@/widgets/kpi-grid/StatsGrid";
 import OrderTable from "@/widgets/order-table/OrderTable";
 import { calcularEstatisticas } from "@/entities/pedido/api/mockPedidos";
 import { fetchPedidos, updatePedido } from "@/entities/pedido/api/pedidosApi";
+import { getUsuario } from "@/shared/api/authToken";
 
 export default function PedidosPage() {
   const [pedidos, setPedidos] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState("pedidos");
   const [searchParams, setSearchParams] = useSearchParams();
   const etapaFilter = searchParams.get("etapa");
 
-  // Usuário logado (simulado - em produção viria de um contexto de autenticação)
-  const usuarioLogado = {
-    id: 1,
-    nome: "Gustavo",
-  };
+  // Usuário logado vindo da sessão (fallback para evitar crash em dev sem login)
+  const usuarioLogado = getUsuario() || { id: null, nome: "Usuário" };
 
-  // Carrega pedidos do "backend" no mount
+  // Carrega pedidos do backend no mount
   useEffect(() => {
     let ativo = true;
     setCarregando(true);
+    setErro(null);
     fetchPedidos()
       .then((data) => {
         if (ativo) setPedidos(data);
       })
-      .catch((err) => console.error("Erro ao buscar pedidos:", err))
+      .catch((err) => {
+        console.error("Erro ao buscar pedidos:", err);
+        if (ativo) setErro("Não foi possível carregar os pedidos.");
+      })
       .finally(() => {
         if (ativo) setCarregando(false);
       });
@@ -48,13 +51,19 @@ export default function PedidosPage() {
 
     // Filtrar por termo de busca
     if (searchTerm) {
-      filtered = filtered.filter(
-        (pedido) =>
-          pedido.num_pedido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          pedido.cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          pedido.vendedor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          pedido.responsavel.nome.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter((pedido) => {
+        const num = pedido.num_pedido?.toLowerCase() || "";
+        const cliente = pedido.cliente?.nome?.toLowerCase() || "";
+        const vendedor = pedido.vendedor?.nome?.toLowerCase() || "";
+        const responsavel = pedido.responsavel?.nome?.toLowerCase() || "";
+        return (
+          num.includes(term) ||
+          cliente.includes(term) ||
+          vendedor.includes(term) ||
+          responsavel.includes(term)
+        );
+      });
     }
 
     return filtered;
@@ -90,12 +99,22 @@ export default function PedidosPage() {
       prev.map((p) => (p.id_pedido === pedidoId ? pedidoAtualizado : p))
     );
     try {
-      await updatePedido(pedidoId, pedidoAtualizado);
+      const persistido = await updatePedido(pedidoId, pedidoAtualizado, usuarioLogado);
+      // Sincroniza com a resposta do servidor (datas, IDs etc.)
+      if (persistido) {
+        setPedidos((prev) =>
+          prev.map((p) => (p.id_pedido === pedidoId ? persistido : p))
+        );
+      }
     } catch (err) {
       console.error("Erro ao atualizar pedido:", err);
-      // Em caso de erro real, recarregaria do servidor para reverter
-      const dados = await fetchPedidos();
-      setPedidos(dados);
+      // Reverte recarregando do servidor
+      try {
+        const dados = await fetchPedidos();
+        setPedidos(dados);
+      } catch (e) {
+        console.error("Erro ao recarregar pedidos:", e);
+      }
     }
   };
 
@@ -138,6 +157,8 @@ export default function PedidosPage() {
             <div className="p-8 text-center text-[#5f5f5f]">
               Carregando pedidos...
             </div>
+          ) : erro ? (
+            <div className="p-8 text-center text-red-600">{erro}</div>
           ) : (
             <OrderTable
               pedidos={pedidosFiltrados}
