@@ -142,9 +142,9 @@ function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar }) {
         <div className="mb-6">
           <button
             onClick={() => aoMudar("todos")}
-            className={`px-6 py-2 font-black uppercase tracking-widest text-xs transition-all duration-300 border-2 ${categoriaAtiva === "todos"
-                ? 'bg-black text-white border-black'
-                : 'bg-white text-black border-black hover:bg-black hover:text-white'
+            className={`px-6 py-2 font-black uppercase tracking-widest text-xs transition-all duration-300 border-2 cursor-pointer ${categoriaAtiva === "todos"
+              ? 'bg-black text-white border-black'
+              : 'bg-white text-black border-black hover:bg-black hover:text-white'
               }`}
           >
             TODOS
@@ -161,12 +161,12 @@ function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar }) {
               onMouseLeave={() => setHoveredCategory(null)}
             >
               {/* Card da Categoria Principal */}
-              <div className="h-32 bg-gradient-to-br from-gray-50 to-white p-5 flex flex-col justify-between text-left cursor-pointer hover:from-gray-100 hover:to-gray-50 transition-all duration-300 group-hover:shadow-md border-2 border-black">
+              <div className="h-32 g-gradient-to-br from-gray-50 to-white p-5 flex flex-col justify-between text-left cursor-pointer hover:from-gray-100 hover:to-gray-50 transition-all duration-300 group-hover:shadow-md border-2 border-black">
                 <div>
                   <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-2">
                     {categoria.label}
                   </p>
-                  <h3 className="text-sm font-black uppercase text-gray-900 leading-tight">
+                  <h3 className="text-lg font-black uppercase text-gray-900 leading-tight">
                     {categoria.nome}
                   </h3>
                 </div>
@@ -183,7 +183,7 @@ function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar }) {
                       <button
                         key={index}
                         onClick={() => handleSubcategoryClick(subcategoria.valor)}
-                        className="w-full px-5 py-3 text-left text-xs font-medium text-gray-700 hover:bg-black hover:text-white transition-colors uppercase tracking-wide"
+                        className="w-full cursor-pointer px-5 py-3 text-left text-xs font-medium text-gray-700 hover:bg-black hover:text-white transition-colors uppercase tracking-wide"
                       >
                         {subcategoria.label}
                       </button>

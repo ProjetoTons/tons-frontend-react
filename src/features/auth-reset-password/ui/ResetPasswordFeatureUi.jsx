@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useResetPassword } from "@/features/auth-reset-password/model/ResetPasswordFeatureModel";
+import LoadingOverlay from "@/shared/ui/molecules/LoadingOverlay/LoadingOverlay";
 
 export default function ResetPasswordFeatureUi() {
   const {
@@ -16,6 +17,7 @@ export default function ResetPasswordFeatureUi() {
 
   return (
     <div className="h-screen overflow-hidden bg-[#F8F9FA] flex flex-col items-center justify-center px-4 font-sans">
+      <LoadingOverlay isVisible={isLoading} message="Salvando..." />
 
       {/* Logo */}
       <div className="w-full max-w-md mb-8">

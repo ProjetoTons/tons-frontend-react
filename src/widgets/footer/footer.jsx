@@ -30,12 +30,12 @@ function Footer() {
 
                     </div>
                     <div className="flex gap-[10px]">
-                        <button className="w-[50px] h-[50px] rounded-lg border border-[var(--cinza-escuro)] bg-transparent text-[var(--branco)] cursor-pointer transition-colors duration-300 flex justify-center items-center hover:bg-[var(--preto-neutro)] hover:border-[var(--amarelo-base)]">
-                            <img className='w-[25px]' src="/icons/instagram.png" alt="" />
-                        </button>
-                        <button className="w-[50px] h-[50px] rounded-lg border border-[var(--cinza-escuro)] bg-transparent text-[var(--branco)] cursor-pointer transition-colors duration-300 flex justify-center items-center hover:bg-[var(--preto-neutro)] hover:border-[var(--amarelo-base)]">
-                            <img className='w-[25px]' src="/icons/facebook.png" alt="" />
-                        </button>
+                        <a href="https://www.instagram.com/tonspersonalizados/" target="_blank" rel="noopener noreferrer" className="w-[50px] h-[50px] rounded-lg border border-[var(--cinza-escuro)] bg-transparent text-[var(--branco)] cursor-pointer transition-colors duration-300 flex justify-center items-center hover:bg-[var(--preto-neutro)] hover:border-[var(--amarelo-base)]">
+                            <img className='w-[25px]' src="/icons/instagram.png" alt="Instagram" />
+                        </a>
+                        <a href="https://www.facebook.com/TonsPersonalizados/" target="_blank" rel="noopener noreferrer" className="w-[50px] h-[50px] rounded-lg border border-[var(--cinza-escuro)] bg-transparent text-[var(--branco)] cursor-pointer transition-colors duration-300 flex justify-center items-center hover:bg-[var(--preto-neutro)] hover:border-[var(--amarelo-base)]">
+                            <img className='w-[25px]' src="/icons/facebook.png" alt="Facebook" />
+                        </a>
                     </div>
                 </section>
             </section>
