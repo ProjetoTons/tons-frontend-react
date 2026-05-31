@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import KpiCard from "@/shared/ui/molecules/Kpi/KpiCard";
+import FinancialKpiCard from "@/shared/ui/molecules/Kpi/FinancialKpiCard";
 import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
 import { fetchKpisDashboard } from "@/entities/pedido/api/mockPedidosEstatisticas";
 import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
 
-export default function StatsGrid() {
+export default function StatsGrid({ onEditGoal }) {
   const { periodo, dataInicio } = useDashboardFilters();
   const [stats, setStats] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -30,32 +31,31 @@ export default function StatsGrid() {
 
   return (
     <div className={`w-full grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 xl:gap-5 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
-      <KpiCard
+      
+      {/* Card Financeiro Especializado */}
+      <FinancialKpiCard
         title="Total (R$) no período"
         value={(stats.totalHoje || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        subtitle={`Em ${total} pedidos`}
-        variant="dark"
-        isCurrency
+        currentValue={stats.totalHoje}
+        goalValue={stats.metaAtual}
+        onEditGoal={onEditGoal}
       />
       <KpiCard
         title="Aguardando Arte"
         value={stats.aguardandoArte || 0}
         subtitle={`de ${total} pedidos`}
-        variant="light"
       />
 
       <KpiCard
-        title="Enviado / Aguardando Retirada"
-        value={stats.enviadoAguardandoRetirada || 0}
+        title="Aguardando Retirada"
+        value={stats.enviado || 0}
         subtitle={`de ${total} pedidos`}
-        variant="light"
       />
 
       <KpiCard
-        title="Concluído"
-        value={stats.concluido || 0}
+        title="Aguardando Retirada"
+        value={stats.aguardandoRetirada || 0}
         subtitle={`de ${total} pedidos`}
-        variant="light"
       />
     </div>
   );

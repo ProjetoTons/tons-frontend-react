@@ -5,12 +5,16 @@ import StatsGrid from '@/widgets/kpi-grid/StatsGrid';
 import FilterTabsFeature from '@/features/filter-tabs/ui/FilterTabsFeature';
 import { StageAllocationChart } from '@/widgets/order-charts/StageAllocationChart';
 import { EmployeePerformanceChart } from '@/widgets/order-charts/EmployeePerformanceChart';
-import { DelayedOrdersCompact } from '@/widgets/delayed-orders-list/DelayedOrdersCompact';
+import PedidosListWidget from '@/widgets/pedidos-list/PedidosListWidget';
 import { ServiceStatusModal } from '@/widgets/service-status-sidebar/ServiceStatusModal';
 import TopNavBar from '@/widgets/topnav-grafica/TopNavBar';
+import { EditMetas } from '@/widgets/edit-metas/EditMetas';
 
 export default function DashboardPedidosPage() {
     const [showServiceStatus, setShowServiceStatus] = useState(false);
+    
+    // 1. Novo estado para controlar o modal de configuração de metas
+    const [showMetasModal, setShowMetasModal] = useState(false);
 
     const handleNavClick = (page) => {
         console.log("Navegando para:", page);
@@ -46,12 +50,11 @@ export default function DashboardPedidosPage() {
                 </div>
 
                 {/* KPIs */}
-                <StatsGrid />
+                {/* 2. Passando a função onEditGoal para o StatsGrid */}
+                <StatsGrid onEditGoal={() => setShowMetasModal(true)} />
 
                 {/* Gráficos + Atrasados */}
                 <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
-
-                    {/* Coluna esquerda: 2 gráficos empilhados */}
                     <div className="lg:col-span-2 flex flex-col gap-2 lg:gap-3 min-h-0">
                         <section className="flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm p-3 lg:p-4 flex flex-col">
                             <StageAllocationChart />
@@ -61,9 +64,8 @@ export default function DashboardPedidosPage() {
                         </section>
                     </div>
 
-                    {/* Coluna direita: Pedidos Atrasados */}
                     <section className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 lg:p-4 flex flex-col min-h-0">
-                        <DelayedOrdersCompact />
+                        <PedidosListWidget />
                     </section>
                 </div>
             </div>
@@ -72,6 +74,12 @@ export default function DashboardPedidosPage() {
             {showServiceStatus && (
                 <ServiceStatusModal onClose={() => setShowServiceStatus(false)} />
             )}
+
+           {/* Modal para exibir metas */}
+            {showMetasModal && (
+                <EditMetas onClose={() => setShowMetasModal(false)} />
+            )} 
+           
         </div>
     );
 }

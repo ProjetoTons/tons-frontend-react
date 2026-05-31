@@ -178,7 +178,7 @@ export const mockPedidosEstatisticas = [
     valor_total: 1100.50,
     descricao: "Cartões de visita personalizados",
     data_pedido: "2026-05-24",
-    data_finalizacao: "2026-05-30",
+    data_finalizacao: "2026-05-31",
     fk_usuario_cliente: 3,
     fk_usuario_responsavel: 3,
     cliente: { id: 3, nome: "Ana Costa" },
@@ -576,6 +576,11 @@ export const mockPedidosEstatisticas = [
   }
 ];
 
+export let mockMetasAtuais = {
+  semanal: 15000.00,
+  mensal: 60000.00,
+  anual: 700000.00
+};
 
 /**
  * Endpoint Simulado: GET /api/dashboard/kpis?startDate={}&endDate={}
@@ -585,19 +590,35 @@ export const fetchKpisDashboard = async (startDate, endDate) => {
   // Simula o tempo de resposta da internet (500ms)
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  // 1. O Backend filtra as datas no banco de dados (WHERE data >= startDate...)
+  // 1. Converte as entradas com segurança para objetos Date
+  const dataInicioSegura = new Date(startDate);
+  const dataFimSegura = new Date(endDate);
+
+  // 2. O Backend filtra as datas no banco de dados comparando os milissegundos (.getTime())
   const pedidosFiltrados = mockPedidosEstatisticas.filter((p) => {
-    const d = new Date(`${p.data_pedido}T00:00:00`);
-    return d >= startDate && d <= endDate;
+    const dataPedido = new Date(`${p.data_pedido}T00:00:00`);
+    return dataPedido.getTime() >= dataInicioSegura.getTime() && dataPedido.getTime() <= dataFimSegura.getTime();
   });
 
-  // 2. O Backend soma os valores e devolve o JSON pronto
+  // 3. Calcula a diferença de dias de forma blindada contra strings
+  const diffDias = Math.ceil((dataFimSegura.getTime() - dataInicioSegura.getTime()) / (1000 * 60 * 60 * 24));
+  
+  let metaAplicavel = mockMetasAtuais.mensal; // Fallback padrão
+
+  if (diffDias <= 7) {
+    metaAplicavel = mockMetasAtuais.semanal;
+  } else if (diffDias > 31) {
+    metaAplicavel = mockMetasAtuais.anual;
+  }
+
   return {
     totalHoje: pedidosFiltrados.reduce((sum, p) => sum + p.valor_total, 0),
     aguardandoArte: pedidosFiltrados.filter(p => p.status === "aguardando-arte").length,
-    enviadoAguardandoRetirada: pedidosFiltrados.filter(p => p.status === "enviado" || p.status === "aguardando-retirada").length,
-    concluido: pedidosFiltrados.filter(p => p.status === "finalizado").length,
+    enviado: pedidosFiltrados.filter(p => p.status === "enviado").length,
+    aguardandoRetirada: pedidosFiltrados.filter(p => p.status === "aguardando-retirada").length,
+    // concluido: pedidosFiltrados.filter(p => p.status === "finalizado").length,
     totalPedidos: pedidosFiltrados.length,
+    metaAtual: metaAplicavel
   };
 };
 
@@ -682,8 +703,8 @@ export const fetchPerformanceFuncionarios = async (startDate, endDate) => {
 
   pedidosFiltrados.forEach((p) => {
     // Intercepta pedidos sem responsável
-    const id = p.fk_usuario_responsavel || 9999; 
-    const nome = p.responsavel?.nome || "Sem responsável"; 
+    const id = p.fk_usuario_responsavel || 9999;
+    const nome = p.responsavel?.nome || "Sem responsável";
     const etapa = p.etapa_pedido;
 
     // Cria a estrutura com as 4 macro-etapas zeradas
@@ -700,9 +721,9 @@ export const fetchPerformanceFuncionarios = async (startDate, endDate) => {
     } else if (etapa === "Produção") {
       agrupamento[id].tarefas.producao += 1;
     } else if (etapa === "Embalagem") {
-      agrupamento[id].tarefas.embalagem += 1; 
+      agrupamento[id].tarefas.embalagem += 1;
     } else if (etapa === "Logística") {
-      agrupamento[id].tarefas.logistica += 1; 
+      agrupamento[id].tarefas.logistica += 1;
     }
   });
 
@@ -718,54 +739,51 @@ export const fetchPerformanceFuncionarios = async (startDate, endDate) => {
 };
 
 /**
- * Endpoint Simulado: GET /api/dashboard/pedidos-atrasados
- * Objetivo: Retornar lista de pedidos com prazo estourado ou vencendo hoje.
+ * Endpoint Simulado: GET /api/dashboard/pedidos-lista?startDate={}&endDate={}
+ * Objetivo: Retornar a lista completa com os cálculos de prazo já embutidos.
  */
-export const fetchPedidosAtrasados = async () => {
-  // Simula o tempo de resposta da internet (400ms)
-  await new Promise((resolve) => setTimeout(resolve, 400));
+export const fetchPedidosLista = async (startDate, endDate) => {
+  await new Promise((resolve) => setTimeout(resolve, 600));
 
+  const dataInicioSegura = new Date(startDate);
+  const dataFimSegura = new Date(endDate);
+  
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
-  // Pega apenas pedidos que AINDA NÃO foram entregues/finalizados
-  const pedidosPendentes = mockPedidosEstatisticas.filter(p => p.status !== "finalizado" && p.status !== "enviado");
+  // 1. Filtra pela data (respeitando o filtro global da tela)
+  const pedidosNoPeriodo = mockPedidosEstatisticas.filter((p) => {
+    const dataPedido = new Date(`${p.data_pedido}T00:00:00`);
+    return dataPedido.getTime() >= dataInicioSegura.getTime() && dataPedido.getTime() <= dataFimSegura.getTime();
+  });
 
-  const tabelaAtrasados = pedidosPendentes.map(p => {
+  // 2. Enriquecimento: injeta a sua lógica de atraso em CADA pedido da lista
+  return pedidosNoPeriodo.map((p) => {
     const prazo = new Date(`${p.data_finalizacao}T00:00:00`);
-    
-    // Calcula a diferença em dias
     const diferencaTempo = hoje.getTime() - prazo.getTime();
     const diasAtraso = Math.ceil(diferencaTempo / (1000 * 3600 * 24));
 
     let statusAtraso = "NO_PRAZO";
-    if (diasAtraso > 0) statusAtraso = "ATRASADO";
-    else if (diasAtraso === 0) statusAtraso = "VENCE_HOJE";
+    
+    // Só acusa atraso se o pedido AINDA estiver rolando na operação
+    if (p.status !== "finalizado" && p.status !== "enviado") {
+      if (diasAtraso > 0) statusAtraso = "ATRASADO";
+      else if (diasAtraso === 0) statusAtraso = "VENCE_HOJE";
+    }
 
     return {
-      idPedido: p.id_pedido,
-      numPedido: p.num_pedido,
-      nomeResponsavel: p.responsavel?.nome || "Sem responsável",
-      macroEtapa: p.etapa_pedido, // Ex: "Design"
-      subEtapa: p.status,         // Ex: "aguardando-arte"
-      prazoFinal: p.data_finalizacao,
+      ...p, // Retorna tudo que o pedido já tinha (cliente, num_pedido, valor, etc)
       statusAtraso,
       diasAtraso: diasAtraso > 0 ? diasAtraso : 0
     };
   });
-
-  // Filtra apenas os que exigem atenção (vencem hoje ou estão atrasados)
-  // E ordena do MAIS ATRASADO para o menos atrasado
-  return tabelaAtrasados
-    .filter(p => p.statusAtraso !== "NO_PRAZO")
-    .sort((a, b) => b.diasAtraso - a.diasAtraso);
 };
 
 // Estatísticas calculadas a partir dos pedidos
 export const calcularEstatisticas = (pedidos) => {
   return {
     totalHoje: pedidos.reduce((sum, p) => sum + p.
-    valor_total, 0),
+      valor_total, 0),
     aguardandoArte: pedidos.filter(p => p.status === "aguardando-arte").length,
     enviadoAguardandoRetirada: pedidos.filter(p => p.status === "enviado" || p.status === "aguardando-retirada").length,
     concluido: pedidos.filter(p => p.status === "finalizado").length,
