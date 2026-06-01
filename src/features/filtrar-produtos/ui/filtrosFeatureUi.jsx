@@ -1,98 +1,216 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar }) {
-  const categorias = [
-    { label: "TODOS", valor: "todos" },
-    { label: "COPA DO MUNDO", valor: "copa_do_mundo" },
-    { label: "VERÃO", valor: "verao" },
-    { label: "ACESSÓRIOS P/ CELULAR", valor: "acessorios_p_celular" },
-    { label: "ACESSÓRIOS PARA CARROS", valor: "acessorios_para_carros" },
-    { label: "BAR E BEBIDAS", valor: "bar_e_bebidas" },
-    { label: "BLOCOS E CADERNETAS", valor: "blocos_e_cadernetas" },
-    { label: "BOLSAS TÉRMICAS", valor: "bolsas_termicas" },
-    { label: "BRINQUEDOS", valor: "brinquedos" },
-    { label: "CAIXAS DE SOM", valor: "caixas_de_som" },
-    { label: "CANECAS", valor: "canecas" },
-    { label: "CANETAS", valor: "canetas" },
-    { label: "CARREGADORES", valor: "carregadores" },
-    { label: "CASA", valor: "casa" },
-    { label: "CHAVEIROS", valor: "chaveiros" },
-    { label: "CONJUNTOS EXECUTIVOS", valor: "conjuntos_executivos" },
-    { label: "COPOS", valor: "copos" },
-    { label: "COZINHA", valor: "cozinha" },
-    { label: "CUIDADOS PESSOAIS", valor: "cuidados_pessoais" },
-    { label: "ESCRITÓRIO", valor: "escritorio" },
-    { label: "ESPELHOS", valor: "espelhos" },
-    { label: "ESPORTE E JOGOS", valor: "esporte_e_jogos" },
-    { label: "ESTOJOS", valor: "estojos" },
-    { label: "FERRAMENTAS", valor: "ferramentas" },
-    { label: "FONES DE OUVIDO", valor: "fones_de_ouvido" },
-    { label: "GUARDA-CHUVA", valor: "guarda_chuva" },
-    { label: "INFORMÁTICA E TELEFONIA", valor: "informatica_e_telefonia" },
-    { label: "KIT CHURRASCO", valor: "kit_churrasco" },
-    { label: "KIT QUEIJO", valor: "kit_queijo" },
-    { label: "LANTERNAS E LUMINÁRIAS", valor: "lanternas_e_luminarias" },
-    { label: "LÁPIS E LAPISEIRAS", valor: "lapis_e_lapiseiras" },
-    { label: "LINHA ECOLÓGICA", valor: "linha_ecologica" },
-    { label: "LINHA FEMININA", valor: "linha_feminina" },
-    { label: "LINHA MASCULINA", valor: "linha_masculina" },
-    { label: "LINHA PET", valor: "linha_pet" },
-    { label: "MALAS MOCHILAS BOLSAS", valor: "malas_mochilas_bolsas" },
-    { label: "MICROFONES", valor: "microfones" },
-    { label: "MODA E ESTILO", valor: "moda_e_estilo" },
-    { label: "NÉCESSAIRES", valor: "necessaires" },
-    { label: "PASTAS", valor: "pastas" },
-    { label: "PEN DRIVES", valor: "pen_drives" },
-    { label: "PETISQUEIRAS", valor: "petisqueiras" },
-    { label: "PLAQUINHAS", valor: "plaquinhas" },
-    { label: "PORTA CANETAS", valor: "porta_canetas" },
-    { label: "PORTA RETRATOS", valor: "porta_retratos" },
-    { label: "PORTA-DOCUMENTOS E ID", valor: "porta_documentos_e_id" },
-    { label: "RELÓGIOS", valor: "relogios" },
-    { label: "SACOLAS E SACOCHILAS", valor: "sacolas_e_sacochilas" },
-    { label: "SQUEEZES E GARRAFAS", valor: "squeezes_e_garrafas" },
-    { label: "TÁBUAS", valor: "tabuas" },
-    { label: "UMIDIFICADORES", valor: "umidificadores" }
+  const [hoveredCategory, setHoveredCategory] = useState(null);
 
+  const categoriasAgrupadas = [
+    {
+      id: "papelaria",
+      label: "CAT-01",
+      nome: "Papelaria Corporativa",
+      itemCount: 24,
+      subcategorias: [
+        { label: "Blocos e Cadernetas", valor: "blocos_e_cadernetas" },
+        { label: "Canetas", valor: "canetas" },
+        { label: "Lápis e Lapiseiras", valor: "lapis_e_lapiseiras" },
+        { label: "Porta Canetas", valor: "porta_canetas" },
+        { label: "Pastas", valor: "pastas" },
+        { label: "Porta-Documentos e ID", valor: "porta_documentos_e_id" },
+        { label: "Plaquinhas", valor: "plaquinhas" },
+        { label: "Conjuntos Executivos", valor: "conjuntos_executivos" },
+        { label: "Porta Retratos", valor: "porta_retratos" }
+      ]
+    },
+    {
+      id: "embalagens",
+      label: "CAT-02",
+      nome: "Embalagens Premium",
+      itemCount: 18,
+      subcategorias: [
+        { label: "Caixas Personalizadas", valor: "caixas_personalizadas" },
+        { label: "Sacos e Envelopes", valor: "sacos_e_envelopes" },
+        { label: "Papel de Embrulho", valor: "papel_embrulho" },
+        { label: "Fitas e Laços", valor: "fitas_e_lacos" },
+        { label: "Adesivos", valor: "adesivos" }
+      ]
+    },
+    {
+      id: "impressao",
+      label: "CAT-03",
+      nome: "Impressão Digital",
+      itemCount: 42,
+      subcategorias: [
+        { label: "Cartões de Visita", valor: "cartoes_visita" },
+        { label: "Flyers e Panfletos", valor: "flyers_panfletos" },
+        { label: "Banners", valor: "banners" },
+        { label: "Adesivos Personalizados", valor: "adesivos_personalizados" },
+        { label: "Impressão Offset", valor: "impressao_offset" }
+      ]
+    },
+    {
+      id: "editorial",
+      label: "CAT-04",
+      nome: "Editorial & Books",
+      itemCount: 12,
+      subcategorias: [
+        { label: "Livros Personalizados", valor: "livros_personalizados" },
+        { label: "Catálogos", valor: "catalogos" },
+        { label: "Revistas", valor: "revistas" },
+        { label: "E-books", valor: "ebooks" }
+      ]
+    },
+    {
+      id: "branding",
+      label: "CAT-05",
+      nome: "Branding & Kits",
+      itemCount: 31,
+      subcategorias: [
+        { label: "Identidade Visual", valor: "identidade_visual" },
+        { label: "Kits Completos", valor: "kits_completos" },
+        { label: "Assinadores", valor: "assinadores" },
+        { label: "Selos", valor: "selos" }
+      ]
+    },
+    {
+      id: "formatos",
+      label: "CAT-06",
+      nome: "Grandes Formatos",
+      itemCount: 9,
+      subcategorias: [
+        { label: "Outdoor", valor: "outdoor" },
+        { label: "Backlight", valor: "backlight" },
+        { label: "Lona Vinílica", valor: "lona_vinil" },
+        { label: "Envelopamento", valor: "envelopamento" }
+      ]
+    },
+    {
+      id: "adesivos",
+      label: "CAT-07",
+      nome: "Adesivos & Labels",
+      itemCount: 15,
+      subcategorias: [
+        { label: "Etiquetas Personalizadas", valor: "etiquetas_personalizadas" },
+        { label: "Rótulos", valor: "rotulos" },
+        { label: "Adesivos de Vinil", valor: "adesivos_vinil" },
+        { label: "Labels Holográficas", valor: "labels_hologaficas" }
+      ]
+    },
+    {
+      id: "acabamentos",
+      label: "CAT-08",
+      nome: "Acabamentos Especiais",
+      itemCount: 6,
+      subcategorias: [
+        { label: "Laminação", valor: "laminacao" },
+        { label: "Plastificação", valor: "plastificacao" },
+        { label: "Verniz", valor: "verniz" },
+        { label: "Relevo", valor: "relevo" }
+      ]
+    },
+    {
+      id: "tecnologia",
+      label: "CAT-09",
+      nome: "Tecnologia & Eletrônicos",
+      itemCount: 27,
+      subcategorias: [
+        { label: "Acessórios p/ Celular", valor: "acessorios_p_celular" },
+        { label: "Informática e Telefonia", valor: "informatica_e_telefonia" },
+        { label: "Carregadores", valor: "carregadores" },
+        { label: "Fones de Ouvido", valor: "fones_de_ouvido" },
+        { label: "Pen Drives", valor: "pen_drives" }
+      ]
+    }
   ];
 
-  return (
-    <section className="w-full bg-[#F2F2F2] px-10 py-10">
-      <h2 className="text-[var(--preto-neutro)] text-2xl font-bold uppercase tracking-wide mb-6" style={{ fontFamily: 'var(--fonte-space)' }}>
-        Explore nosso portfólio
-      </h2>
+  const handleSubcategoryClick = (valor) => {
+    aoMudar(valor);
+    setHoveredCategory(null);
+  };
 
-      <div className="flex items-center justify-between gap-6 flex-wrap">
-        {/* Filtros por categoria */}
-        <div className="flex gap-3 flex-wrap">
-          {categorias.map(cat => (
-            <button
-              key={cat.valor}
-              className={`px-6 py-[10px] text-xs font-bold tracking-[1px] uppercase cursor-pointer border-2 transition-all duration-300 outline-none relative overflow-hidden active:scale-95 active:shadow-lg ${categoriaAtiva === cat.valor
-                  ? 'bg-black text-white border-black'
-                  : 'bg-white text-gray-700 border-gray-400 hover:bg-[var(--amarelo-base)] hover:text-black hover:border-black'
-                }`}
-              onClick={() => aoMudar(cat.valor)}
-            >
-              {cat.label}
-            </button>
-          ))}
+  return (
+    <section className="w-full bg-white px-8 py-10">
+      {/* Header com Título */}
+      <div className="mb-8">
+        <h2 className="text-3xl font-black uppercase tracking-tight text-black" style={{ fontFamily: 'var(--fonte-space)' }}>
+          Explore nosso portfólio!
+        </h2>
+      </div>
+
+      {/* Grid de Categorias */}
+      <div className="mb-6">
+        {/* Botão TODOS */}
+        <div className="mb-6">
+          <button
+            onClick={() => aoMudar("todos")}
+            className={`px-6 py-2 font-black uppercase tracking-widest text-xs transition-all duration-300 border-2 cursor-pointer ${categoriaAtiva === "todos"
+              ? 'bg-black text-white border-black'
+              : 'bg-white text-black border-black hover:bg-black hover:text-white'
+              }`}
+          >
+            TODOS
+          </button>
         </div>
 
-        {/* Barra de Busca */}
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={busca}
-            onChange={(e) => aoBuscar(e.target.value)}
-            className="bg-white border border-black rounded-md px-3 py-2 pr-10 w-[250px] focus:outline-none focus:ring-1 focus:ring-[var(--amarelo-base)] transition-all text-sm"
-          />
-          <img
-            src="/icons/search.png"
-            alt="Buscar"
-            className="absolute right-3 w-4 h-4 opacity-70"
-          />
+        {/* Grid de Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {categoriasAgrupadas.map((categoria) => (
+            <div
+              key={categoria.id}
+              className="relative group"
+              onMouseEnter={() => setHoveredCategory(categoria.id)}
+              onMouseLeave={() => setHoveredCategory(null)}
+            >
+              {/* Card da Categoria Principal */}
+              <div className="h-32 g-gradient-to-br from-gray-50 to-white p-5 flex flex-col justify-between text-left cursor-pointer hover:from-gray-100 hover:to-gray-50 transition-all duration-300 group-hover:shadow-md border-2 border-black">
+                <div>
+                  <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-2">
+                    {categoria.label}
+                  </p>
+                  <h3 className="text-lg font-black uppercase text-gray-900 leading-tight">
+                    {categoria.nome}
+                  </h3>
+                </div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {categoria.itemCount} itens
+                </p>
+              </div>
+
+              {/* Dropdown com Subcategorias */}
+              {hoveredCategory === categoria.id && (
+                <div className="absolute top-full left-0 right-0 bg-white border-2 border-black shadow-lg z-50 max-h-80 overflow-y-auto animate-in fade-in duration-200">
+                  <div className="divide-y divide-gray-100">
+                    {categoria.subcategorias.map((subcategoria, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSubcategoryClick(subcategoria.valor)}
+                        className="w-full cursor-pointer px-5 py-3 text-left text-xs font-medium text-gray-700 hover:bg-black hover:text-white transition-colors uppercase tracking-wide"
+                      >
+                        {subcategoria.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Barra de Pesquisa Abaixo - Alinhada à Direita */}
+      <div className="flex justify-end mt-8">
+        <div className="w-full max-w-xs">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Localizar serviço ou produto..."
+              value={busca}
+              onChange={(e) => aoBuscar(e.target.value)}
+              className="w-full bg-transparent border-b-2 border-gray-300 px-0 py-2 text-xs font-medium placeholder-gray-400 text-gray-700 focus:outline-none focus:border-black transition-colors"
+            />
+            <svg className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
         </div>
       </div>
     </section>

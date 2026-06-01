@@ -1,9 +1,21 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { clearSession } from '@/shared/api/authToken';
 
 export default function MobileMenu({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const menuItems = [
+    { path: '/portfolio', label: 'PORTFÓLIO', icon: '/logo-tons/Logo Hefestos Nome.png', isImage: true },
+    { path: '/lista-interesse', label: 'LISTA DE INTERESSE', icon: '/icons/clipboard.png', isImage: true },
+    { path: '/meus-pedidos', label: 'MEUS PEDIDOS', icon: '/icons/parcel.png', isImage: true },
+    { path: '/historico-pedidos', label: 'HISTÓRICO DE PEDIDOS', icon: 'clock', isImage: false },
+    { path: '/configuracoes', label: 'CONFIGURAÇÕES', icon: '/icons/settings.png', isImage: true },
+  ];
+
+  const currentPath = location.pathname;
+  const filteredItems = menuItems.filter(item => item.path !== currentPath);
 
   const handleLogout = () => {
     clearSession();
@@ -36,39 +48,21 @@ export default function MobileMenu({ isOpen, onClose }) {
         {/* Links de Navegação (Recuperados do seu código anterior) */}
         <nav className="flex flex-col px-8 mt-10 gap-8">
           
-          {/* Link Lista de Interesse */}
-          <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <Link to="/lista-interesse" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#8e8d8d]">
-              LISTA DE INTERESSE
-            </Link>
-            <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/clipboard.png" alt="" />
-          </div>
-
-          {/* Link Meus Pedidos */}
-          <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <Link to="/meus-pedidos" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#8e8d8d]">
-              MEUS PEDIDOS
-            </Link>
-            <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/parcel.png" alt="" />
-          </div>
-
-          {/* Link Histórico de Pedidos */}
-          <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <Link to="/historico-pedidos" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#8e8d8d]">
-              HISTÓRICO DE PEDIDOS
-            </Link>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-          </div>
-
-           <div className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
-            <Link to="/configuracoes" onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#8e8d8d]">
-              CONFIGURAÇÕES
-            </Link>
-            <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src="/icons/settings.png" alt="" />
-          </div>
+          {filteredItems.map((item) => (
+            <div key={item.path} className="flex items-center justify-between group cursor-pointer border-b border-black/5 pb-2">
+              <Link to={item.path} onClick={onClose} className="text-black text-sm font-bold tracking-widest transition-colors group-hover:text-[#8e8d8d]">
+                {item.label}
+              </Link>
+              {item.isImage ? (
+                <img className="w-5 h-5 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" src={item.icon} alt="" />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              )}
+            </div>
+          ))}
 
         </nav>
 

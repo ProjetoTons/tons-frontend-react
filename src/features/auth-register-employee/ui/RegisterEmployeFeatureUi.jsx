@@ -4,6 +4,7 @@ import useRegisterEmployeFeature from "@/features/auth-register-employee/model/R
 import FileInputForm from "@/shared/ui/molecules/FormField/FileInputform";
 import SelectForm from "@/shared/ui/molecules/FormField/SelectForm";
 import { Link } from "react-router-dom";
+import LoadingOverlay from "@/shared/ui/molecules/LoadingOverlay/LoadingOverlay";
 
 export default function RegisterEmployeeFeature() {
 
@@ -26,6 +27,7 @@ export default function RegisterEmployeeFeature() {
 
     return (
         <div className="h-screen overflow-hidden bg-[#F8F9FA] flex flex-col items-center justify-center px-8 py-0 font-sans">
+            <LoadingOverlay isVisible={isLoading} message="Salvando Funcionário..." />
 
             {/* HEADER: Logo da Empresa */}
             <div className="w-full max-w-2xl mb-0">

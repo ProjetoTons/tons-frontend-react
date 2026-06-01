@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useLogin } from "@/features/auth-login/model/LoginFeatureModel";
+import LoadingOverlay from "@/shared/ui/molecules/LoadingOverlay/LoadingOverlay";
 
 export default function LoginFeatureUi() {
   const { formData, isLoading, errorMessage, handleChange, handleSubmit } = useLogin();
 
   return (
     <div className="h-screen overflow-hidden bg-[#F8F9FA] flex flex-col items-center justify-center px-4 font-sans">
+      <LoadingOverlay isVisible={isLoading} message="Autenticando..." />
 
       {/* Logo */}
       <div className="w-full max-w-md mb-8">
