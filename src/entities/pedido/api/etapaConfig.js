@@ -4,29 +4,38 @@
 
 export const ETAPA_CONFIG = {
   Design: {
-    cor: '#7C3AED', // Roxo
+    cor: '#8444F3', // Roxo
+    txtColor: '#f6f6f6',
     icone: '/icons/triangle-icon.png',
     displayName: 'Design',
   },
   Produção: {
     cor: '#0EA5E9', // Azul
+    txtColor: '#f6f6f6',
     icone: '/icons/square-icon.png',
     displayName: 'Produção',
   },
   Embalagem: {
-    cor: '#D91EF6', // Verde
+    cor: '#BE41AB', // Rosa
+    txtColor: '#f6f6f6',
     icone: '/icons/shield-icon.png',
     displayName: 'Embalagem',
   },
   Logística: {
-    cor: '#F59E0B', // Laranja
+    cor: '#E89402', // Laranja
+    txtColor: '#f6f6f6',
     icone: '/icons/circle-icon.png',
     displayName: 'Logística',
   },
   Finalizados: {
-    cor: '#10B981', // Ciano
+    cor: '#0D9B6C', // Verde
+    txtColor: '#f6f6f6',
     icone: '/icons/finished-icon.png',
     displayName: 'Finalizados',
+  },
+  Tudo: {
+    cor: '#FFE301', // Amarelo
+    txtColor: '#161616',
   },
 };
 
@@ -36,5 +45,5 @@ export const ETAPA_CONFIG = {
  * @returns {object} - Configuração com cor e ícone
  */
 export function getEtapaConfig(etapa) {
-  return ETAPA_CONFIG[etapa] || ETAPA_CONFIG.Design;
+  return ETAPA_CONFIG[etapa] || ETAPA_CONFIG.Tudo;
 }
