@@ -3,6 +3,7 @@ import InputForm from "@/shared/ui/molecules/FormField/FormField";
 import { useRegisterClient } from "@/features/auth-register-client/model/RegisterClientFeatureModel";
 import { Link } from "react-router-dom";
 import EtapaVisual from "@/shared/ui/molecules/Etapas/EtapaVisual";
+import LoadingOverlay from "@/shared/ui/molecules/LoadingOverlay/LoadingOverlay";
 
 export default function RegisterClient() {
 
@@ -10,6 +11,7 @@ export default function RegisterClient() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-white font-sans">
+      <LoadingOverlay isVisible={isLoading} message="Processando Cadastro..." />
 
       {/* SEÇÃO ESQUERDA */}
       <div className="w-1/2 relative flex flex-col items-center justify-center px-8 lg:px-16 overflow-y-auto animate-slide-in-left">
