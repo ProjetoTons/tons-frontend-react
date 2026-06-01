@@ -16,6 +16,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
     <div className="bg-white w-full overflow-x-auto rounded">
       <table className="w-full table-fixed border-collapse">
         <colgroup>
+          <col className="w-[10px]" />
           <col className="w-[70px]" />
           <col className="w-[90px]" />
           <col className="w-[140px]" />
@@ -30,6 +31,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
         {/* Table Header */}
         <thead>
           <tr className="bg-[#161616] border-b border-[#e4e2e2]">
+            <th className="py-3 px-2"></th>
             <th className="py-3 px-2"></th>
             <th className="py-3 px-2 text-center">
               <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
@@ -94,7 +96,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
             ))
           ) : (
             <tr>
-              <td colSpan="10" className="py-10 text-center text-[#5f5f5f]">
+              <td colSpan="11" className="py-10 text-center text-[#5f5f5f]">
                 Nenhum pedido encontrado
               </td>
             </tr>
