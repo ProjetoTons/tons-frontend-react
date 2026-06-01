@@ -32,7 +32,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
         <thead>
           <tr className="bg-[#161616] border-b border-[#e4e2e2]">
             <th className="py-3 px-2"></th>
-            <th className="py-3 px-2"></th>
+            <th className="py-3 px-2"></th> 
             <th className="py-3 px-2 text-center">
               <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
                 N° Pedido

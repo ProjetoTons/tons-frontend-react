@@ -8,6 +8,7 @@
  * - onEtapaFilter: function - callback para filtrar por etapa
  * - etapaAtiva: string - etapa atualmente selecionada
  */
+import { getEtapaConfig } from "@/entities/pedido/api/etapaConfig";
 
 function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiva = null }) {
   const handleSearchChange = (e) => {
@@ -39,19 +40,25 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
       <div className="flex items-center gap-[12px] mt-10">
 
         {/* Filtros por etapa */}
+
         <div className="flex items-center gap-[12px]">
           {etapas.map(({ value, label }) => {
             const isAtiva = value === null ? !etapaAtiva : etapaAtiva === value;
+            const etapaConfig = getEtapaConfig(value || "Tudo");
             return (
               <button
                 key={label}
                 onClick={() => onEtapaFilter && onEtapaFilter(value)}
+                style={isAtiva ? { backgroundColor: etapaConfig.cor, color: etapaConfig.txtColor } : {}}
                 className={`px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all ${isAtiva
-                  ? "bg-[#fdf210] text-[#161616] hover:bg-[#e6d800] shadow-md cursor-pointer"
+                  ? 'shadow-md cursor-pointer hover:opacity-90'
                   : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] border-2 border-transparent shadow-md cursor-pointer"
                   }`}
               >
+                <div className="flex gap-1 justify-center items-center">
                 {label}
+                <img src={etapaConfig.icone} alt="" className={isAtiva ? "w-3 h-3 brightness-0 invert" : "w-3 h-3 brightness-35"} />
+                </div>
               </button>
             );
           })}
