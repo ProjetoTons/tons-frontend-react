@@ -22,7 +22,7 @@ import {
  * - usuarioLogado: object - Dados do usuário logado
  */
 
-function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado = { id: 1, nome: "Usuário" } }) {
+function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado = { id: 1, nome: "Usuário" } }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Usa diretamente os dados do prop (estado controlado pelo pai)
   const pedidoLocal = pedido;
@@ -264,6 +264,36 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, usuarioLogado
             </span>
           </button>
         </div>
+      </td>
+
+      {/* Cancelar */}
+      <td className="py-2 px-2 text-center">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            Swal.fire({
+              title: "Cancelar pedido",
+              text: `Deseja realmente cancelar o pedido ${pedidoLocal.num_pedido}?`,
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#d33",
+              cancelButtonColor: "#6b7280",
+              confirmButtonText: "Sim, cancelar!",
+              cancelButtonText: "Voltar",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                onCancelar && onCancelar(pedidoLocal.id_pedido);
+              }
+            });
+          }}
+          className="flex items-center justify-center px-2 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
+          title="Cancelar pedido"
+        >
+          <span className="font-['Inter:Bold',sans-serif] font-bold text-[9px] tracking-[0.5px] uppercase">
+            Cancelar
+          </span>
+        </button>
       </td>
       </tr>
 

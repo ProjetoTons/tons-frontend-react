@@ -183,3 +183,21 @@ export async function fetchHistoricoEtapas(id) {
   const { data } = await http.get(`/pedidos/${id}/etapas`);
   return data;
 }
+
+/**
+ * Busca pedidos em andamento do cliente logado.
+ * GET /pedidos/meus (filtro por JWT, etapaPedido != Finalizado)
+ */
+export async function fetchMeusPedidos() {
+  const { data } = await http.get("/pedidos/meus");
+  return Array.isArray(data) ? data.map(toFrontend) : [];
+}
+
+/**
+ * Busca pedidos finalizados do cliente logado.
+ * GET /pedidos/meus/historico (filtro por JWT, etapaPedido == Finalizado)
+ */
+export async function fetchMeusPedidosHistorico() {
+  const { data } = await http.get("/pedidos/meus/historico");
+  return Array.isArray(data) ? data.map(toFrontend) : [];
+}

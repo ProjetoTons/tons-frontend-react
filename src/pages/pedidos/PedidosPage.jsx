@@ -16,6 +16,7 @@ export default function PedidosPage() {
   const [currentPage, setCurrentPage] = useState("pedidos");
   const [searchParams, setSearchParams] = useSearchParams();
   const etapaFilter = searchParams.get("etapa");
+  const [filterConfig, setFilterConfig] = useState({ status: "", ordenarPor: "", direcao: "asc" });
 
   // Usuário logado vindo da sessão (fallback para evitar crash em dev sem login)
   const usuarioLogado = getUsuario() || { id: null, nome: "Usuário" };
@@ -49,6 +50,11 @@ export default function PedidosPage() {
       filtered = filtered.filter((pedido) => pedido.etapa_pedido === etapaFilter);
     }
 
+    // Filtrar por status (painel de filtro)
+    if (filterConfig.status) {
+      filtered = filtered.filter((pedido) => pedido.status === filterConfig.status);
+    }
+
     // Filtrar por termo de busca
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -66,8 +72,29 @@ export default function PedidosPage() {
       });
     }
 
+    // Ordenação
+    if (filterConfig.ordenarPor) {
+      const dir = filterConfig.direcao === "desc" ? -1 : 1;
+      filtered = [...filtered].sort((a, b) => {
+        let va = a[filterConfig.ordenarPor];
+        let vb = b[filterConfig.ordenarPor];
+
+        // Valores numéricos
+        if (filterConfig.ordenarPor === "valor_total") {
+          va = Number(va) || 0;
+          vb = Number(vb) || 0;
+          return (va - vb) * dir;
+        }
+
+        // Datas e strings
+        va = va || "";
+        vb = vb || "";
+        return va.localeCompare(vb) * dir;
+      });
+    }
+
     return filtered;
-  }, [pedidos, searchTerm, etapaFilter]);
+  }, [pedidos, searchTerm, etapaFilter, filterConfig]);
 
   const stats = useMemo(() => calcularEstatisticas(pedidos), [pedidos]);
 
@@ -75,8 +102,8 @@ export default function PedidosPage() {
     setSearchTerm(value);
   };
 
-  const handleFilter = () => {
-    console.log("Filtro clicado");
+  const handleFilter = (config) => {
+    if (config) setFilterConfig(config);
   };
 
   const handleEtapaFilter = (etapa) => {
@@ -130,6 +157,12 @@ export default function PedidosPage() {
     atualizarPedido(pedidoId, pedidoAtualizado);
   };
 
+  const handleCancelar = (pedidoId) => {
+    // Remove o pedido da lista local (otimista)
+    setPedidos((prev) => prev.filter((p) => p.id_pedido !== pedidoId));
+    // TODO: chamar endpoint DELETE/PATCH no backend quando disponível
+  };
+
   const handleNavClick = (page) => {
     setCurrentPage(page);
     console.log("Navegando para:", page);
@@ -165,6 +198,7 @@ export default function PedidosPage() {
               onAvancar={handleAvancar}
               onRetornar={handleRetornar}
               onStatusChange={handleStatusChange}
+              onCancelar={handleCancelar}
               usuarioLogado={usuarioLogado}
             />
           )}

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { mockHistoricoPedidos } from "@/entities/pedido/api/mockHistoricoPedidos";
+import { useState, useEffect } from "react";
+import { fetchMeusPedidosHistorico } from "@/entities/pedido/api/pedidosApi";
 import DetalhesPedidoModal from "@/features/detalhes-pedido/DetalhesPedidoModal";
 
 
@@ -16,6 +16,29 @@ function StatusBadge({ status }) {
 export default function HistoricoPedidosWidget() {
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pedidos, setPedidos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
+  const [filtro, setFiltro] = useState("Todos");
+
+  const FILTROS = ["Todos", "Finalizados", "Cancelados"];
+
+  useEffect(() => {
+    let ativo = true;
+    setLoading(true);
+    fetchMeusPedidosHistorico()
+      .then((data) => {
+        if (ativo) setPedidos(data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar histórico de pedidos:", err);
+        if (ativo) setErro("Não foi possível carregar o histórico.");
+      })
+      .finally(() => {
+        if (ativo) setLoading(false);
+      });
+    return () => { ativo = false; };
+  }, []);
 
   const handleOpenModal = (pedido) => {
     setSelectedPedido(pedido);
@@ -27,7 +50,11 @@ export default function HistoricoPedidosWidget() {
     setSelectedPedido(null);
   };
 
-  const pedidosFiltrados = mockHistoricoPedidos.filter((pedido) => pedido.status === "Concluído");
+  const pedidosFiltrados = filtro === "Todos"
+    ? pedidos
+    : filtro === "Cancelados"
+      ? pedidos.filter((p) => p.status === "cancelado" || p.etapa_pedido === "Cancelado")
+      : pedidos.filter((p) => p.status !== "cancelado" && p.etapa_pedido !== "Cancelado");
 
   return (
     <div className="w-full">
@@ -41,9 +68,30 @@ export default function HistoricoPedidosWidget() {
         <p className="text-sm text-gray-500">Visualize seus pedidos</p>
       </div>
 
+      {/* Filtros */}
+      <div className="flex gap-3 mb-8 flex-wrap">
+        {FILTROS.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFiltro(f)}
+            className={`px-5 py-2 text-sm font-bold uppercase tracking-wider border transition-colors cursor-pointer ${
+              filtro === f
+                ? "bg-[#F7D708] border-[#F7D708] text-black"
+                : "bg-[#F2F2F2] border-gray-300 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
       {/* Lista de Pedidos */}
       <div className="flex flex-col gap-6">
-        {pedidosFiltrados.length === 0 ? (
+        {loading ? (
+          <p className="text-gray-500 text-sm text-center py-10">Carregando...</p>
+        ) : erro ? (
+          <p className="text-red-500 text-sm text-center py-10">{erro}</p>
+        ) : pedidosFiltrados.length === 0 ? (
           <p className="text-gray-500 text-sm text-center py-10">Nenhum pedido encontrado.</p>
         ) : (
           pedidosFiltrados.map((pedido) => (
@@ -57,8 +105,8 @@ export default function HistoricoPedidosWidget() {
                 onClick={() => handleOpenModal(pedido)}
               >
                 <img
-                  src={pedido.image || "/product/placeholder.png"}
-                  alt={pedido.titulo}
+                  src={pedido.url_foto_arte || "/product/placeholder.png"}
+                  alt={pedido.descricao}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
@@ -69,14 +117,14 @@ export default function HistoricoPedidosWidget() {
                 <div className="flex flex-wrap items-start gap-x-8 gap-y-2">
                   <span className="text-[11px] font-bold text-black uppercase tracking-wider">
                     <span className="text-gray-400 mr-1">Pedido</span>
-                    {pedido.id_pedido_display}
+                    #{pedido.num_pedido}
                   </span>
                   <h3 className="text-[15px] font-bold text-black uppercase flex-1 min-w-[150px]">
-                    {pedido.titulo}
+                    {pedido.descricao}
                   </h3>
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Data</span>
-                    <span className="text-[13px] font-bold text-black">{pedido.data}</span>
+                    <span className="text-[13px] font-bold text-black">{pedido.data_finalizacao || pedido.data_pedido}</span>
                   </div>
                 </div>
 
@@ -84,15 +132,19 @@ export default function HistoricoPedidosWidget() {
                 <div className="flex flex-wrap items-end gap-x-12 gap-y-3">
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Status</span>
-                    <StatusBadge status={pedido.status} />
+                    <StatusBadge status="Concluído" />
                   </div>
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Quantidade</span>
-                    <span className="text-[13px] font-bold text-black">{pedido.quantidade}</span>
+                    <span className="text-[13px] font-bold text-black">
+                      {pedido.itens_pedido?.reduce((acc, item) => acc + (item.quantidade || 0), 0) || "-"} Unid.
+                    </span>
                   </div>
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Total</span>
-                    <span className="text-[15px] font-bold text-black">{pedido.total}</span>
+                    <span className="text-[15px] font-bold text-black">
+                      {pedido.valor_total ? `R$ ${pedido.valor_total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "-"}
+                    </span>
                   </div>
                 </div>
               </div>
