@@ -45,3 +45,13 @@ button.botao-filtro.active {
 .botao-filtro:active {
   transform: scale(0.95); /* Efeito de 'apertar' o botão */
 }
+
+/* Esconder scrollbar horizontal */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
