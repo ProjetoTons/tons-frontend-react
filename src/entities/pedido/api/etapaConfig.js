@@ -6,31 +6,31 @@ export const ETAPA_CONFIG = {
   Design: {
     cor: '#8444F3', // Roxo
     txtColor: '#f6f6f6',
-    icone: '/icons/triangle-icon.png',
+    icone: '/pedidos-icons/triangle-icon.png',
     displayName: 'Design',
   },
   Produção: {
     cor: '#0EA5E9', // Azul
     txtColor: '#f6f6f6',
-    icone: '/icons/square-icon.png',
+    icone: '/pedidos-icons/square-icon.png',
     displayName: 'Produção',
   },
   Embalagem: {
     cor: '#BE41AB', // Rosa
     txtColor: '#f6f6f6',
-    icone: '/icons/shield-icon.png',
+    icone: '/pedidos-icons/shield-icon.png',
     displayName: 'Embalagem',
   },
   Logística: {
     cor: '#E89402', // Laranja
     txtColor: '#f6f6f6',
-    icone: '/icons/circle-icon.png',
+    icone: '/pedidos-icons/circle-icon.png',
     displayName: 'Logística',
   },
   Finalizados: {
     cor: '#0D9B6C', // Verde
     txtColor: '#f6f6f6',
-    icone: '/icons/finished-icon.png',
+    icone: '/pedidos-icons/finished-icon.png',
     displayName: 'Finalizados',
   },
   Tudo: {
