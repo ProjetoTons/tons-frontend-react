@@ -34,8 +34,8 @@ export const ETAPA_CONFIG = {
     displayName: 'Finalizados',
   },
   Tudo: {
-    cor: '#FFE301', // Amarelo
-    txtColor: '#161616',
+    cor: '#161616', // Amarelo
+    txtColor: '#f2f2f2',
   },
 };
 
