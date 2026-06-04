@@ -228,3 +228,14 @@ export async function cancelarPedido(id, motivo) {
   const { data } = await http.put(`/pedidos/${id}/cancelar`, { motivo });
   return data;
 }
+
+/**
+ * Atualiza pedido completo (dados + itens).
+ * PUT /pedidos/{id}
+ * @param {number} id - ID do pedido
+ * @param {Object} payload - PedidoRequestDto
+ */
+export async function editarPedido(id, payload) {
+  const { data } = await http.put(`/pedidos/${id}`, payload);
+  return toFrontend(data);
+}

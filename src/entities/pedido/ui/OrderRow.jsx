@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import StatusBadge from "./StatusBadge";
 import OrderDetailModal from "./OrderDetailModal";
@@ -24,6 +25,7 @@ import { getEtapaConfig } from "@/entities/pedido/api/etapaConfig";
  */
 
 function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado = { id: 1, nome: "Usuário" } }) {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Usa diretamente os dados do prop (estado controlado pelo pai)
   const pedidoLocal = pedido;
@@ -142,8 +144,7 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
   };
 
   const handleEditPedido = (pedido) => {
-    console.log("Editar pedido:", pedido);
-    // TODO: Navegue para página de edição ou abra um modal de edição
+    navigate(`/pedidos/${pedido.id_pedido}/editar`);
   };
 
   // Determina qual responsável mostrar
