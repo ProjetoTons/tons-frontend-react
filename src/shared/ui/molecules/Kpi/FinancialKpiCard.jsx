@@ -1,10 +1,10 @@
 /**
  * FinancialKpiCard - Componente especializado para KPIs financeiros com barra de meta
  */
-function FinancialKpiCard({ title, value, currentValue, goalValue, onEditGoal }) {
+function FinancialKpiCard({ title, value, currentValue, goalValue, goalLabel = "META", onEditGoal }) {
     const safeCurrentValue = Number(currentValue) || 0;
     const safeGoalValue = Number(goalValue) || 0;
-    const hasGoal = safeGoalValue > 0;
+    const hasGoal = safeGoalValue >= 0;
 
     const percentage = hasGoal ? Math.min(Math.round((safeCurrentValue / safeGoalValue) * 100), 100) : 0;
 
@@ -31,8 +31,9 @@ function FinancialKpiCard({ title, value, currentValue, goalValue, onEditGoal })
 
                             {/* Texto e Botão */}
                             <div className="flex items-center gap-1.5">
+                                {/* 👇 AQUI FOI ALTERADO PARA RECEBER O goalLabel 👇 */}
                                 <span className="text-[9px] lg:text-[10px] font-medium text-gray-400 tracking-wide pr-2">
-                                    META: R$ {safeGoalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    {goalLabel}: R$ {safeGoalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
 
                                 {onEditGoal && (
@@ -41,17 +42,7 @@ function FinancialKpiCard({ title, value, currentValue, goalValue, onEditGoal })
                                         className="text-gray-300 hover:text-white transition-colors duration-200 focus:outline-none cursor-pointer"
                                         title="Configurar Metas"
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="14"
-                                            height="14"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
