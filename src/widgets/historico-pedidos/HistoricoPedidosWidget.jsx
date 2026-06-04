@@ -41,7 +41,16 @@ export default function HistoricoPedidosWidget() {
   }, []);
 
   const handleOpenModal = (pedido) => {
-    setSelectedPedido(pedido);
+    setSelectedPedido({
+      id_pedido_display: `#${pedido.num_pedido}`,
+      titulo: pedido.descricao,
+      image: pedido.url_foto_arte,
+      descricao: pedido.descricao,
+      status: pedido.etapa_pedido === "Cancelado" ? "Cancelado" : "Concluído",
+      data: pedido.data_finalizacao || pedido.data_pedido || "-",
+      quantidade: pedido.itens_pedido?.reduce((acc, item) => acc + (item.quantidade || 0), 0) || "-",
+      total: pedido.valor_total ? `R$ ${pedido.valor_total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "-",
+    });
     setIsModalOpen(true);
   };
 

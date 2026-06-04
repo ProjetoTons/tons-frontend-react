@@ -142,7 +142,7 @@ export const useRegisterEnterprise = () => {
         // Sem chamada à API neste step. CNPJ + dados da empresa são apenas validados
         // e propagados via router state. O cadastro real (POST /usuarios com cnpj)
         // acontece no último step (RegistrationSuccessFeature).
-        navigate("/cadastro/sucesso", {
+        navigate("/cadastro/endereco", {
             state: {
                 dadosPessoais: location.state?.dadosPessoais,
                 cpfSalvo: location.state?.cpfSalvo,

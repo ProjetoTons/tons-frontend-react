@@ -218,7 +218,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                 Descrição do Pedido
               </h3>
               <div className="bg-yellow-50 border-l-4 border-[#fdf210] p-4 rounded">
-                <p className="text-[14px] text-[#323233] leading-relaxed">
+                <p className="text-[14px] text-[#323233] leading-relaxed whitespace-pre-line">
                   {dadosPedido.descricao}
                 </p>
               </div>

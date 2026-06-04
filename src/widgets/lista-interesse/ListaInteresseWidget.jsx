@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductModal from "@/features/modal-produto/modal-produto.jsx";
 import WhatsAppConfirmModal from "@/features/whatsapp-confirm/WhatsAppConfirmModal.jsx";
+import EnderecoValidacaoModal from "@/features/endereco-validacao/EnderecoValidacaoModal.jsx";
+import EnderecoAvisoModal from "@/features/endereco-validacao/EnderecoAvisoModal.jsx";
 import { enviarListaWhatsApp } from "@/shared/lib/whatsapp";
-import { getToken } from "@/shared/api/authToken";
+import { getToken, getUsuario } from "@/shared/api/authToken";
+import { buscarEnderecoUsuario } from "@/entities/usuario/api/usuarioApi";
 import {
   listarProdutosInteresse,
   removerProdutoInteresse,
@@ -18,6 +21,9 @@ export default function ListaInteresseWidget() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [removingId, setRemovingId] = useState(null);
+  const [isEnderecoModalOpen, setIsEnderecoModalOpen] = useState(false);
+  const [isAvisoModalOpen, setIsAvisoModalOpen] = useState(false);
+  const [enderecoUsuario, setEnderecoUsuario] = useState(null);
   const isLogado = Boolean(getToken());
 
   useEffect(() => {
@@ -73,13 +79,47 @@ export default function ListaInteresseWidget() {
     }
   };
 
-  const handleEnviarWhatsApp = () => {
+  const handleEnviarWhatsApp = async () => {
     if (itemsSalvos.length === 0) return;
+
+    // Buscar endereço do usuário antes de prosseguir
+    const usuario = getUsuario();
+    if (usuario?.id) {
+      try {
+        const endereco = await buscarEnderecoUsuario(usuario.id);
+        setEnderecoUsuario(endereco);
+      } catch {
+        setEnderecoUsuario(null);
+      }
+    } else {
+      setEnderecoUsuario(null);
+    }
+    setIsEnderecoModalOpen(true);
+  };
+
+  const handleEnderecoConfirmado = () => {
+    setIsEnderecoModalOpen(false);
     setIsConfirmOpen(true);
   };
 
+  const handleEnviarSemEndereco = () => {
+    setIsEnderecoModalOpen(false);
+    setIsAvisoModalOpen(true);
+  };
+
+  const handleAvisoEnviarMesmoAssim = () => {
+    setIsAvisoModalOpen(false);
+    setIsConfirmOpen(true);
+  };
+
+  const handleIrConfiguracoes = () => {
+    setIsEnderecoModalOpen(false);
+    setIsAvisoModalOpen(false);
+    navigate("/configuracoes");
+  };
+
   const handleConfirmEnvio = () => {
-    enviarListaWhatsApp(itemsSalvos);
+    enviarListaWhatsApp(itemsSalvos, enderecoUsuario);
     setIsConfirmOpen(false);
   };
 
@@ -221,6 +261,22 @@ export default function ListaInteresseWidget() {
         onConfirm={handleConfirmEnvio}
         contexto="LISTA DE INTERESSE"
         totalItens={itemsSalvos.length}
+      />
+
+      <EnderecoValidacaoModal
+        isOpen={isEnderecoModalOpen}
+        onClose={() => setIsEnderecoModalOpen(false)}
+        onConfirm={handleEnderecoConfirmado}
+        onIrConfiguracoes={handleIrConfiguracoes}
+        onEnviarSemEndereco={handleEnviarSemEndereco}
+        endereco={enderecoUsuario}
+      />
+
+      <EnderecoAvisoModal
+        isOpen={isAvisoModalOpen}
+        onClose={() => setIsAvisoModalOpen(false)}
+        onEnviarMesmoAssim={handleAvisoEnviarMesmoAssim}
+        onIrConfiguracoes={handleIrConfiguracoes}
       />
     </div>
   );

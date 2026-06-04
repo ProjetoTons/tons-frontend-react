@@ -76,3 +76,8 @@ export const aplicarMascaraData = (dataIso) => {
  * apenasDigitos(null)                // ""
  */
 export const apenasDigitos = (valor) => (valor ?? "").replace(/\D/g, "");
+
+export const aplicarMascaraCep = (cleanCep) => {
+  if (cleanCep.length <= 5) return cleanCep;
+  return cleanCep.slice(0, 5) + "-" + cleanCep.slice(5);
+};

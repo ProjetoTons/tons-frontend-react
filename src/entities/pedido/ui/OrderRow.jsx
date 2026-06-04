@@ -283,20 +283,7 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              Swal.fire({
-                title: "Cancelar pedido",
-                text: `Deseja realmente cancelar o pedido ${pedidoLocal.num_pedido}?`,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#6b7280",
-                confirmButtonText: "Sim, cancelar!",
-                cancelButtonText: "Voltar",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  onCancelar && onCancelar(pedidoLocal.id_pedido);
-                }
-              });
+              onCancelar && onCancelar(pedidoLocal.id_pedido);
             }}
             className="flex items-center justify-center px-2 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
             title="Cancelar pedido"

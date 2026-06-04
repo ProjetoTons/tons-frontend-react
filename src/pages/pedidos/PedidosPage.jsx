@@ -4,8 +4,9 @@ import TopNavBar from "@/widgets/topnav-grafica/TopNavBar";
 import PageHeader from "@/widgets/page-header/PageHeader";
 import StatsGrid from "@/widgets/kpi-grid/StatsGrid";
 import OrderTable from "@/widgets/order-table/OrderTable";
+import CancelarPedidoModal from "@/features/cancelar-pedido/CancelarPedidoModal";
 import { calcularEstatisticas } from "@/entities/pedido/api/mockPedidos";
-import { fetchPedidos, updatePedido } from "@/entities/pedido/api/pedidosApi";
+import { fetchPedidos, updatePedido, cancelarPedido } from "@/entities/pedido/api/pedidosApi";
 import { getUsuario } from "@/shared/api/authToken";
 
 export default function PedidosPage() {
@@ -18,6 +19,7 @@ export default function PedidosPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const etapaFilter = searchParams.get("etapa");
   const [filterConfig, setFilterConfig] = useState({ status: "", ordenarPor: "", direcao: "asc" });
+  const [responsavelFilter, setResponsavelFilter] = useState("todos");
 
   // Usuário logado vindo da sessão (fallback para evitar crash em dev sem login)
   const usuarioLogado = getUsuario() || { id: null, nome: "Usuário" };
@@ -45,6 +47,13 @@ export default function PedidosPage() {
 
   const pedidosFiltrados = useMemo(() => {
     let filtered = pedidos;
+
+    // Filtrar por responsável ("meus" mostra apenas pedidos onde o usuário é responsável)
+    if (responsavelFilter === "meus" && usuarioLogado.id) {
+      filtered = filtered.filter(
+        (pedido) => pedido.responsavel?.id === usuarioLogado.id
+      );
+    }
 
     // Filtrar por etapa
     if (etapaFilter) {
@@ -95,7 +104,7 @@ export default function PedidosPage() {
     }
 
     return filtered;
-  }, [pedidos, searchTerm, etapaFilter, filterConfig]);
+  }, [pedidos, searchTerm, etapaFilter, filterConfig, responsavelFilter, usuarioLogado.id]);
 
   const stats = useMemo(() => calcularEstatisticas(pedidos), [pedidos]);
 
@@ -159,10 +168,24 @@ export default function PedidosPage() {
   };
 
   const handleCancelar = (pedidoId) => {
-    // Remove o pedido da lista local (otimista)
-    setPedidos((prev) => prev.filter((p) => p.id_pedido !== pedidoId));
-    // TODO: chamar endpoint DELETE/PATCH no backend quando disponível
+    const pedido = pedidos.find((p) => p.id_pedido === pedidoId);
+    setCancelTarget({ id: pedidoId, numPedido: pedido?.num_pedido || "" });
   };
+
+  const handleConfirmCancelar = async (motivo) => {
+    if (!cancelTarget) return;
+    try {
+      await cancelarPedido(cancelTarget.id, motivo);
+      // Remove da lista local após sucesso
+      setPedidos((prev) => prev.filter((p) => p.id_pedido !== cancelTarget.id));
+    } catch (err) {
+      console.error("Erro ao cancelar pedido:", err);
+    } finally {
+      setCancelTarget(null);
+    }
+  };
+
+  const [cancelTarget, setCancelTarget] = useState(null);
 
   const handleNavClick = (page) => {
     setCurrentPage(page);
@@ -180,6 +203,8 @@ export default function PedidosPage() {
           onNovoPedido={handleNovoPedido}
           onEtapaFilter={handleEtapaFilter}
           etapaAtiva={etapaFilter}
+          responsavelFilter={responsavelFilter}
+          onResponsavelFilter={setResponsavelFilter}
         />
 
 
@@ -205,6 +230,13 @@ export default function PedidosPage() {
           )}
         </div>
       </main>
+
+      <CancelarPedidoModal
+        isOpen={!!cancelTarget}
+        onClose={() => setCancelTarget(null)}
+        onConfirm={handleConfirmCancelar}
+        numPedido={cancelTarget?.numPedido}
+      />
     </div>
   );
 }
