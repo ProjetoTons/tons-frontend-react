@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
 import { obterDatasDoFiltro } from '@/shared/lib/utils/dateFiltered';
-import { fetchPedidosLista } from '@/entities/pedido/api/mockPedidosEstatisticas';
+import { fetchPedidosLista } from '@/entities/pedido/api/dashboardApi';
 import { InfoTooltip } from '@/shared/ui/atoms/InfoTooltip';
 
 /**

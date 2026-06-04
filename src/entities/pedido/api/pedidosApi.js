@@ -34,6 +34,7 @@ const STATUS_FRONT_TO_BACK = {
   "emitir-etiqueta": "Emitir etiqueta",
   "enviado": "Enviado",
   "aguardando-retirada": "Aguardando retirada",
+  "finalizado": "Concluído",
 };
 
 // Backend label -> Frontend slug (gerado invertendo o mapa acima)
@@ -54,6 +55,21 @@ function statusToFrontend(label) {
 }
 
 // ---------------------------------------------------------------------------
+// Mapeamento de etapa: backend usa "Finalizado" (singular), frontend usa "Finalizados" (plural)
+// ---------------------------------------------------------------------------
+
+const ETAPA_BACK_TO_FRONT = { "Finalizado": "Finalizados" };
+const ETAPA_FRONT_TO_BACK = { "Finalizados": "Finalizado" };
+
+function etapaToFrontend(etapa) {
+  return ETAPA_BACK_TO_FRONT[etapa] ?? etapa;
+}
+
+function etapaToBackend(etapa) {
+  return ETAPA_FRONT_TO_BACK[etapa] ?? etapa;
+}
+
+// ---------------------------------------------------------------------------
 // Adapters
 // ---------------------------------------------------------------------------
 
@@ -70,7 +86,7 @@ function toFrontend(dto) {
     id_pedido: dto.idPedido,
     num_pedido: dto.numPedido,
     url_foto_arte: dto.urlFotoArte,
-    etapa_pedido: dto.etapaPedido,
+    etapa_pedido: etapaToFrontend(dto.etapaPedido),
     status: statusToFrontend(dto.status),
     valor_total: dto.valorTotal != null ? Number(dto.valorTotal) : 0,
     descricao: dto.descricao,
@@ -138,7 +154,7 @@ function buildEtapaRequest(pedidoAtualizado, usuarioLogado) {
       usuarioLogado?.id ??
       pedidoAtualizado.responsavel_fase_atual?.id ??
       null,
-    etapa: pedidoAtualizado.etapa_pedido,
+    etapa: etapaToBackend(pedidoAtualizado.etapa_pedido),
     status: statusToBackend(pedidoAtualizado.status),
     dataEntrada: new Date().toISOString(),
     dataSaida: null,

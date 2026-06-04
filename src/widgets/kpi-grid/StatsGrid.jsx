@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import KpiCard from "@/shared/ui/molecules/Kpi/KpiCard";
 import FinancialKpiCard from "@/shared/ui/molecules/Kpi/FinancialKpiCard";
 import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
-import { fetchKpisDashboard } from "@/entities/pedido/api/mockPedidosEstatisticas";
+import { fetchKpisDashboard } from "@/entities/pedido/api/dashboardApi";
 import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
 
 export default function StatsGrid({ onEditGoal }) {
@@ -53,7 +53,7 @@ export default function StatsGrid({ onEditGoal }) {
       />
 
       <KpiCard
-        title="Aguardando Retirada"
+        title="Enviada"
         value={stats.aguardandoRetirada || 0}
         subtitle={`de ${total} pedidos`}
       />

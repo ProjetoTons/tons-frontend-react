@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import TopNavBar from "@/widgets/topnav-grafica/TopNavBar";
 import PageHeader from "@/widgets/page-header/PageHeader";
 import StatsGrid from "@/widgets/kpi-grid/StatsGrid";
@@ -9,6 +9,7 @@ import { fetchPedidos, updatePedido } from "@/entities/pedido/api/pedidosApi";
 import { getUsuario } from "@/shared/api/authToken";
 
 export default function PedidosPage() {
+  const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
@@ -117,7 +118,7 @@ export default function PedidosPage() {
   };
 
   const handleNovoPedido = () => {
-    console.log("Novo pedido clicado");
+    navigate("/pedidos/novo");
   };
 
   const atualizarPedido = async (pedidoId, pedidoAtualizado) => {

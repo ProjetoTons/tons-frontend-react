@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
-import { fetchPerformanceFuncionarios } from "@/entities/pedido/api/mockPedidosEstatisticas";
+import { fetchPerformanceFuncionarios } from "@/entities/pedido/api/dashboardApi";
 import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
 
 import {
