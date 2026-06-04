@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDashboardFilters } from '@/shared/lib/hooks/useDashboardFilters';
-import { fetchGraficoEtapas, fetchSubEtapasPorEtapa } from "@/entities/pedido/api/mockPedidosEstatisticas";
+import { fetchGraficoEtapas, fetchSubEtapasPorEtapa } from "@/entities/pedido/api/dashboardApi";
 import { obterDatasDoFiltro } from "@/shared/lib/utils/dateFiltered";
 
 import {

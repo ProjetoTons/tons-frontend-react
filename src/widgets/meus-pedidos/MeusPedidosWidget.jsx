@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { mockPedidosCliente } from "@/entities/pedido/api/mockPedidosCliente";
+import React, { useState, useEffect } from "react";
+import { fetchMeusPedidos } from "@/entities/pedido/api/pedidosApi";
 import ProductModal from "@/features/modal-produto/modal-produto.jsx";
 
 const ETAPAS = ["Arte", "Produção", "Embalagem", "Logística", "Entrega", "Concluído"];
@@ -64,12 +64,31 @@ export default function MeusPedidosWidget() {
   const [busca, setBusca] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const pedidos = mockPedidosCliente;
+  const [pedidos, setPedidos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
+
+  useEffect(() => {
+    let ativo = true;
+    setLoading(true);
+    fetchMeusPedidos()
+      .then((data) => {
+        if (ativo) setPedidos(data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar meus pedidos:", err);
+        if (ativo) setErro("Não foi possível carregar os pedidos.");
+      })
+      .finally(() => {
+        if (ativo) setLoading(false);
+      });
+    return () => { ativo = false; };
+  }, []);
 
   const handleOpenModal = (pedido) => {
     setSelectedProduct({
-      title: pedido.titulo,
-      image: pedido.image,
+      title: pedido.descricao,
+      image: pedido.url_foto_arte,
       description: pedido.descricao,
     });
     setIsModalOpen(true);
@@ -82,8 +101,8 @@ export default function MeusPedidosWidget() {
 
   const pedidosFiltrados = busca.trim()
     ? pedidos.filter(p =>
-        p.id_pedido_display.toLowerCase().includes(busca.toLowerCase()) ||
-        p.titulo.toLowerCase().includes(busca.toLowerCase())
+        (p.num_pedido || "").toLowerCase().includes(busca.toLowerCase()) ||
+        (p.descricao || "").toLowerCase().includes(busca.toLowerCase())
       )
     : pedidos;
 
@@ -98,7 +117,15 @@ export default function MeusPedidosWidget() {
           Gestão centralizada de solicitações e logística industrial.
         </p>
 
-        {pedidosFiltrados.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-sm">Carregando pedidos...</p>
+          </div>
+        ) : erro ? (
+          <div className="text-center py-16">
+            <p className="text-red-500 text-sm">{erro}</p>
+          </div>
+        ) : pedidosFiltrados.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-500 text-sm">Nenhum pedido encontrado.</p>
           </div>
@@ -117,8 +144,8 @@ export default function MeusPedidosWidget() {
                     onClick={() => handleOpenModal(pedido)}
                   >
                     <img
-                      src={pedido.image || "/product/placeholder.png"}
-                      alt={pedido.titulo}
+                      src={pedido.url_foto_arte || "/product/placeholder.png"}
+                      alt={pedido.descricao}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
@@ -127,19 +154,16 @@ export default function MeusPedidosWidget() {
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex justify-between">
                       <div>
-                        <EtapaBadge etapa={pedido.etapa_label} />
+                        <EtapaBadge etapa={pedido.status ? `Em ${pedido.etapa_pedido}` : pedido.etapa_pedido} />
                         <h3 className="text-[18px] font-bold text-black uppercase mt-3 mb-1">
-                          {pedido.titulo}
-                        </h3>
-                        <p className="text-[13px] text-gray-500">
                           {pedido.descricao}
-                        </p>
+                        </h3>
                       </div>
 
                       {/* ID do Pedido */}
                       <div className="flex flex-col items-end flex-shrink-0">
                         <span className="text-[10px] text-gray-400 uppercase tracking-wider">ID do Pedido</span>
-                        <span className="text-[18px] font-bold text-black">{pedido.id_pedido_display}</span>
+                        <span className="text-[18px] font-bold text-black">#{pedido.num_pedido}</span>
                       </div>
                     </div>
 
@@ -152,17 +176,15 @@ export default function MeusPedidosWidget() {
                 <div className="bg-[#F2F2F2] p-5 flex flex-col gap-4 min-w-[200px]">
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Responsável</span>
-                    <span className="text-[14px] font-bold text-black uppercase">{pedido.responsavel}</span>
+                    <span className="text-[14px] font-bold text-black uppercase">{pedido.responsavel?.nome || "-"}</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Data de Início</span>
-                    <span className="text-[14px] font-bold text-black">{pedido.data_inicio}</span>
+                    <span className="text-[14px] font-bold text-black">{pedido.data_pedido || "-"}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 uppercase tracking-wider block">
-                      {pedido.concluido ? "Entregue em" : "Data Fim"}
-                    </span>
-                    <span className="text-[14px] font-bold text-black">{pedido.data_fim}</span>
+                    <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Previsão</span>
+                    <span className="text-[14px] font-bold text-black">{pedido.data_finalizacao || "-"}</span>
                   </div>
                 </div>
               </div>

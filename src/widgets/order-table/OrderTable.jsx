@@ -11,7 +11,7 @@ import OrderRow from "@/entities/pedido/ui/OrderRow";
  * - usuarioLogado: object - Dados do usuário logado
  */
 
-function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLogado }) {
+function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado }) {
   return (
     <div className="bg-white w-full overflow-x-auto rounded">
       <table className="w-full table-fixed border-collapse">
@@ -27,6 +27,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
           <col className="w-[100px]" />
           <col className="w-[90px]" />
           <col className="w-[110px]" />
+          <col className="w-[80px]" />
         </colgroup>
         {/* Table Header */}
         <thead>
@@ -78,6 +79,11 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
                 Ações
               </span>
             </th>
+            <th className="py-3 px-2 text-center">
+              <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
+                Cancelar
+              </span>
+            </th>
           </tr>
         </thead>
 
@@ -91,6 +97,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, usuarioLog
                 onAvancar={onAvancar}
                 onRetornar={onRetornar}
                 onStatusChange={onStatusChange}
+                onCancelar={onCancelar}
                 usuarioLogado={usuarioLogado}
               />
             ))
