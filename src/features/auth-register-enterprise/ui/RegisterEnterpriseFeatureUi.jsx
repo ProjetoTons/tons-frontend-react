@@ -46,7 +46,7 @@ export default function RegisterEnterpriseFeature() {
         <EtapaVisual
           NomeEstapa={"VÍNCULO CORPORATIVO"}
           faseInicial={2}
-          faseFinal={2}
+          faseFinal={4}
         />
 
         {/* CARTÃO PRINCIPAL BRANCO */}
@@ -125,26 +125,31 @@ export default function RegisterEnterpriseFeature() {
             </div>
 
             {/* Ações do Formulário (Rodapé do Cartão) */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-between pt-6 mt-2 gap-4">
-
-              <button
-                type="button"
-                onClick={handleVoltar}
-                className="text-[11px] font-bold text-gray-400 uppercase tracking-wider hover:text-black transition-colors"
-              >
-                Voltar para o passo 1
-              </button>
+            <div className="flex flex-col gap-3 pt-4 mt-2">
 
               <button
                 type="submit"
                 disabled={!cnpjValido || isLoading}
-                className="w-full sm:w-auto bg-[#FFE300] text-black font-bold py-2.5 px-8 text-[11px] uppercase tracking-wider hover:bg-[#EED100] disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+                className="w-full bg-[#FFE300] text-black font-bold py-3 px-6 text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#EED100] disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
               >
                 {isLoading ? (
                   "Processando..."
                 ) : (
-                  <>Cadastrar Empresa</>
+                  <>
+                    Próximo Passo
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </>
                 )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleVoltar}
+                className="w-full text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider hover:text-black transition-colors cursor-pointer"
+              >
+                Voltar para o passo 1
               </button>
             </div>
           </form>
@@ -159,7 +164,7 @@ export default function RegisterEnterpriseFeature() {
               dadosPessoais: location.state?.dadosPessoais,
               cpfSalvo: location.state?.cpfSalvo
             }}
-            to="/cadastro/sucesso"
+            to="/cadastro/endereco"
             className="text-[12px] font-bold text-gray-700 uppercase tracking-widest underline decoration-gray-300 underline-offset-[8px] hover:text-black hover:decoration-black transition-all"
           >
             Não represento uma empresa. Continuar.

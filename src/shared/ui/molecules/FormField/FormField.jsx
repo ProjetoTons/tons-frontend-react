@@ -1,7 +1,7 @@
 // src/shared/ui/molecules/FormField/FormField.jsx
 import React, { useState } from "react";
 
-export default function InputForm({ label, type = "text", placeholder, name, disabled, value, onChange }) {
+export default function InputForm({ label, type = "text", placeholder, name, disabled, readOnly, value, onChange }) {
   const inputId = `input-${name}`;
 
   const [showPassword, setShowPassword] = useState(false);
@@ -27,9 +27,10 @@ export default function InputForm({ label, type = "text", placeholder, name, dis
           type={currentType}
           placeholder={placeholder}
           disabled={disabled}
-          onChange={onChange}
+          readOnly={readOnly}
+          onChange={readOnly ? undefined : onChange}
           value={value}
-          className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2 px-4 pr-10 focus:outline-none focus:ring-1 focus:ring-[#FFE300] disabled:cursor-not-allowed"
+          className={`w-full text-sm py-2 px-4 pr-10 focus:outline-none ${readOnly ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-[#EFEFEF] text-gray-800 focus:ring-1 focus:ring-[#FFE300]'} disabled:cursor-not-allowed`}
         />
 
         {/* Renderiza o botão do olhinho APENAS se o type original for 'password' */}

@@ -37,7 +37,7 @@ const ORDENAR_OPTIONS = [
   { value: "status", label: "Status" },
 ];
 
-function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiva = null }) {
+function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiva = null, responsavelFilter = "todos", onResponsavelFilter }) {
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [ordenarPor, setOrdenarPor] = useState("");
@@ -80,6 +80,7 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
     { value: "Embalagem", label: "Embalagem" },
     { value: "Logística", label: "Logística" },
     { value: "Finalizados", label: "Finalizados" },
+    { value: "Cancelado", label: "Cancelados" },
   ];
 
   return (
@@ -96,6 +97,30 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
 
       {/* Controls Row - Busca, Filtro e Novo Pedido */}
       <div className="flex items-center gap-[12px] mt-10">
+
+        {/* Toggle Todos / Meus Pedidos */}
+        <div className="flex items-stretch gap-[6px] border-r-2 border-[#e4e2e2] pr-[16px] mr-[4px]">
+          <button
+            onClick={() => onResponsavelFilter && onResponsavelFilter("todos")}
+            className={`whitespace-nowrap min-w-[130px] px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all cursor-pointer text-center ${
+              responsavelFilter === "todos"
+                ? "bg-[#161616] text-white shadow-md"
+                : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] shadow-md"
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => onResponsavelFilter && onResponsavelFilter("meus")}
+            className={`whitespace-nowrap min-w-[130px] px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all cursor-pointer text-center ${
+              responsavelFilter === "meus"
+                ? "bg-[#fdf210] text-black shadow-md font-bold"
+                : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] shadow-md"
+            }`}
+          >
+            Meus Pedidos
+          </button>
+        </div>
 
         {/* Filtros por etapa */}
 

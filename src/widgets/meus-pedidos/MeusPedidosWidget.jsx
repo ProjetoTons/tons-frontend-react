@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchMeusPedidos } from "@/entities/pedido/api/pedidosApi";
-import ProductModal from "@/features/modal-produto/modal-produto.jsx";
+import DetalhesPedidoModal from "@/features/detalhes-pedido/DetalhesPedidoModal.jsx";
 
 const ETAPAS = ["Arte", "Produção", "Embalagem", "Logística", "Entrega", "Concluído"];
 
@@ -62,7 +62,7 @@ function TimelineEtapas({ etapaAtual }) {
 
 export default function MeusPedidosWidget() {
   const [busca, setBusca] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedPedido, setSelectedPedido] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,17 +86,22 @@ export default function MeusPedidosWidget() {
   }, []);
 
   const handleOpenModal = (pedido) => {
-    setSelectedProduct({
-      title: pedido.descricao,
+    setSelectedPedido({
+      id_pedido_display: `#${pedido.num_pedido}`,
+      titulo: pedido.descricao,
       image: pedido.url_foto_arte,
-      description: pedido.descricao,
+      descricao: pedido.descricao,
+      status: pedido.etapa_pedido === "Concluído" ? "Concluído" : `Em ${pedido.etapa_pedido}`,
+      data: pedido.data_pedido || "-",
+      quantidade: pedido.quantidade || "-",
+      total: pedido.total || "-",
     });
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedProduct(null);
+    setSelectedPedido(null);
   };
 
   const pedidosFiltrados = busca.trim()
@@ -222,10 +227,10 @@ export default function MeusPedidosWidget() {
         </div>
       </aside>
 
-      <ProductModal
+      <DetalhesPedidoModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        produto={selectedProduct}
+        pedido={selectedPedido}
       />
     </div>
   );

@@ -24,6 +24,7 @@ import {
   buscarUsuarioPorId,
   atualizarUsuario,
   alterarSenhaUsuario,
+  salvarEnderecoUsuario,
 } from "@/entities/usuario/api/usuarioApi";
 
 export default function ConfiguracoesWidget() {
@@ -317,20 +318,23 @@ export default function ConfiguracoesWidget() {
         idEmpresa: empresaId || null,
       };
 
-      // Incluir endereço se CEP preenchido
-      if (cepLimpo) {
-        payload.endereco = {
+      await atualizarUsuario(userId, payload);
+
+      // Endereço: usar endpoint dedicado (POST cria, PUT atualiza)
+      if (cepLimpo && form.logradouro.trim()) {
+        const enderecoDto = {
           logradouro: form.logradouro.trim(),
-          numero: form.numero.trim(),
+          numero: form.numero.trim() || "",
           cep: cepLimpo,
           complemento: form.complemento.trim() || null,
           bairro: form.bairro.trim() || null,
           cidade: form.cidade.trim() || null,
           estado: form.estado.trim() || null,
         };
+        await salvarEnderecoUsuario(userId, enderecoDto, enderecoExiste);
+        setEnderecoExiste(true);
       }
 
-      await atualizarUsuario(userId, payload);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 4000);
     } catch (err) {
@@ -345,6 +349,9 @@ export default function ConfiguracoesWidget() {
 
   const inputClass =
     "w-full bg-white border border-gray-300 px-4 py-3 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[var(--amarelo-base)]";
+
+  const inputReadOnlyClass =
+    "w-full bg-gray-100 border border-gray-300 px-4 py-3 text-sm text-gray-600 cursor-not-allowed focus:outline-none";
 
   const inputErrorClass =
     "w-full bg-white border border-red-400 px-4 py-3 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-red-400";
@@ -541,9 +548,9 @@ export default function ConfiguracoesWidget() {
               <input
                 type="text"
                 value={form.logradouro}
-                onChange={handleChange("logradouro")}
+                readOnly
                 placeholder="Avenida Paulista"
-                className={inputClass}
+                className={inputReadOnlyClass}
               />
             </div>
           </div>
@@ -579,9 +586,9 @@ export default function ConfiguracoesWidget() {
               <input
                 type="text"
                 value={form.bairro}
-                onChange={handleChange("bairro")}
+                readOnly
                 placeholder="Bela Vista"
-                className={inputClass}
+                className={inputReadOnlyClass}
               />
             </div>
             <div>
@@ -589,9 +596,9 @@ export default function ConfiguracoesWidget() {
               <input
                 type="text"
                 value={form.cidade}
-                onChange={handleChange("cidade")}
+                readOnly
                 placeholder="São Paulo"
-                className={inputClass}
+                className={inputReadOnlyClass}
               />
             </div>
             <div>
@@ -599,9 +606,9 @@ export default function ConfiguracoesWidget() {
               <input
                 type="text"
                 value={form.estado}
-                onChange={handleChange("estado")}
+                readOnly
                 placeholder="SP"
-                className={inputClass}
+                className={inputReadOnlyClass}
               />
             </div>
           </div>

@@ -127,6 +127,7 @@ export default function useRegisterEmployeFeature() {
 
         if (!formData.dataNascimento) return setErrorMessage("Por favor, informe a data de nascimento.");
         if (!formData.cargo || formData.cargo.length === 0) return setErrorMessage("Por favor, selecione ao menos um cargo para o funcionário.");
+        if (!formData.foto) return setErrorMessage("Por favor, adicione uma foto do funcionário.");
 
         // Ativa o estado de carregamento (mostra o spinner no botão, por exemplo)
         setIsLoading(true);

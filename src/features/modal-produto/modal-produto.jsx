@@ -1,7 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { adicionarProdutoInteresse } from "@/entities/produto/api/produtoInteresseApi";
+import { getToken } from "@/shared/api/authToken";
 
 export default function ProductModal({ isOpen, onClose, produto, onInteresse }) {
+  const navigate = useNavigate();
+
   if (!isOpen || !produto) return null;
 
   return (
@@ -62,6 +66,11 @@ export default function ProductModal({ isOpen, onClose, produto, onInteresse }) 
             {/* Botão de Ação */}
             <button
               onClick={async () => {
+                if (!getToken()) {
+                  onClose();
+                  navigate("/login");
+                  return;
+                }
                 try {
                   await adicionarProdutoInteresse(produto.id);
                   onInteresse && onInteresse(produto);

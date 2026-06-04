@@ -50,9 +50,10 @@ export function redirecionarWhatsApp(mensagem = "") {
 /**
  * Formata uma lista de produtos em uma mensagem padrão para o atendente.
  * @param {Array<{title: string, category?: string, type?: string}>} itens
+ * @param {Object|null} endereco - Endereço do usuário (opcional)
  * @returns {string}
  */
-export function formatarListaWhatsApp(itens) {
+export function formatarListaWhatsApp(itens, endereco = null) {
   if (!itens || itens.length === 0) return "";
 
   const cabecalho =
@@ -66,16 +67,32 @@ export function formatarListaWhatsApp(itens) {
     })
     .join("\n");
 
+  let enderecoTexto = "";
+  if (endereco && endereco.logradouro) {
+    enderecoTexto = "\n\n*Endereço para entrega:*\n";
+    enderecoTexto += `${endereco.logradouro}`;
+    if (endereco.numero) enderecoTexto += `, ${endereco.numero}`;
+    if (endereco.complemento) enderecoTexto += ` — ${endereco.complemento}`;
+    enderecoTexto += "\n";
+    if (endereco.bairro) enderecoTexto += `${endereco.bairro}`;
+    if (endereco.cidade) enderecoTexto += ` — ${endereco.cidade}`;
+    if (endereco.estado) enderecoTexto += `/${endereco.estado}`;
+    if (endereco.cep) enderecoTexto += `\nCEP: ${endereco.cep}`;
+  } else {
+    enderecoTexto = "\n\n_Endereço não informado — combinar entrega/retirada._";
+  }
+
   const rodape = `\n\nTotal de itens: ${itens.length}\n\nAguardo retorno!`;
 
-  return `${cabecalho}\n\n${lista}${rodape}`;
+  return `${cabecalho}\n\n${lista}${enderecoTexto}${rodape}`;
 }
 
 /**
  * Atalho: monta a mensagem com a lista e redireciona.
  * @param {Array} itens
+ * @param {Object|null} endereco - Endereço do usuário (opcional)
  */
-export function enviarListaWhatsApp(itens) {
+export function enviarListaWhatsApp(itens, endereco = null) {
   if (!itens || itens.length === 0) return;
-  redirecionarWhatsApp(formatarListaWhatsApp(itens));
+  redirecionarWhatsApp(formatarListaWhatsApp(itens, endereco));
 }

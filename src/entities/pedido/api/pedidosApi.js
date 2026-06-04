@@ -217,3 +217,14 @@ export async function fetchMeusPedidosHistorico() {
   const { data } = await http.get("/pedidos/meus/historico");
   return Array.isArray(data) ? data.map(toFrontend) : [];
 }
+
+/**
+ * Cancela um pedido (soft delete).
+ * PUT /pedidos/{id}/cancelar
+ * @param {number} id - ID do pedido
+ * @param {string} motivo - Motivo obrigatório do cancelamento
+ */
+export async function cancelarPedido(id, motivo) {
+  const { data } = await http.put(`/pedidos/${id}/cancelar`, { motivo });
+  return data;
+}

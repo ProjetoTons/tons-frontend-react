@@ -7,6 +7,7 @@ import ResetPasswordPage from '@/pages/login/ResetPasswordPage'
 import RegisterClientPage from '@/pages/register/RegisterClientPage'
 import RegisterEmployeePage from '@/pages/register/RegisterEmployeePage'
 import RegisterEnterprisePage from '@/pages/register/RegisterEnterprisePage'
+import RegisterAddressPage from '@/pages/register/RegisterAddressPage'
 import PageNotFind from '@/pages/Page-Not-Find/PageNotFind'
 import RegistrationSuccessPage from '@/pages/register/RegisterSuccessPage'
 import EmployeePage from '@/pages/employee/EmployeePage'
@@ -35,6 +36,7 @@ export function AppRouter() {
         <Route path="/login/reset-senha" element={<ResetPasswordPage />} />
         <Route path="/cadastro/cliente" element={<RegisterClientPage />} />
         <Route path="/cadastro/empresa" element={<RegisterEnterprisePage />} />
+        <Route path="/cadastro/endereco" element={<RegisterAddressPage />} />
         <Route path="/cadastro/sucesso" element={<RegistrationSuccessPage/>}/>
         <Route path="/funcionario/cadastro" element={<RegisterEmployeePage />} />
         {/* Páginas do cliente */}
