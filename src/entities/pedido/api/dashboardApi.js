@@ -23,6 +23,14 @@ function formatDate(date) {
   return date.toISOString().substring(0, 10);
 }
 
+/**
+ * Formatar para Number (formato seguro para falhas de null/undefined)
+ */
+function formatNumber(number) {
+  if (number == null || isNaN(number)) return undefined;
+  return Number(number);
+}
+
 // ---------------------------------------------------------------------------
 // API pública — mesma assinatura dos mocks anteriores
 // ---------------------------------------------------------------------------
@@ -133,4 +141,19 @@ export const fetchPedidosLista = async (startDate, endDate) => {
       diasAtraso,
     };
   });
+};
+
+/**
+ * PATCH /empresas/meta-semanal
+ * Parametro: { metaSemanal: valor } no corpo da requisição (body)
+ * Retorna: { metaAtualizada }
+ */
+export const updateMetas = async (meta) => {
+  const { data } = await http.patch("/empresas/meta-semanal", {
+    metaSemanal: meta
+  });
+
+  return {
+    metaAtual: data.metaSemanal ?? meta,
+  };
 };
