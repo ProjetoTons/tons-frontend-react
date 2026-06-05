@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import StatusBadge from "./StatusBadge";
 import { fetchPedidoById } from "@/entities/pedido/api/pedidosApi";
+import { formatarDataBR } from "@/shared/lib/dateFormatter";
 
 /**
  * OrderDetailModal - Modal com detalhes completos do pedido
@@ -73,14 +74,14 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
     <div className="fixed inset-0 bg-gray-800/50 bg-opacity-0 flex items-center justify-center z-50 p-4">
       {/* Container do Modal */}
       <div className="bg-white rounded-lg shadow-lg max-w-[70vw] w-full max-h-[90vh] overflow-y-auto">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#e4e2e2] sticky top-0 bg-white">
-          <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-bold text-[#161616]">
+          <div className="flex items-center w-2/5 gap-4">
+            <h2 className="text-2xl w-full font-bold text-[#161616]">
               Pedido {dadosPedido.num_pedido}
             </h2>
-            <StatusBadge 
+            <StatusBadge
               status={dadosPedido.status}
               etapa_pedido={dadosPedido.etapa_pedido}
               onStatusChange={handleStatusChange}
@@ -89,7 +90,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
           </div>
           <button
             onClick={onClose}
-            className="text-[#6b7280] hover:text-[#161616] text-2xl font-bold"
+            className="text-[#6b7280] hover:text-[#161616] text-2xl font-bold cursor-pointer"
           >
             ✕
           </button>
@@ -97,7 +98,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
 
         {/* Conteúdo */}
         <div className="p-6 space-y-8">
-          
+
           {/* Seção 1: Preview e Informações Principais */}
           <div className="grid grid-cols-3 gap-6">
             {/* Preview da Produção */}
@@ -174,7 +175,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Data Início
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {dadosPedido.data_pedido}
+                    {formatarDataBR(dadosPedido.data_pedido)}
                   </p>
                 </div>
               </div>
@@ -194,7 +195,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
                     Data Fim
                   </p>
                   <p className="text-[14px] font-medium text-[#161616]">
-                    {dadosPedido.data_finalizacao || "-"}
+                    {formatarDataBR(dadosPedido.data_finalizacao) || "-"}
                   </p>
                 </div>
               </div>
@@ -211,15 +212,29 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
             </div>
           </div>
 
-          {/* Seção 2: Descrição do Pedido */}
+          {/* Seção 2: Descrição da Arte */}
           {dadosPedido.descricao && (
             <div>
               <h3 className="text-[14px] font-bold text-[#161616] uppercase tracking-[1px] mb-3">
-                Descrição do Pedido
+                Descrição da Arte
               </h3>
               <div className="bg-yellow-50 border-l-4 border-[#fdf210] p-4 rounded">
                 <p className="text-[14px] text-[#323233] leading-relaxed whitespace-pre-line">
                   {dadosPedido.descricao}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Seção 2: Observação do Pedido */}
+          {dadosPedido.descricao && (
+            <div>
+              <h3 className="text-[14px] font-bold text-[#161616] uppercase tracking-[1px] mb-3">
+                Observação do Pedido
+              </h3>
+              <div className="bg-[#F6F3F2] border-l-4 border-[#fdf210] p-4 rounded">
+                <p className="text-[14px] text-[#323233] leading-relaxed">
+                  {dadosPedido.observacao || "Nenhuma observação registrada."}
                 </p>
               </div>
             </div>

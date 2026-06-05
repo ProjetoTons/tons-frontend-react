@@ -1,4 +1,5 @@
 import React from "react";
+import { formatarDataBR } from "@/shared/lib/dateFormatter";
 
 export default function DetalhesPedidoModal({ isOpen, onClose, pedido }) {
   if (!isOpen || !pedido) return null;
@@ -72,7 +73,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido }) {
             </div>
             <div className="border border-gray-200 bg-white p-4">
               <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Data</span>
-              <span className="text-[12px] font-bold text-black">{pedido.data}</span>
+              <span className="text-[12px] font-bold text-black">{formatarDataBR(pedido.data)}</span>
             </div>
             <div className="border border-gray-200 bg-white p-4">
               <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Quantidade</span>

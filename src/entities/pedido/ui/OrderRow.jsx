@@ -12,6 +12,7 @@ import {
   getLastStatus,
 } from "@/entities/pedido/api/statusFlowConfig";
 import { getEtapaConfig } from "@/entities/pedido/api/etapaConfig";
+import { formatarDataBR } from "@/shared/lib/dateFormatter";
 
 /**
  * OrderRow - Uma linha da tabela de pedidos
@@ -219,14 +220,14 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
         {/* Data Início */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Regular',sans-serif] font-normal text-[13px] text-[#5f5f5f]">
-            {pedidoLocal.data_pedido}
+            {formatarDataBR(pedidoLocal.data_pedido)}
           </span>
         </td>
 
         {/* Data Fim */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Regular',sans-serif] font-normal text-[13px] text-[#5f5f5f]">
-            {pedidoLocal.data_finalizacao}
+            {formatarDataBR(pedidoLocal.data_finalizacao)}
           </span>
         </td>
 
@@ -247,15 +248,18 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
                 handleRetornar();
               }}
               disabled={!podeRetornar}
-              className={`flex items-center justify-center px-2 py-1.5 rounded transition-colors ${podeRetornar
+              className={`flex items-center justify-center w-2/3 px-2 py-1.5 rounded transition-colors ${podeRetornar
                 ? 'bg-[#161616] hover:bg-[#474747] text-white cursor-pointer'
                 : 'bg-[#e4e3e2] text-[#b0b0b0] cursor-not-allowed opacity-50'
                 }`}
               title={podeRetornar ? "Retornar para etapa anterior" : "Não é possível retornar"}
             >
-              <span className="font-['Inter:Bold',sans-serif] font-bold text-[9px] tracking-[0.5px] uppercase">
-                &lt; Retornar
-              </span>
+              <div className="flex items-center">
+                <img className="w-4 h-4" src="/pedidos-icons/return-icon.svg" alt="Retornar" />
+                <span className="font-['Inter:Bold',sans-serif] font-bold text-[9px] tracking-[0.5px] uppercase">
+                  Retornar
+                </span>
+              </div>
             </button>
 
             {/* Botão Avançar */}
@@ -265,15 +269,18 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
                 handleAvancar();
               }}
               disabled={!podeAvancar}
-              className={`flex items-center justify-center px-2 py-1.5 rounded transition-colors ${podeAvancar
+              className={`flex items-center justify-center w-2/3 px-2 py-1.5 rounded transition-colors ${podeAvancar
                 ? 'bg-[#fdf210] hover:bg-[#e6d800] cursor-pointer'
                 : 'bg-[#fdf210] text-[#808080] cursor-not-allowed opacity-50'
                 }`}
               title={podeAvancar ? "Avançar para próxima etapa" : "Conclua o status atual para avançar"}
             >
-              <span className="font-['Inter:Bold',sans-serif] font-bold text-[9px] text-[#161616] tracking-[0.5px] uppercase">
-                Avançar &gt;
-              </span>
+              <div className="flex items-center">
+                <img className="w-4 h-4 brightness-5" src="/pedidos-icons/advance-icon.svg" alt="Avançar" />
+                <span className="font-['Inter:Bold',sans-serif] font-bold text-[9px] text-[#161616] tracking-[0.5px] uppercase">
+                  Avançar
+                </span>
+              </div>
             </button>
           </div>
         </td>
