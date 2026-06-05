@@ -2,12 +2,12 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import TopNavBar from "@/widgets/topnav-grafica/TopNavBar";
 import PageHeader from "@/widgets/page-header/PageHeader";
-import StatsGrid from "@/widgets/kpi-grid/StatsGrid";
 import OrderTable from "@/widgets/order-table/OrderTable";
 import CancelarPedidoModal from "@/features/cancelar-pedido/CancelarPedidoModal";
 import { calcularEstatisticas } from "@/entities/pedido/api/mockPedidos";
 import { fetchPedidos, updatePedido, cancelarPedido } from "@/entities/pedido/api/pedidosApi";
 import { getUsuario } from "@/shared/api/authToken";
+import { ROLE_TABS_ACCESS } from "@/shared/config/permissions";
 
 export default function PedidosPage() {
   const navigate = useNavigate();
@@ -20,9 +20,17 @@ export default function PedidosPage() {
   const etapaFilter = searchParams.get("etapa");
   const [filterConfig, setFilterConfig] = useState({ status: "", ordenarPor: "", direcao: "asc" });
   const [responsavelFilter, setResponsavelFilter] = useState("todos");
+  const [cancelTarget, setCancelTarget] = useState(null);
 
-  // Usuário logado vindo da sessão (fallback para evitar crash em dev sem login)
-  const usuarioLogado = getUsuario() || { id: null, nome: "Usuário" };
+  // Extrai a role principal dinamicamente a partir do array
+  const rawUser = getUsuario() || { id: null, nome: "Usuário", acessos: [] };
+  const isAdmin = rawUser.acessos?.some(a => a.role === 'Adm');
+  const rolePrincipal = isAdmin ? 'Adm' : (rawUser.acessos?.[0]?.role || "");
+
+  const usuarioLogado = { 
+    ...rawUser, 
+    role: rolePrincipal 
+  };
 
   // Carrega pedidos do backend no mount
   useEffect(() => {
@@ -45,22 +53,41 @@ export default function PedidosPage() {
     };
   }, []);
 
+  // 🔒 CONTROLADOR DE ACESSO INICIAL VIA URL
+  useEffect(() => {
+    if (usuarioLogado.role !== 'Adm') {
+      const etapasPermitidas = ROLE_TABS_ACCESS[usuarioLogado.role] || [];
+      
+      if (!etapaFilter || !etapasPermitidas.includes(etapaFilter)) {
+        if (etapasPermitidas.length > 0) {
+          setSearchParams({ etapa: etapasPermitidas[0] });
+        }
+      }
+    }
+  }, [etapaFilter, usuarioLogado.role, setSearchParams]);
+
   const pedidosFiltrados = useMemo(() => {
     let filtered = pedidos;
 
-    // Filtrar por responsável ("meus" mostra apenas pedidos onde o usuário é responsável)
+    // 🔒 BARREIRA DE SEGURANÇA VISUAL (FILTRO COMPORTAMENTAL DE PERFIL)
+    if (usuarioLogado.role !== 'Adm') {
+      const etapasPermitidas = ROLE_TABS_ACCESS[usuarioLogado.role] || [];
+      filtered = filtered.filter((pedido) => etapasPermitidas.includes(pedido.etapa_pedido));
+    }
+
+    // Filtrar por responsável
     if (responsavelFilter === "meus" && usuarioLogado.id) {
       filtered = filtered.filter(
         (pedido) => pedido.responsavel?.id === usuarioLogado.id
       );
     }
 
-    // Filtrar por etapa
+    // Filtrar por etapa vindo dos parâmetros de busca
     if (etapaFilter) {
       filtered = filtered.filter((pedido) => pedido.etapa_pedido === etapaFilter);
     }
 
-    // Filtrar por status (painel de filtro)
+    // Filtrar por status
     if (filterConfig.status) {
       filtered = filtered.filter((pedido) => pedido.status === filterConfig.status);
     }
@@ -71,13 +98,13 @@ export default function PedidosPage() {
       filtered = filtered.filter((pedido) => {
         const num = pedido.num_pedido?.toLowerCase() || "";
         const cliente = pedido.cliente?.nome?.toLowerCase() || "";
-        const vendedor = pedido.vendedor?.nome?.toLowerCase() || "";
-        const responsavel = pedido.responsavel?.nome?.toLowerCase() || "";
+        const seller = pedido.vendedor?.nome?.toLowerCase() || "";
+        const resp = pedido.responsavel?.nome?.toLowerCase() || "";
         return (
           num.includes(term) ||
           cliente.includes(term) ||
-          vendedor.includes(term) ||
-          responsavel.includes(term)
+          seller.includes(term) ||
+          resp.includes(term)
         );
       });
     }
@@ -89,14 +116,12 @@ export default function PedidosPage() {
         let va = a[filterConfig.ordenarPor];
         let vb = b[filterConfig.ordenarPor];
 
-        // Valores numéricos
         if (filterConfig.ordenarPor === "valor_total") {
           va = Number(va) || 0;
           vb = Number(vb) || 0;
           return (va - vb) * dir;
         }
 
-        // Datas e strings
         va = va || "";
         vb = vb || "";
         return va.localeCompare(vb) * dir;
@@ -104,7 +129,7 @@ export default function PedidosPage() {
     }
 
     return filtered;
-  }, [pedidos, searchTerm, etapaFilter, filterConfig, responsavelFilter, usuarioLogado.id]);
+  }, [pedidos, searchTerm, etapaFilter, filterConfig, responsavelFilter, usuarioLogado.id, usuarioLogado.role]);
 
   const stats = useMemo(() => calcularEstatisticas(pedidos), [pedidos]);
 
@@ -117,11 +142,11 @@ export default function PedidosPage() {
   };
 
   const handleEtapaFilter = (etapa) => {
+    if (usuarioLogado.role !== 'Adm') return;
+
     if (!etapa || etapaFilter === etapa) {
-      // "Todos" ou clicar no mesmo botão limpa o filtro
       setSearchParams({});
     } else {
-      // Define o novo filtro
       setSearchParams({ etapa });
     }
   };
@@ -131,13 +156,11 @@ export default function PedidosPage() {
   };
 
   const atualizarPedido = async (pedidoId, pedidoAtualizado) => {
-    // Atualização otimista — UI reflete imediatamente
     setPedidos((prev) =>
       prev.map((p) => (p.id_pedido === pedidoId ? pedidoAtualizado : p))
     );
     try {
       const persistido = await updatePedido(pedidoId, pedidoAtualizado, usuarioLogado);
-      // Sincroniza com a resposta do servidor (datas, IDs etc.)
       if (persistido) {
         setPedidos((prev) =>
           prev.map((p) => (p.id_pedido === pedidoId ? persistido : p))
@@ -145,7 +168,6 @@ export default function PedidosPage() {
       }
     } catch (err) {
       console.error("Erro ao atualizar pedido:", err);
-      // Reverte recarregando do servidor
       try {
         const dados = await fetchPedidos();
         setPedidos(dados);
@@ -176,7 +198,6 @@ export default function PedidosPage() {
     if (!cancelTarget) return;
     try {
       await cancelarPedido(cancelTarget.id, motivo);
-      // Remove da lista local após sucesso
       setPedidos((prev) => prev.filter((p) => p.id_pedido !== cancelTarget.id));
     } catch (err) {
       console.error("Erro ao cancelar pedido:", err);
@@ -184,8 +205,6 @@ export default function PedidosPage() {
       setCancelTarget(null);
     }
   };
-
-  const [cancelTarget, setCancelTarget] = useState(null);
 
   const handleNavClick = (page) => {
     setCurrentPage(page);
@@ -197,6 +216,7 @@ export default function PedidosPage() {
       <TopNavBar onNavClick={handleNavClick} currentPage={currentPage} />
 
       <main className="flex-1 px-[64px] py-[32px] flex flex-col gap-[32px]">
+        {/* 👇 CORREÇÃO: Propriedades adicionadas para alimentar o PageHeader 👇 */}
         <PageHeader
           onSearch={handleSearch}
           onFilter={handleFilter}
@@ -205,11 +225,9 @@ export default function PedidosPage() {
           etapaAtiva={etapaFilter}
           responsavelFilter={responsavelFilter}
           onResponsavelFilter={setResponsavelFilter}
+          etapasPermitidas={ROLE_TABS_ACCESS[usuarioLogado.role] || []}
+          userRole={usuarioLogado.role}
         />
-
-
-        {/* <StatsGrid stats={stats} /> */}
-
 
         <div className="bg-white rounded shadow-sm">
           {carregando ? (
@@ -224,6 +242,7 @@ export default function PedidosPage() {
               onAvancar={handleAvancar}
               onRetornar={handleRetornar}
               onStatusChange={handleStatusChange}
+              onTriangleChange={handleStatusChange}
               onCancelar={handleCancelar}
               usuarioLogado={usuarioLogado}
             />

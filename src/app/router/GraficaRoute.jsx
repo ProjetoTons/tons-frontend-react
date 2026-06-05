@@ -3,12 +3,10 @@ import { getUsuario } from "@/shared/api/authToken";
 import { env } from "@/shared/config/env";
 
 /**
- * Permite acesso apenas a usuários autenticados e vinculados ao CNPJ
- * da gráfica (configurado em `VITE_CNPJ_GRAFICA`). Usuários comuns
- * (cliente final) são redirecionados para `/portfolio`. Usuários não
- * logados vão para `/login`.
+ * Permite acesso apenas a usuários vinculados ao CNPJ da gráfica.
+ * Se a prop `requireAdmin` for true, barra qualquer perfil que não contenha 'Adm' nos acessos.
  */
-export default function GraficaRoute({ children }) {
+export default function GraficaRoute({ children, requireAdmin = false }) {
   const usuario = getUsuario();
 
   if (!usuario) {
@@ -19,6 +17,14 @@ export default function GraficaRoute({ children }) {
 
   if (cnpjUsuario !== env.cnpjGrafica) {
     return <Navigate to="/portfolio" replace />;
+  }
+
+  // 👇 NOVA LÓGICA: Valida a trava de administrador varrendo a lista de objetos de acesso 👇
+  if (requireAdmin) {
+    const isAdm = usuario.acessos?.some(acesso => acesso.role === 'Adm');
+    if (!isAdm) {
+      return <Navigate to="/pedidos" replace />;
+    }
   }
 
   return children;

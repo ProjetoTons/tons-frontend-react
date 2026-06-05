@@ -27,7 +27,7 @@ export function AppRouter() {
     <BrowserRouter>
       <Routes>
         {/* Pagina de erro */}
-        <Route path="*" element={<PageNotFind/>} />
+        <Route path="*" element={<PageNotFind />} />
         {/* Pagina de portfolio */}
         <Route path="/" element={<Navigate to="/portfolio" replace />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
@@ -38,7 +38,7 @@ export function AppRouter() {
         <Route path="/cadastro/cliente" element={<RegisterClientPage />} />
         <Route path="/cadastro/empresa" element={<RegisterEnterprisePage />} />
         <Route path="/cadastro/endereco" element={<RegisterAddressPage />} />
-        <Route path="/cadastro/sucesso" element={<RegistrationSuccessPage/>}/>
+        <Route path="/cadastro/sucesso" element={<RegistrationSuccessPage />} />
         <Route path="/funcionario/cadastro" element={<RegisterEmployeePage />} />
         {/* Páginas do cliente */}
         <Route path="/lista-interesse" element={<ListaInteressePage />} />
@@ -47,11 +47,11 @@ export function AppRouter() {
         <Route path="/configuracoes" element={<ConfiguracoesPage />} />
         {/* Painel kanban — acesso restrito ao CNPJ da gráfica */}
         <Route path="/pedidos" element={<GraficaRoute><PedidosPage /></GraficaRoute>} />
-        <Route path="/pedidos/novo" element={<GraficaRoute><NovoPedidoPage /></GraficaRoute>} />
-        <Route path="/pedidos/:id/editar" element={<GraficaRoute><EditarPedidoPage /></GraficaRoute>} />
-        <Route path='/pedidos/dashboard' element={<GraficaRoute><DashboardPedidosPage/></GraficaRoute>}/>
-        <Route path="/funcionario" element={<GraficaRoute><EmployeePage/></GraficaRoute>}/>
-        <Route path='/funcionario/editar/:id' element={<GraficaRoute><EmployeeEditPage/></GraficaRoute>}/>
+        <Route path="/pedidos/novo" element={<GraficaRoute requireAdmin={true}><NovoPedidoPage /></GraficaRoute>} />
+        <Route path="/pedidos/:id/editar" element={<GraficaRoute requireAdmin={true}><EditarPedidoPage /></GraficaRoute>} />
+        <Route path='/pedidos/dashboard' element={<GraficaRoute requireAdmin={true}><DashboardPedidosPage /></GraficaRoute>} />
+        <Route path="/funcionario" element={<GraficaRoute requireAdmin={true}><EmployeePage /></GraficaRoute>} />
+        <Route path='/funcionario/editar/:id' element={<GraficaRoute requireAdmin={true}><EmployeeEditPage /></GraficaRoute>} />
       </Routes>
     </BrowserRouter>
   )

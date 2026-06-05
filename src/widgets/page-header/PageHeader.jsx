@@ -1,15 +1,15 @@
 /**
  * PageHeader - Cabeçalho da página com título, busca e filtros
- * 
- * Props:
+ * * Props:
  * - onSearch: function - callback quando busca
  * - onFilter: function - callback quando aplica filtro { status, ordenarPor, direcao }
  * - onNovoPedido: function - callback quando clica em novo pedido
  * - onEtapaFilter: function - callback para filtrar por etapa
  * - etapaAtiva: string - etapa atualmente selecionada
+ * - etapasPermitidas: array - lista de etapas que o usuário atual pode ver (Oculta botões se restrito)
+ * - userRole: string - Papel principal do usuário na aplicação
  */
 import { getEtapaConfig } from "@/entities/pedido/api/etapaConfig";
-
 import { useState, useRef, useEffect } from "react";
 
 const STATUS_OPTIONS = [
@@ -37,7 +37,18 @@ const ORDENAR_OPTIONS = [
   { value: "status", label: "Status" },
 ];
 
-function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiva = null, responsavelFilter = "todos", onResponsavelFilter }) {
+// 👇 1. Adicionamos as props de validação na assinatura da função
+function PageHeader({ 
+  onSearch, 
+  onFilter, 
+  onNovoPedido, 
+  onEtapaFilter, 
+  etapaAtiva = null, 
+  responsavelFilter = "todos", 
+  onResponsavelFilter,
+  etapasPermitidas = [], 
+  userRole
+}) {
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [ordenarPor, setOrdenarPor] = useState("");
@@ -69,12 +80,13 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
     onFilter && onFilter({ status: "", ordenarPor: "", direcao: "asc" });
     setShowFilterPanel(false);
   };
+  
   const handleSearchChange = (e) => {
     onSearch && onSearch(e.target.value);
   };
 
-  const etapas = [
-    { value: null, label: "Todos" },
+  // 2. Separamos o botão "Todos" da lista base de etapas
+  const etapasBase = [
     { value: "Design", label: "Design" },
     { value: "Produção", label: "Produção" },
     { value: "Embalagem", label: "Embalagem" },
@@ -82,6 +94,11 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
     { value: "Finalizados", label: "Finalizados" },
     { value: "Cancelado", label: "Cancelados" },
   ];
+
+  // 3. Filtramos: Adm vê todas, os demais veem apenas o que está no array `etapasPermitidas`
+  const etapasVisiveis = userRole === 'Adm' 
+    ? etapasBase 
+    : etapasBase.filter(etapa => etapasPermitidas.includes(etapa.value));
 
   return (
     <div>
@@ -123,10 +140,27 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
         </div>
 
         {/* Filtros por etapa */}
-
         <div className="flex items-center gap-[12px]">
-          {etapas.map(({ value, label }) => {
-            const isAtiva = value === null ? !etapaAtiva : etapaAtiva === value;
+          
+          {/* 👇 Botão "Todos" (Filtro nulo) aparece EXCLUSIVAMENTE para Adm 👇 */}
+          {userRole === 'Adm' && (
+            <button
+              onClick={() => onEtapaFilter && onEtapaFilter(null)}
+              style={!etapaAtiva ? { backgroundColor: '#fdf210', color: '#000000' } : {}}
+              className={`px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all ${!etapaAtiva
+                ? 'shadow-md cursor-pointer hover:opacity-90 font-bold'
+                : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] border-2 border-transparent shadow-md cursor-pointer"
+              }`}
+            >
+              <div className="flex gap-1 justify-center items-center">
+                Todos
+              </div>
+            </button>
+          )}
+
+          {/* 👇 Renderiza os botões dinamicamente após a filtragem 👇 */}
+          {etapasVisiveis.map(({ value, label }) => {
+            const isAtiva = etapaAtiva === value;
             const etapaConfig = getEtapaConfig(value || "Tudo");
             return (
               <button
@@ -134,7 +168,7 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
                 onClick={() => onEtapaFilter && onEtapaFilter(value)}
                 style={isAtiva ? { backgroundColor: etapaConfig.cor, color: etapaConfig.txtColor } : {}}
                 className={`px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all ${isAtiva
-                  ? 'shadow-md cursor-pointer hover:opacity-90'
+                  ? 'shadow-md cursor-pointer hover:opacity-90 font-bold'
                   : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] border-2 border-transparent shadow-md cursor-pointer"
                   }`}
               >
@@ -274,14 +308,16 @@ function PageHeader({ onSearch, onFilter, onNovoPedido, onEtapaFilter, etapaAtiv
             )}
           </div>
 
-          {/* Novo Pedido Button */}
-          <button
-            onClick={() => onNovoPedido && onNovoPedido()}
-            className="bg-[#161616] hover:bg-[#0a0a0a] transition-colors text-white px-[32px] py-[9px] rounded flex items-center justify-center gap-[4px]"
-          >
-            <span className="font-['Inter:Bold',sans-serif] font-bold text-[18px]">+</span>
-            <span className="font-['Inter:Bold',sans-serif] font-bold text-[14px]">Novo Pedido</span>
-          </button>
+          {/* Novo Pedido Button - SOMENTE ADM TEM PERMISSÃO DE CRIAR PEDIDO! */}
+          {userRole === 'Adm' && (
+            <button
+              onClick={() => onNovoPedido && onNovoPedido()}
+              className="bg-[#161616] hover:bg-[#0a0a0a] transition-colors text-white px-[32px] py-[9px] rounded flex items-center justify-center gap-[4px]"
+            >
+              <span className="font-['Inter:Bold',sans-serif] font-bold text-[18px]">+</span>
+              <span className="font-['Inter:Bold',sans-serif] font-bold text-[14px]">Novo Pedido</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
