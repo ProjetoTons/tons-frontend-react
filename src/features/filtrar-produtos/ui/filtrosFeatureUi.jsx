@@ -104,23 +104,24 @@ function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar }) {
   return (
     <section className="w-full bg-white px-10 py-6">
       {/* Header com linha amarela */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="h-1 w-8 bg-yellow-400 rounded-full"></div>
-        <h2 className="text-sm font-black uppercase tracking-widest text-black" style={{ fontFamily: 'var(--fonte-space)' }}>
+      <div className="mb-6">
+        <h2 className="text-2xl font-black uppercase tracking-widest text-black mb-2" style={{ fontFamily: 'var(--fonte-space)' }}>
           Categorias
+        </h2>
+        <h2 className="text-lg font-black uppercase tracking-widest text-black" style={{ fontFamily: 'var(--fonte-space)' }}>
+          Explore nosso portfólio.
         </h2>
       </div>
 
-      {/* Flex horizontal com scroll */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-3 mb-6 scrollbar-hide">
+      {/* Flex com wrap para mostrar todas as categorias */}
+      <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
         {/* Botão TODOS */}
         <button
-          onClick={() => aoMudar("todos")}
-          className={`shrink-0 px-4 py-2 font-bold uppercase tracking-wider text-xs transition-all duration-300 border-2 cursor-pointer rounded-full whitespace-nowrap ${
-            categoriaAtiva === "todos"
+          onClick={() => aoMudar("todos")} 
+          className={`px-4 py-2 font-bold uppercase tracking-wider text-xs transition-all duration-300 border-2 cursor-pointer rounded-full whitespace-nowrap ${categoriaAtiva === "todos"
               ? 'bg-yellow-400 text-black border-yellow-400'
               : 'bg-white text-black border-black hover:bg-yellow-50 hover:border-yellow-400'
-          }`}
+            }`}
         >
           TODOS
         </button>
@@ -130,18 +131,16 @@ function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar }) {
           <button
             key={categoria.id}
             onClick={() => aoMudar(categoria.id)}
-            className={`shrink-0 px-3 py-2 font-bold text-xs tracking-wider transition-all duration-300 border-2 cursor-pointer rounded-full whitespace-nowrap flex items-center gap-2 ${
-              categoriaAtiva === categoria.id
+            className={`px-3 py-2 font-bold text-xs tracking-wider transition-all duration-300 border-2 cursor-pointer rounded-full flex items-center gap-2 ${categoriaAtiva === categoria.id
                 ? 'bg-yellow-400 text-black border-yellow-400'
                 : 'bg-white text-black border-gray-300 hover:border-yellow-400 hover:bg-gray-50'
-            }`}
+              }`}
           >
             <span>{categoria.nome}</span>
-            <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-black ${
-              categoriaAtiva === categoria.id
+            <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-black ${categoriaAtiva === categoria.id
                 ? 'bg-black text-yellow-400'
                 : 'bg-yellow-400 text-black'
-            }`}>
+              }`}>
               {categoria.itemCount}
             </span>
           </button>
