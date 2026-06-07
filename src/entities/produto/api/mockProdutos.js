@@ -92,27 +92,27 @@ export const produtos = [
   // =============== CAT-13: Caneta ===============
   { id: 67, title: "Caneta Plástica Translúcida", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Plastica-Translucida-11662-1583496611.jpg", destaque: false },
   { id: 68, title: "Caneta Plástica modelo 1", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Plastica-PRATA-609-1480005056.jpg", destaque: false },
-  { id: 68, title: "Caneta Plástica modelo 2", category: "Caneta", type: "caneta", image: "  https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Plastica-BRANCO-372-1758827423.jpg", destaque: false },
-  { id: 69, title: "Caneta Ecológica Papelão", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Ecologica-10694-1569521296.jpg", destaque: false },
-  { id: 70, title: "Caneta Plástica Touch com Suporte", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Plastica-Touch-com-Suporte-ROXO-3682-1595518087.jpg", destaque: false },
-  { id: 71, title: "Caneta Metal", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Metal-AZUL-520-1562943647.jpg", destaque: true },
-  { id: 71, title: "Caneta Metal Touch modelo 1", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Metal-Touch-17461-1697483509.jpg", destaque: true },
-  { id: 72, title: "Caneta Metal Touch modelo 2", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Metal-Touch-LARANJA-18537-1709209777.jpg", destaque: false },
+  { id: 69, title: "Caneta Plástica modelo 2", category: "Caneta", type: "caneta", image: "  https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Plastica-BRANCO-372-1758827423.jpg", destaque: false },
+  { id: 70, title: "Caneta Ecológica Papelão", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Ecologica-10694-1569521296.jpg", destaque: false },
+  { id: 71, title: "Caneta Plástica Touch com Suporte", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Plastica-Touch-com-Suporte-ROXO-3682-1595518087.jpg", destaque: false },
+  { id: 72, title: "Caneta Metal", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Metal-AZUL-520-1562943647.jpg", destaque: true },
+  { id: 73, title: "Caneta Metal Touch modelo 1", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Metal-Touch-17461-1697483509.jpg", destaque: true },
+  { id: 74, title: "Caneta Metal Touch modelo 2", category: "Caneta", type: "caneta", image: "https://www.xbzbrindes.com.br/img/produtos/3/Caneta-Metal-Touch-LARANJA-18537-1709209777.jpg", destaque: false },
 
   // =============== CAT-14: Estojo ===============
-  { id: 73, title: "Estojo Zip Zap", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/13410_d1.jpg", destaque: false },
-  { id: 74, title: "Estojo para Canudo", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/13410_d1.jpg", destaque: false },
-  { id: 75, title: "Estojo de Papel", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/13410_d1.jpg", destaque: false },
-  { id: 76, title: "Estojo Couro Sintético", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/Estojo-Couro-Sintetico-26384d5-1764090449.jpg", destaque: false },
+  { id: 75, title: "Estojo Zip Zap", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/13410_d1.jpg", destaque: false },
+  { id: 76, title: "Estojo para Canudo", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/Estojo-para-Canudo-BEGE-11742-1583330881.jpg", destaque: false },
+  { id: 77, title: "Estojo de Papel", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/13409_d2.jpg", destaque: false },
+  { id: 78, title: "Estojo Couro Sintético", category: "Estojo", type: "estojo", image: "https://www.xbzbrindes.com.br/img/produtos/3/Estojo-Couro-Sintetico-26384d5-1764090449.jpg", destaque: false },
 
   // =============== CAT-15: Ferramentas ===============
-  { id: 77, title: "Kit Ferramentas 25 Peças", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Ferramentas-25-Pecas-27370d2-1774440842.jpg", destaque: false },
-  { id: 78, title: "Kit Jardinagem 3 Peças", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Jardinagem-3-Pecas-PRETO-26827-1767960698.jpg", destaque: false },
-  { id: 79, title: "Kit Ferramentas 19 Peças com Lanterna", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Ferramenta-19-Pecas-com-Lanterna-4990d1-1488540793.jpg", destaque: false },
-  { id: 80, title: "Kit Ferramentas 4 Peças", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Ferramentas-4-Pecas-16928-1731098573.jpg", destaque: false },
+  { id: 79, title: "Kit Ferramentas 25 Peças", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Ferramentas-25-Pecas-27370d2-1774440842.jpg", destaque: false },
+  { id: 80, title: "Kit Jardinagem 3 Peças", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Jardinagem-3-Pecas-PRETO-26827-1767960698.jpg", destaque: false },
+  { id: 81, title: "Kit Ferramentas 19 Peças com Lanterna", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Ferramenta-19-Pecas-com-Lanterna-4990d1-1488540793.jpg", destaque: false },
+  { id: 82, title: "Kit Ferramentas 4 Peças", category: "Ferramentas", type: "ferramentas", image: "https://www.xbzbrindes.com.br/img/produtos/3/Kit-Ferramentas-4-Pecas-16928-1731098573.jpg", destaque: false },
 
   // =============== CAT-16: Lanternas e Luminárias ===============
-  { id: 81, title: "Lanterna Plástica Dínamo", category: "Lanternas e Luminárias", type: "lanternas_luminarias", image: "https://www.xbzbrindes.com.br/img/produtos/3/1291_AZU.jpg", destaque: false },
-  { id: 82, title: "Luminária de Mesa Recarregável", category: "Lanternas e Luminárias", type: "lanternas_luminarias", image: "https://www.xbzbrindes.com.br/img/produtos/3/Luminaria-de-Mesa-Recarregavel-28408d1-1778095166.jpg", destaque: true },
-  { id: 83, title: "Lanterna de Alumínio", category: "Lanternas e Luminárias", type: "lanternas_luminarias", image: "https://xbzbrindes.com.br/img/produtos/3/Lanterna-de-Aluminio-2375-1774639698.jpg", destaque: false }
+  { id: 83, title: "Lanterna Plástica Dínamo", category: "Lanternas e Luminárias", type: "lanternas_luminarias", image: "https://www.xbzbrindes.com.br/img/produtos/3/1291_AZU.jpg", destaque: false },
+  { id: 84, title: "Luminária de Mesa Recarregável", category: "Lanternas e Luminárias", type: "lanternas_luminarias", image: "https://www.xbzbrindes.com.br/img/produtos/3/Luminaria-de-Mesa-Recarregavel-28408d1-1778095166.jpg", destaque: true },
+  { id: 85, title: "Lanterna de Alumínio", category: "Lanternas e Luminárias", type: "lanternas_luminarias", image: "https://xbzbrindes.com.br/img/produtos/3/Lanterna-de-Aluminio-2375-1774639698.jpg", destaque: false }
 ];

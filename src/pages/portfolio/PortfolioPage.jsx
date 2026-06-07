@@ -44,6 +44,13 @@ export default function PortfolioPage() {
     }
   }, [mostrarDestaque]);
 
+  // Preparar busca por substring (contém), case-insensitive
+  const buscaTrim = busca.trim();
+  const query = buscaTrim.toLowerCase();
+  const matchedProducts = buscaTrim
+    ? produtos.filter(p => p.title?.toLowerCase().includes(query))
+    : [];
+
   // Função para abrir o modal com o produto específico
   const handleOpenModal = (produto) => {
     setSelectedProduct(produto);
@@ -99,6 +106,9 @@ export default function PortfolioPage() {
 
   // Função para mudar o filtro ativo
   const handleMudarFiltro = (filtro) => {
+    // Limpar busca quando filtro é alterado
+    setBusca("");
+    
     // Desativar filtro de destaque quando ativar outro filtro
     setMostrarDestaque(false);
     
@@ -113,6 +123,9 @@ export default function PortfolioPage() {
 
   // Função para ativar filtro de destaque
   const handleVerColecaoDestaque = () => {
+    // Limpar busca quando ativa destaque
+    setBusca("");
+    
     setMostrarDestaque(true);
     setCategoriaAtiva("todos");
   };
@@ -153,22 +166,48 @@ export default function PortfolioPage() {
           </div>
         )}
         
-        {renderizarCategoria("Acessórios p/ Celular", "acessorios_celular")}
-        {renderizarCategoria("Bar e Bebidas", "bar_bebidas")}
-        {renderizarCategoria("Blocos e Cadernetas", "blocos_cadernetas")}
-        {renderizarCategoria("Bolsas Térmicas", "bolsas_termicas")}
-        {renderizarCategoria("Caixa de Som", "caixa_som")}
-        {renderizarCategoria("Caneca", "caneca")}
-        {renderizarCategoria("Chaveiros", "chaveiros")}
-        {renderizarCategoria("Copos Térmicos", "copos_termicos")}
-        {renderizarCategoria("Cozinha", "cozinha")}
-        {renderizarCategoria("Cuidados Pessoais", "cuidados_pessoais")}
-        {renderizarCategoria("Escritório", "escritorio")}
-        {renderizarCategoria("Esporte e Jogos", "esporte_jogos")}
-        {renderizarCategoria("Caneta", "caneta")}
-        {renderizarCategoria("Estojo", "estojo")}
-        {renderizarCategoria("Ferramentas", "ferramentas")}
-        {renderizarCategoria("Lanternas e Luminárias", "lanternas_luminarias")}
+        {buscaTrim ? (
+          matchedProducts.length > 0 ? (
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-1.5 w-10 bg-yellow-400 rounded-full"></div>
+                <h2 className="text-2xl font-black uppercase tracking-wide text-black">Resultados para "{buscaTrim}"</h2>
+              </div>
+              <ProductList
+                produtos={matchedProducts}
+                onSave={toggleSaveProduct}
+                savedItems={itemsSalvos}
+                onImageClick={handleOpenModal}
+              />
+            </div>
+          ) : (
+            <div className="mb-12 p-6 bg-white border-l-4 border-yellow-400 rounded">
+              <h3 className="text-lg font-black uppercase tracking-wide">Nenhum produto encontrado</h3>
+              <p className="text-sm text-gray-600 mt-2">
+                Não encontramos nenhum produto com o nome "{buscaTrim}". Verifique a grafia ou limpe a busca.
+              </p>
+            </div>
+          )
+        ) : (
+          <>
+            {renderizarCategoria("Acessórios p/ Celular", "acessorios_celular")}
+            {renderizarCategoria("Bar e Bebidas", "bar_bebidas")}
+            {renderizarCategoria("Blocos e Cadernetas", "blocos_cadernetas")}
+            {renderizarCategoria("Bolsas Térmicas", "bolsas_termicas")}
+            {renderizarCategoria("Caixa de Som", "caixa_som")}
+            {renderizarCategoria("Caneca", "caneca")}
+            {renderizarCategoria("Chaveiros", "chaveiros")}
+            {renderizarCategoria("Copos Térmicos", "copos_termicos")}
+            {renderizarCategoria("Cozinha", "cozinha")}
+            {renderizarCategoria("Cuidados Pessoais", "cuidados_pessoais")}
+            {renderizarCategoria("Escritório", "escritorio")}
+            {renderizarCategoria("Esporte e Jogos", "esporte_jogos")}
+            {renderizarCategoria("Caneta", "caneta")}
+            {renderizarCategoria("Estojo", "estojo")}
+            {renderizarCategoria("Ferramentas", "ferramentas")}
+            {renderizarCategoria("Lanternas e Luminárias", "lanternas_luminarias")}
+          </>
+        )}
       </section>
 
       <FAQ />
@@ -191,6 +230,7 @@ export default function PortfolioPage() {
         isLoading={isLoading}
         error={error}
         onToggleSave={toggleSaveProduct}
+        onImageClick={handleOpenModal}
       />
 
       {/* Menu Mobile / Configurações */}
