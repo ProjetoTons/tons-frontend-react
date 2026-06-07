@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { adicionarProdutoInteresse } from "@/entities/produto/api/produtoInteresseApi";
 import { getToken } from "@/shared/api/authToken";
 
-export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading = false, error = null, onToggleSave = () => {} }) {
+export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading = false, error = null, onToggleSave = () => {}, onImageClick = () => {} }) {
   const navigate = useNavigate();
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(null);
@@ -91,6 +91,10 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading
             savedItems.map((item) => (
               <div
                 key={item.id}
+                onClick={() => {
+                  onImageClick(item);
+                  onClose();
+                }}
                 className="bg-white flex items-center p-4 mb-4 gap-4 rounded-sm shadow-sm relative group cursor-pointer hover:bg-gray-50 transition-colors"
               >
                 <div className="w-[60px] h-[60px] bg-gray-100 flex-shrink-0 rounded-sm overflow-hidden">
@@ -110,7 +114,7 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading
                 </div>
                 <div className="ml-auto opacity-100">
                   <button 
-                    onClick={() => onToggleSave(item)}
+                    onClick={(e) => { e.stopPropagation(); onToggleSave(item); }}
                     className="bg-[#f1efed] border-none w-11 h-11 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:bg-white shadow-sm"
                   >
                     <img
