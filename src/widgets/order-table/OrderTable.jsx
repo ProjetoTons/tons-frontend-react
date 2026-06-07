@@ -14,20 +14,19 @@ import OrderRow from "@/entities/pedido/ui/OrderRow";
 function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado }) {
   return (
     <div className="bg-white w-full overflow-x-auto rounded">
-      <table className="w-full table-fixed border-collapse">
+      <table className="w-full min-w-[1100px] table-fixed border-collapse">
         <colgroup>
-          <col className="w-[10px]" />
-          <col className="w-[70px]" />
-          <col className="w-[90px]" />
-          <col className="w-[140px]" />
-          <col className="w-[110px]" />
-          <col className="w-[130px]" />
-          <col className="w-[130px]" />
-          <col className="w-[100px]" />
-          <col className="w-[100px]" />
-          <col className="w-[90px]" />
-          <col className="w-[110px]" />
-          <col className="w-[80px]" />
+          <col style={{width: '1%'}} />
+          <col style={{width: '5%'}} />
+          <col style={{width: '8%'}} />
+          <col style={{width: '13%'}} />
+          <col style={{width: '10%'}} />
+          <col style={{width: '13%'}} />
+          <col style={{width: '13%'}} />
+          <col style={{width: '9%'}} />
+          <col style={{width: '9%'}} />
+          <col style={{width: '9%'}} />
+          <col style={{width: '10%'}} />
         </colgroup>
         {/* Table Header */}
         <thead>
@@ -79,11 +78,6 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, onCancelar
                 Ações
               </span>
             </th>
-            <th className="py-3 px-2 text-center">
-              <span className="font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#d5d5d5] tracking-[1.1px] uppercase">
-                Cancelar
-              </span>
-            </th>
           </tr>
         </thead>
 
@@ -103,7 +97,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, onCancelar
             ))
           ) : (
             <tr>
-              <td colSpan="11" className="py-10 text-center text-[#5f5f5f]">
+              <td colSpan="10" className="py-10 text-center text-[#5f5f5f]">
                 Nenhum pedido encontrado
               </td>
             </tr>

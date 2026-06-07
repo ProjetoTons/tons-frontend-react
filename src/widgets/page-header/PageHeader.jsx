@@ -50,6 +50,7 @@ function PageHeader({
   userRole
 }) {
   const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [showPedidosDropdown, setShowPedidosDropdown] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [ordenarPor, setOrdenarPor] = useState("");
   const [direcao, setDirecao] = useState("asc");
@@ -67,6 +68,19 @@ function PageHeader({
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showFilterPanel]);
+
+  // Fecha dropdown de pedidos ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (!e.target.closest('[data-pedidos-dropdown]')) {
+        setShowPedidosDropdown(false);
+      }
+    }
+    if (showPedidosDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPedidosDropdown]);
 
   const handleApplyFilter = () => {
     onFilter && onFilter({ status: statusFilter, ordenarPor, direcao });
@@ -102,47 +116,82 @@ function PageHeader({
 
   return (
     <div>
-      {/* Título e Descrição */}
-      <div className="mb-[24px]">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">
-          Gerenciamento de Pedidos
-        </h1>
-        <p className="text-sm text-gray-500 max-w-lg whitespace-nowrap">
-          Gerencie a entrada e triagem de novos projetos.
-        </p>
+      {/* Linha 1: Título + Busca na mesma linha */}
+      <div className="flex items-end justify-between mt-10">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">
+            Gerenciamento de Pedidos
+          </h1>
+          <p className="text-sm text-gray-500 max-w-lg whitespace-nowrap">
+            Gerencie a entrada e triagem de novos projetos.
+          </p>
+        </div>
+
+        {/* Search Input */}
+        <div className="relative w-[289px]">
+          <div className="bg-[#e4e2e2] flex items-center px-[40px] py-[11px] rounded relative">
+            <input
+              type="text"
+              placeholder="Buscar pedido"
+              onChange={handleSearchChange}
+              className="bg-transparent font-['Inter:Medium',sans-serif] font-medium text-[14px] text-[#6b7280] placeholder-[#6b7280] outline-none w-full"
+            />
+          </div>
+          <svg
+            className="absolute left-[12px] top-1/2 transform -translate-y-1/2 w-[13.5px] h-[13.5px] text-[#6b7280]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
       </div>
 
-      {/* Controls Row - Busca, Filtro e Novo Pedido */}
-      <div className="flex items-center gap-[12px] mt-10">
+      {/* Linha 2: Tabs + Filtro + Novo Pedido */}
+      <div className="flex items-center gap-[12px] mt-4">
 
-        {/* Toggle Todos / Meus Pedidos */}
-        <div className="flex items-stretch gap-[6px] border-r-2 border-[#e4e2e2] pr-[16px] mr-[4px]">
+        {/* Dropdown Pedidos */}
+        <div className="relative border-r-2 border-[#e4e2e2] pr-[16px] mr-[4px]" data-pedidos-dropdown>
           <button
-            onClick={() => onResponsavelFilter && onResponsavelFilter("todos")}
-            className={`whitespace-nowrap min-w-[130px] px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all cursor-pointer text-center ${
-              responsavelFilter === "todos"
-                ? "bg-[#161616] text-white shadow-md"
-                : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] shadow-md"
-            }`}
+            onClick={() => setShowPedidosDropdown((v) => !v)}
+            className="whitespace-nowrap px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all cursor-pointer text-center bg-[#161616] text-white shadow-md flex items-center gap-2"
           >
-            Todos
+            Pedidos
+            <svg className={`w-3 h-3 transition-transform ${showPedidosDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </button>
-          <button
-            onClick={() => onResponsavelFilter && onResponsavelFilter("meus")}
-            className={`whitespace-nowrap min-w-[130px] px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all cursor-pointer text-center ${
-              responsavelFilter === "meus"
-                ? "bg-[#fdf210] text-black shadow-md font-bold"
-                : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] shadow-md"
-            }`}
-          >
-            Meus Pedidos
-          </button>
+          {showPedidosDropdown && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px] overflow-hidden">
+              <button
+                onClick={() => { onResponsavelFilter && onResponsavelFilter("todos"); setShowPedidosDropdown(false); }}
+                className={`w-full text-left px-4 py-2 text-[14px] font-medium transition-colors ${
+                  responsavelFilter === "todos" ? "bg-[#f5f5f5] font-bold" : "hover:bg-[#f5f5f5]"
+                }`}
+              >
+                Todos os Pedidos
+              </button>
+              <button
+                onClick={() => { onResponsavelFilter && onResponsavelFilter("meus"); setShowPedidosDropdown(false); }}
+                className={`w-full text-left px-4 py-2 text-[14px] font-medium transition-colors ${
+                  responsavelFilter === "meus" ? "bg-[#fdf210] font-bold" : "hover:bg-[#f5f5f5]"
+                }`}
+              >
+                Meus Pedidos
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Filtros por etapa */}
         <div className="flex items-center gap-[12px]">
           
-          {/* 👇 Botão "Todos" (Filtro nulo) aparece EXCLUSIVAMENTE para Adm 👇 */}
           {userRole === 'Adm' && (
             <button
               onClick={() => onEtapaFilter && onEtapaFilter(null)}
@@ -158,7 +207,6 @@ function PageHeader({
             </button>
           )}
 
-          {/* 👇 Renderiza os botões dinamicamente após a filtragem 👇 */}
           {etapasVisiveis.map(({ value, label }) => {
             const isAtiva = etapaAtiva === value;
             const etapaConfig = getEtapaConfig(value || "Tudo");
@@ -181,134 +229,52 @@ function PageHeader({
           })}
         </div>
 
-        <div className="flex justify-end items-center w-full gap-[12px]">
-          {/* Search Input */}
-          <div className="relative w-full max-w-[289px] ml-16">
-            <div className="bg-[#e4e2e2] flex items-center px-[40px] py-[11px] rounded relative">
-              <input
-                type="text"
-                placeholder="Buscar pedido"
-                onChange={handleSearchChange}
-                className="bg-transparent font-['Inter:Medium',sans-serif] font-medium text-[14px] text-[#6b7280] placeholder-[#6b7280] outline-none w-full"
-              />
-            </div>
-            {/* Search Icon */}
-            <svg
-              className="absolute left-[12px] top-1/2 transform -translate-y-1/2 w-[13.5px] h-[13.5px] text-[#6b7280]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-
-          {/* Filtro Button + Panel */}
-          <div className="relative" ref={panelRef}>
+        {/* Filtro + Novo Pedido alinhados à direita (mesma largura da busca) */}
+        <div className="flex items-center gap-[12px] ml-auto w-[289px]">
+          <div className="relative flex-1" ref={panelRef}>
             <button
               onClick={() => setShowFilterPanel((v) => !v)}
-              className={`bg-[#e4e2e2] hover:bg-[#d4d2d2] transition-colors flex items-center gap-[8px] px-[16px] py-[10px] rounded ${
+              className={`w-full bg-[#e4e2e2] hover:bg-[#d4d2d2] transition-colors flex items-center justify-center gap-[8px] px-[16px] py-[10px] rounded ${
                 (statusFilter || ordenarPor) ? "ring-2 ring-[#fdf210]" : ""
               }`}
             >
               <svg className="w-[13.5px] h-[9px] text-[#323233]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
-              <span className="font-['Inter:Bold',sans-serif] font-bold text-[14px] text-[#323233]">
-                Filtro
-              </span>
+              <span className="font-['Inter:Bold',sans-serif] font-bold text-[14px] text-[#323233]">Filtro</span>
             </button>
 
             {showFilterPanel && (
               <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-5 w-[300px]">
-                {/* Status */}
                 <div className="mb-4">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#fdf210]"
-                  >
-                    {STATUS_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Status</label>
+                  <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#fdf210]">
+                    {STATUS_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
                   </select>
                 </div>
-
-                {/* Ordenar por */}
                 <div className="mb-4">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">
-                    Ordenar por
-                  </label>
-                  <select
-                    value={ordenarPor}
-                    onChange={(e) => setOrdenarPor(e.target.value)}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#fdf210]"
-                  >
-                    {ORDENAR_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Ordenar por</label>
+                  <select value={ordenarPor} onChange={(e) => setOrdenarPor(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#fdf210]">
+                    {ORDENAR_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
                   </select>
                 </div>
-
-                {/* Direção */}
                 {ordenarPor && (
                   <div className="mb-4">
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">
-                      Direção
-                    </label>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Direção</label>
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => setDirecao("asc")}
-                        className={`flex-1 px-3 py-2 text-sm font-medium rounded border transition-colors ${
-                          direcao === "asc"
-                            ? "bg-[#fdf210] border-[#fdf210] text-black"
-                            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        ↑ Crescente
-                      </button>
-                      <button
-                        onClick={() => setDirecao("desc")}
-                        className={`flex-1 px-3 py-2 text-sm font-medium rounded border transition-colors ${
-                          direcao === "desc"
-                            ? "bg-[#fdf210] border-[#fdf210] text-black"
-                            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        ↓ Decrescente
-                      </button>
+                      <button onClick={() => setDirecao("asc")} className={`flex-1 px-3 py-2 text-sm font-medium rounded border transition-colors ${direcao === "asc" ? "bg-[#fdf210] border-[#fdf210] text-black" : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"}`}>↑ Crescente</button>
+                      <button onClick={() => setDirecao("desc")} className={`flex-1 px-3 py-2 text-sm font-medium rounded border transition-colors ${direcao === "desc" ? "bg-[#fdf210] border-[#fdf210] text-black" : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"}`}>↓ Decrescente</button>
                     </div>
                   </div>
                 )}
-
-                {/* Botões */}
                 <div className="flex gap-2 pt-2 border-t border-gray-100">
-                  <button
-                    onClick={handleClearFilter}
-                    className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
-                  >
-                    Limpar
-                  </button>
-                  <button
-                    onClick={handleApplyFilter}
-                    className="flex-1 px-3 py-2 text-sm font-bold text-black bg-[#fdf210] rounded hover:bg-[#e6d800] transition-colors"
-                  >
-                    Aplicar
-                  </button>
+                  <button onClick={handleClearFilter} className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors">Limpar</button>
+                  <button onClick={handleApplyFilter} className="flex-1 px-3 py-2 text-sm font-bold text-black bg-[#fdf210] rounded hover:bg-[#e6d800] transition-colors">Aplicar</button>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Novo Pedido Button - SOMENTE ADM TEM PERMISSÃO DE CRIAR PEDIDO! */}
           {userRole === 'Adm' && (
             <button
               onClick={() => onNovoPedido && onNovoPedido()}

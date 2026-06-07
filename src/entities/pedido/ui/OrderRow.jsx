@@ -284,23 +284,6 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
             </button>
           </div>
         </td>
-
-        {/* Cancelar */}
-        <td className="py-2 px-2 text-center">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onCancelar && onCancelar(pedidoLocal.id_pedido);
-            }}
-            className="flex items-center justify-center px-2 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white transition-colors cursor-pointer"
-            title="Cancelar pedido"
-          >
-            <span className="font-['Inter:Bold',sans-serif] font-bold text-[9px] tracking-[0.5px] uppercase">
-              Cancelar
-            </span>
-          </button>
-        </td>
       </tr>
 
       {/* Modal de Detalhes */}
@@ -310,6 +293,7 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
         onClose={handleCloseModal}
         onEdit={handleEditPedido}
         onStatusChange={handleStatusChange}
+        onCancelar={onCancelar}
         usuarioLogado={usuarioLogado}
       />
     </>

@@ -215,7 +215,7 @@ export default function PedidosPage() {
     <div className="bg-[#f3f3f3] min-h-screen flex flex-col">
       <TopNavBar onNavClick={handleNavClick} currentPage={currentPage} />
 
-      <main className="flex-1 px-[64px] py-[32px] flex flex-col gap-[32px]">
+      <main className="flex-1 px-4 lg:px-[64px] py-[32px] flex flex-col gap-[32px]">
         {/* 👇 CORREÇÃO: Propriedades adicionadas para alimentar o PageHeader 👇 */}
         <PageHeader
           onSearch={handleSearch}

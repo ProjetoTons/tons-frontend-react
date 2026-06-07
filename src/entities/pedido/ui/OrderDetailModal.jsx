@@ -14,7 +14,7 @@ import { formatarDataBR } from "@/shared/lib/dateFormatter";
  * - usuarioLogado: object - Dados do usuário logado
  */
 
-function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usuarioLogado }) {
+function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, onCancelar, usuarioLogado }) {
   const [pedidoCompleto, setPedidoCompleto] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -313,22 +313,33 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, usu
         </div>
 
         {/* Footer com Botões */}
-        <div className="flex gap-3 justify-end p-6 border-t border-[#e4e2e2] sticky bottom-0 bg-white">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 rounded font-bold text-[14px] bg-[#f3f3f3] text-[#323233] hover:bg-[#e4e2e2] transition-colors"
-          >
-            Cancelar
-          </button>
+        <div className="flex gap-3 justify-between p-6 border-t border-[#e4e2e2] sticky bottom-0 bg-white">
           <button
             onClick={() => {
-              onEdit && onEdit(dadosPedido);
+              onCancelar && onCancelar(dadosPedido.id_pedido);
               onClose();
             }}
-            className="px-6 py-2 rounded font-bold text-[14px] bg-[#161616] text-white hover:bg-[#0a0a0a] transition-colors"
+            className="px-6 py-2 rounded font-bold text-[14px] bg-red-500 text-white hover:bg-red-600 transition-colors"
           >
-            Editar Pedido
+            Cancelar Pedido
           </button>
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 rounded font-bold text-[14px] bg-[#f3f3f3] text-[#323233] hover:bg-[#e4e2e2] transition-colors"
+            >
+              Fechar
+            </button>
+            <button
+              onClick={() => {
+                onEdit && onEdit(dadosPedido);
+                onClose();
+              }}
+              className="px-6 py-2 rounded font-bold text-[14px] bg-[#161616] text-white hover:bg-[#0a0a0a] transition-colors"
+            >
+              Editar Pedido
+            </button>
+          </div>
         </div>
       </div>
     </div>
