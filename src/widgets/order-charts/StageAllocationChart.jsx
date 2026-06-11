@@ -13,6 +13,7 @@ import {
     Legend
 } from 'chart.js';
 import { Bar, getElementAtEvent } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels'; // <-- 1. Importação do Plugin
 
 ChartJS.register(
     CategoryScale,
@@ -20,21 +21,21 @@ ChartJS.register(
     BarElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    ChartDataLabels // <-- 2. Registro do Plugin
 );
 
 // Cores da marca Ton's
 const COR_QUANTIDADE = '#d4c91a';
 const COR_FINANCEIRO = '#161616';
 
-// ORDEM OFICIAL DAS MACRO-ETAPAS
 const ORDEM_ETAPAS = ["Design", "Produção", "Embalagem", "Logística", "Finalizados"];
 
 export function StageAllocationChart() {
     const { periodo } = useDashboardFilters();
     const [dadosGrafico, setDadosGrafico] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [drillDown, setDrillDown] = useState(null); // { etapa, dados }
+    const [drillDown, setDrillDown] = useState(null);
     const chartRef = useRef(null);
 
     useEffect(() => {
@@ -81,7 +82,6 @@ export function StageAllocationChart() {
         }
     };
 
-    // --- Dados do gráfico principal (consolidado) ---
     const labels = dadosGrafico.map(d => d.etapa);
     const mainData = {
         labels,
@@ -103,7 +103,6 @@ export function StageAllocationChart() {
         ]
     };
 
-    // --- Dados do gráfico drill-down (sub-etapas) ---
     const drillData = drillDown ? {
         labels: drillDown.dados.map(d => d.subEtapa.replace(/-/g, ' ')),
         datasets: [
@@ -134,6 +133,32 @@ export function StageAllocationChart() {
         plugins: {
             legend: {
                 display: false,
+            },
+            // --- 3. Configuração dos Números nas Colunas ---
+            datalabels: {
+                anchor: 'end', // Prende no topo da barra
+                align: 'start', // Alinha para dentro (abaixo do topo)
+                offset: 4, // Espaçamento da borda superior
+                color: function(context) {
+                    // Se for o dataset de Quantidade (índice 0, barra amarela), texto preto. 
+                    // Se for Financeiro (barra preta), texto branco.
+                    return context.datasetIndex === 0 ? '#161616' : '#ffffff';
+                },
+                font: {
+                    family: 'Space Grotesk',
+                    weight: 'bold',
+                    size: 10
+                },
+                formatter: function(value, context) {
+                    if (!value || value === 0) return ''; // Não polui a tela com colunas zeradas
+                    
+                    if (context.dataset.yAxisID === 'y') {
+                        // Formatação enxuta para grana
+                        if (value >= 1000) return (value / 1000).toFixed(1) + 'k';
+                        return value;
+                    }
+                    return value; // Retorna a quantidade pura
+                }
             },
             tooltip: {
                 backgroundColor: 'rgba(22, 22, 22, 0.9)',
