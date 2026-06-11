@@ -107,6 +107,9 @@ export function EmployeePerformanceChart() {
             legend: {
                 display: false,
             },
+            datalabels: {
+                display: false
+            },
             tooltip: {
                 backgroundColor: 'rgba(22, 22, 22, 0.9)',
                 titleFont: { size: 13, family: 'Inter' },
