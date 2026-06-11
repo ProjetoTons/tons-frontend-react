@@ -104,12 +104,13 @@ export default function MeusPedidosWidget() {
     setSelectedPedido(null);
   };
 
-  const pedidosFiltrados = busca.trim()
+  const pedidosFiltrados = (busca.trim()
     ? pedidos.filter(p =>
         (p.num_pedido || "").toLowerCase().includes(busca.toLowerCase()) ||
         (p.descricao || "").toLowerCase().includes(busca.toLowerCase())
       )
-    : pedidos;
+    : pedidos
+  ).filter(p => p.etapa_pedido !== "Cancelados" && p.etapa_pedido !== "Cancelado");
 
   return (
     <div className="w-full flex gap-10 flex-wrap lg:flex-nowrap">

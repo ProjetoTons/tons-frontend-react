@@ -8,9 +8,11 @@ import { calcularEstatisticas } from "@/entities/pedido/api/mockPedidos";
 import { fetchPedidos, updatePedido, cancelarPedido } from "@/entities/pedido/api/pedidosApi";
 import { getUsuario } from "@/shared/api/authToken";
 import { ROLE_TABS_ACCESS } from "@/shared/config/permissions";
+import { useSweetAlert } from "@/shared/lib/hooks/sweetAlert";
 
 export default function PedidosPage() {
   const navigate = useNavigate();
+  const { warning, error: showError } = useSweetAlert();
   const [pedidos, setPedidos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
@@ -32,25 +34,24 @@ export default function PedidosPage() {
     role: rolePrincipal 
   };
 
-  // Carrega pedidos do backend no mount
-  useEffect(() => {
-    let ativo = true;
+  // Função reutilizável para buscar pedidos do backend
+  const carregarPedidos = async () => {
     setCarregando(true);
     setErro(null);
-    fetchPedidos()
-      .then((data) => {
-        if (ativo) setPedidos(data);
-      })
-      .catch((err) => {
-        console.error("Erro ao buscar pedidos:", err);
-        if (ativo) setErro("Não foi possível carregar os pedidos.");
-      })
-      .finally(() => {
-        if (ativo) setCarregando(false);
-      });
-    return () => {
-      ativo = false;
-    };
+    try {
+      const data = await fetchPedidos();
+      setPedidos(data);
+    } catch (err) {
+      console.error("Erro ao buscar pedidos:", err);
+      setErro("Não foi possível carregar os pedidos.");
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  // Carrega pedidos do backend no mount
+  useEffect(() => {
+    carregarPedidos();
   }, []);
 
   // 🔒 CONTROLADOR DE ACESSO INICIAL VIA URL
@@ -142,13 +143,17 @@ export default function PedidosPage() {
   };
 
   const handleEtapaFilter = (etapa) => {
-    if (usuarioLogado.role !== 'Adm') return;
+    if (usuarioLogado.role !== 'Adm') {
+      carregarPedidos();
+      return;
+    }
 
     if (!etapa || etapaFilter === etapa) {
       setSearchParams({});
     } else {
       setSearchParams({ etapa });
     }
+    carregarPedidos();
   };
 
   const handleNovoPedido = () => {
@@ -201,6 +206,13 @@ export default function PedidosPage() {
       setPedidos((prev) => prev.filter((p) => p.id_pedido !== cancelTarget.id));
     } catch (err) {
       console.error("Erro ao cancelar pedido:", err);
+      const mensagem = err?.response?.data?.message || err?.message || "";
+      if (mensagem.includes("já está cancelado")) {
+        warning("Pedido já cancelado", "Este pedido já foi cancelado anteriormente.");
+        carregarPedidos();
+      } else {
+        showError("Erro ao cancelar", "Não foi possível cancelar o pedido. Tente novamente.");
+      }
     } finally {
       setCancelTarget(null);
     }

@@ -198,8 +198,9 @@ export default function ListaInteresseWidget() {
                   onClick={() => handleOpenModal(item)}
                 >
                   <img
-                    src={item.image || "/product/placeholder.png"}
+                    src={item.image || "/product/placeholder.svg"}
                     alt={item.title}
+                    onError={(e) => { e.target.src = "/product/placeholder.svg"; }}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>

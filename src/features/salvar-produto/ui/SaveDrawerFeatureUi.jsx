@@ -100,8 +100,9 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading
                 <div className="w-[60px] h-[60px] bg-gray-100 flex-shrink-0 rounded-sm overflow-hidden">
                   <img
                     className="w-full h-full object-cover"
-                    src={item.image || "/product/placeholder.png"}
+                    src={item.image || "/product/placeholder.svg"}
                     alt={item.title}
+                    onError={(e) => { e.target.src = "/product/placeholder.svg"; }}
                   />
                 </div>
                 <div className="flex flex-col flex-1">
