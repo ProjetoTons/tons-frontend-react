@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getToken } from "@/shared/api/authToken";
 import { fetchMeusPedidos } from "@/entities/pedido/api/pedidosApi";
 import DetalhesPedidoModal from "@/features/detalhes-pedido/DetalhesPedidoModal.jsx";
 
@@ -61,12 +63,20 @@ function TimelineEtapas({ etapaAtual }) {
 }
 
 export default function MeusPedidosWidget() {
+  const navigate = useNavigate();
   const [busca, setBusca] = useState("");
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+
+  // Proteção: redirecionar se não estiver autenticado
+  useEffect(() => {
+    if (!getToken()) {
+      navigate("/portfolio", { replace: true });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     let ativo = true;

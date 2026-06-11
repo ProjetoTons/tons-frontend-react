@@ -19,7 +19,7 @@ export default function GraficaRoute({ children, requireAdmin = false }) {
     return <Navigate to="/portfolio" replace />;
   }
 
-  // 👇 NOVA LÓGICA: Valida a trava de administrador varrendo a lista de objetos de acesso 👇
+  // Valida a trava de administrador varrendo a lista de objetos de acesso 
   if (requireAdmin) {
     const isAdm = usuario.acessos?.some(acesso => acesso.role === 'Adm');
     if (!isAdm) {

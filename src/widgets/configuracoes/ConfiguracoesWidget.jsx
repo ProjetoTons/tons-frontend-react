@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getToken } from "@/shared/api/authToken";
 import {
   aplicarMascaraCpf,
   aplicarMascaraTelefone,
@@ -29,6 +30,13 @@ import {
 
 export default function ConfiguracoesWidget() {
   const navigate = useNavigate();
+
+  // Proteção: redirecionar se não estiver autenticado
+  useEffect(() => {
+    if (!getToken()) {
+      navigate("/portfolio", { replace: true });
+    }
+  }, [navigate]);
 
   // Collapsible sections
   const [openSections, setOpenSections] = useState({

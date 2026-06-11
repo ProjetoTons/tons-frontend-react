@@ -34,6 +34,7 @@ export default function ListaInteresseWidget() {
       if (!getToken()) {
         setItemsSalvos([]);
         setIsLoading(false);
+        navigate("/portfolio", { replace: true });
         return;
       }
       try {
