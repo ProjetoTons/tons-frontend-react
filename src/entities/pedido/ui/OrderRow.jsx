@@ -165,8 +165,8 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
 
         <td className="py-2 px-2 text-center">
           <img
-            src={`https://i.pravatar.cc/150?u=${pedidoLocal.id_pedido}`}
-            className="w-12 h-12 object-cover border border-gray-200 shadow-sm rounded mx-auto"
+            src={`/pedidos-icons/preview-producao.png`}
+            className="w-full h-full object-cover border border-gray-200 shadow-sm rounded mx-auto"
             alt="Pedido"
           />
         </td>

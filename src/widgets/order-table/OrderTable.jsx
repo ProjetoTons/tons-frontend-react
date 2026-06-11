@@ -17,7 +17,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, onCancelar
       <table className="w-full min-w-[1100px] table-fixed border-collapse">
         <colgroup>
           <col style={{width: '1%'}} />
-          <col style={{width: '5%'}} />
+          <col style={{width: '7%'}} />
           <col style={{width: '8%'}} />
           <col style={{width: '13%'}} />
           <col style={{width: '10%'}} />
@@ -25,7 +25,7 @@ function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, onCancelar
           <col style={{width: '13%'}} />
           <col style={{width: '9%'}} />
           <col style={{width: '9%'}} />
-          <col style={{width: '9%'}} />
+          <col style={{width: '8%'}} />
           <col style={{width: '10%'}} />
         </colgroup>
         {/* Table Header */}
