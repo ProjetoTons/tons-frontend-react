@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { getUsuario } from "@/shared/api/authToken";
+import { getUsuario, clearSession } from "@/shared/api/authToken";
 import './topnav.css';
 
 const NAV_ROUTES = {
@@ -23,6 +23,11 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
     if (onNavClick) onNavClick(key);
     const route = NAV_ROUTES[key];
     if (route) navigate(route);
+  };
+
+  const handleLogout = () => {
+    clearSession();
+    navigate('/login');
   };
 
   return (
@@ -85,6 +90,15 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
             Funcionários
           </button>
         )}
+
+        {/* Botão de Logout */}
+        <button
+          onClick={handleLogout}
+          className="font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer text-[#ef4444] hover:text-[#dc2626]"
+          aria-label="Sair da conta"
+        >
+          Sair
+        </button>
       </div>
     </nav>
   );

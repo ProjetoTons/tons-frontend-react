@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+
+const PLACEHOLDER_IMG = '/product/placeholder.svg';
 
 export default function Card({
     produto, // Recebemos o objeto completo do produto
@@ -8,6 +10,7 @@ export default function Card({
     iconActive,
     iconInactive,
 }) {
+  const [imgError, setImgError] = useState(false);
   // Desestruturamos para facilitar o uso, mas mantemos o objeto 'produto' para o modal
   const { image, category, title } = produto;
 
@@ -19,8 +22,9 @@ export default function Card({
         onClick={() => onImageClick(produto)}
       >
         <img 
-          src={image} 
+          src={imgError || !image ? PLACEHOLDER_IMG : image} 
           alt={title} 
+          onError={() => setImgError(true)}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
         />
         {/* Bookmark no canto superior direito */}

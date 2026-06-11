@@ -13,9 +13,9 @@ export function mapProdutoToItem(produto) {
     id: produto.id,
     title: produto.nome ?? 'Produto',
     description: produto.descricao ?? '',
-    type: produto.tipoMaterial ?? '',
+    type: produto.categoriaProduto?.slug ?? produto.tipoMaterial ?? '',
     category: produto.categoriaProduto?.nome ?? produto.tipoMaterial ?? 'Produto',
-    image: produto.image ?? produto.urlImagem ?? '/product/placeholder.png',
+    image: produto.imagemUrl || produto.image || '/product/placeholder.svg',
   }
 }
 

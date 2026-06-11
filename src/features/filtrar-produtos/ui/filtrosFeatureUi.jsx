@@ -1,105 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './filtrosFeatureUi.css';
 
-function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar }) {
-  const categoriasAgrupadas = [
-    {
-      id: "acessorios_celular",
-      label: "CAT-01",
-      nome: "Acessórios p/ Celular",
-      itemCount: 8,
-    },
-    {
-      id: "bar_bebidas",
-      label: "CAT-02",
-      nome: "Bar e Bebidas",
-      itemCount: 5,
-    },
-    {
-      id: "blocos_cadernetas",
-      label: "CAT-03",
-      nome: "Blocos e Cadernetas",
-      itemCount: 6,
-    },
-    {
-      id: "bolsas_termicas",
-      label: "CAT-04",
-      nome: "Bolsas Térmicas",
-      itemCount: 5,
-    },
-    {
-      id: "caixa_som",
-      label: "CAT-05",
-      nome: "Caixa de Som",
-      itemCount: 3,
-    },
-    {
-      id: "caneca",
-      label: "CAT-06",
-      nome: "Caneca",
-      itemCount: 6,
-    },
-    {
-      id: "chaveiros",
-      label: "CAT-07",
-      nome: "Chaveiros",
-      itemCount: 5,
-    },
-    {
-      id: "copos_termicos",
-      label: "CAT-08",
-      nome: "Copos Térmicos",
-      itemCount: 6,
-    },
-    {
-      id: "cozinha",
-      label: "CAT-09",
-      nome: "Cozinha",
-      itemCount: 8,
-    },
-    {
-      id: "cuidados_pessoais",
-      label: "CAT-10",
-      nome: "Cuidados Pessoais",
-      itemCount: 6,
-    },
-    {
-      id: "escritorio",
-      label: "CAT-11",
-      nome: "Escritório",
-      itemCount: 3,
-    },
-    {
-      id: "esporte_jogos",
-      label: "CAT-12",
-      nome: "Esporte e Jogos",
-      itemCount: 5,
-    },
-    {
-      id: "caneta",
-      label: "CAT-13",
-      nome: "Caneta",
-      itemCount: 6,
-    },
-    {
-      id: "estojo",
-      label: "CAT-14",
-      nome: "Estojo",
-      itemCount: 4,
-    },
-    {
-      id: "ferramentas",
-      label: "CAT-15",
-      nome: "Ferramentas",
-      itemCount: 4,
-    },
-    {
-      id: "lanternas_luminarias",
-      label: "CAT-16",
-      nome: "Lanternas e Luminárias",
-      itemCount: 3,
-    }
-  ];
+function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar, categorias = [] }) {
+  const categoriasAgrupadas = categorias.map((cat, index) => ({
+    id: cat.slug,
+    label: `CAT-${String(index + 1).padStart(2, '0')}`,
+    nome: cat.nome,
+    itemCount: cat.count || 0,
+  }));
 
   return (
     <section className="w-full bg-white px-10 py-6">

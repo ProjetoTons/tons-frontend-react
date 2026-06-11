@@ -12,7 +12,7 @@ import MobileMenu from '@/features/mobile-menu/mobile-menu.jsx'
 import ProductModal from '@/features/modal-produto/modal-produto.jsx';
 
 import { useSaveDrawer } from '@/features/salvar-produto/model/useSaveDrawerFeatureModel'
-import { produtos } from '@/entities/produto/api/mockProdutos'
+import { getProdutos } from '@/entities/produto/api/getProdutos'
 
 export default function PortfolioPage() {
   const { isDrawerOpen, itemsSalvos, openDrawer, closeDrawer, toggleSaveProduct, isLoading, error } = useSaveDrawer()
@@ -21,10 +21,33 @@ export default function PortfolioPage() {
   const [categoriaAtiva, setCategoriaAtiva] = useState("todos");
   const [mostrarDestaque, setMostrarDestaque] = useState(false);
   const [busca, setBusca] = useState("");
+  const [produtos, setProdutos] = useState([]);
+  const [carregandoProdutos, setCarregandoProdutos] = useState(true);
 
   // ESTADO DO MODAL DE PRODUTOS
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Carrega produtos do backend
+  useEffect(() => {
+    getProdutos()
+      .then((data) => setProdutos(data))
+      .finally(() => setCarregandoProdutos(false));
+  }, []);
+
+  // Extrai categorias únicas dos produtos carregados (com contagem)
+  const categorias = React.useMemo(() => {
+    const map = new Map();
+    produtos.forEach((p) => {
+      if (p.type) {
+        if (!map.has(p.type)) {
+          map.set(p.type, { slug: p.type, nome: p.category, count: 0 });
+        }
+        map.get(p.type).count++;
+      }
+    });
+    return Array.from(map.values());
+  }, [produtos]);
 
   // Efeito para fazer scroll suave quando a categoria ativa muda
   useEffect(() => {
@@ -146,6 +169,7 @@ export default function PortfolioPage() {
         aoMudar={handleMudarFiltro}
         busca={busca}
         aoBuscar={setBusca}
+        categorias={categorias}
       />
 
       {/* SEÇÃO DE PRODUTOS POR CATEGORIA */}
@@ -166,7 +190,11 @@ export default function PortfolioPage() {
           </div>
         )}
         
-        {buscaTrim ? (
+        {carregandoProdutos ? (
+          <div className="flex justify-center py-16">
+            <p className="text-gray-500 font-medium text-sm uppercase tracking-widest">Carregando produtos...</p>
+          </div>
+        ) : buscaTrim ? (
           matchedProducts.length > 0 ? (
             <div className="mb-12">
               <div className="flex items-center gap-4 mb-8">
@@ -190,22 +218,9 @@ export default function PortfolioPage() {
           )
         ) : (
           <>
-            {renderizarCategoria("Acessórios p/ Celular", "acessorios_celular")}
-            {renderizarCategoria("Bar e Bebidas", "bar_bebidas")}
-            {renderizarCategoria("Blocos e Cadernetas", "blocos_cadernetas")}
-            {renderizarCategoria("Bolsas Térmicas", "bolsas_termicas")}
-            {renderizarCategoria("Caixa de Som", "caixa_som")}
-            {renderizarCategoria("Caneca", "caneca")}
-            {renderizarCategoria("Chaveiros", "chaveiros")}
-            {renderizarCategoria("Copos Térmicos", "copos_termicos")}
-            {renderizarCategoria("Cozinha", "cozinha")}
-            {renderizarCategoria("Cuidados Pessoais", "cuidados_pessoais")}
-            {renderizarCategoria("Escritório", "escritorio")}
-            {renderizarCategoria("Esporte e Jogos", "esporte_jogos")}
-            {renderizarCategoria("Caneta", "caneta")}
-            {renderizarCategoria("Estojo", "estojo")}
-            {renderizarCategoria("Ferramentas", "ferramentas")}
-            {renderizarCategoria("Lanternas e Luminárias", "lanternas_luminarias")}
+            {categorias.map(({ nome, slug }) => (
+              <div key={slug}>{renderizarCategoria(nome, slug)}</div>
+            ))}
           </>
         )}
       </section>
