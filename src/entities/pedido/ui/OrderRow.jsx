@@ -16,40 +16,36 @@ import { formatarDataBR } from "@/shared/lib/dateFormatter";
 
 /**
  * OrderRow - Uma linha da tabela de pedidos
- * 
- * Props:
- * - pedido: object com dados do pedido
- * - onAvancar: function - callback quando clica no botão Avançar
- * - onRetornar: function - callback quando clica no botão Retornar
- * - onStatusChange: function - callback quando status é alterado
- * - usuarioLogado: object - Dados do usuário logado
  */
-
-function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado = { id: 1, nome: "Usuário" } }) {
+function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado = { id: null, nome: "Usuário", role: "" } }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Usa diretamente os dados do prop (estado controlado pelo pai)
   const pedidoLocal = pedido;
 
-  // Próximo status na mesma etapa (sub-etapa)
+  // --- LÓGICA DE NAVEGAÇÃO DE STATUS ---
   const proximoStatus = getNextStatus(pedidoLocal.etapa_pedido, pedidoLocal.status);
   const proximaEtapa = getNextEtapa(pedidoLocal.etapa_pedido);
-
-  // Status anterior na mesma etapa
+  
   const statusAnterior = getPreviousStatus(pedidoLocal.etapa_pedido, pedidoLocal.status);
   const etapaAnterior = getPreviousEtapa(pedidoLocal.etapa_pedido);
 
-  // Pode avançar se houver próxima sub-etapa OU próxima etapa
-  const podeAvancar = proximoStatus !== null || proximaEtapa !== null;
+  // --- TRAVA DE SEGURANÇA ---
+  const isAdmin = usuarioLogado?.role === 'Adm';
+  const responsavelAtualId = pedidoLocal.responsavel_fase_atual?.id;
+  const hasResponsavel = Boolean(responsavelAtualId);
+  const isOutroResponsavel = hasResponsavel && responsavelAtualId !== usuarioLogado.id;
+  
+  // Bloqueia se NÃO for admin, TIVER um responsável, e NÃO FOR o usuário logado
+  const bloqueadoPorOutroResponsavel = !isAdmin && isOutroResponsavel;
 
-  // Pode retornar se houver status anterior OU etapa anterior
-  const podeRetornar = statusAnterior !== null || etapaAnterior !== null;
+  // --- APLICAÇÃO DA TRAVA NAS AÇÕES ---
+  const podeAvancar = (proximoStatus !== null || proximaEtapa !== null) && !bloqueadoPorOutroResponsavel;
+  const podeRetornar = (statusAnterior !== null || etapaAnterior !== null) && !bloqueadoPorOutroResponsavel;
 
   const handleAvancar = () => {
     let pedidoAtualizado;
 
     if (proximoStatus) {
-      // Avança sub-etapa dentro da mesma etapa -> usuário logado vira responsável
       pedidoAtualizado = {
         ...pedidoLocal,
         status: proximoStatus,
@@ -57,7 +53,6 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
       };
       onAvancar && onAvancar(pedidoLocal.id_pedido, pedidoAtualizado);
     } else if (proximaEtapa) {
-      // Cruza para nova etapa -> confirmar com SweetAlert
       Swal.fire({
         title: "Confirmar mudança de etapa",
         text: `Deseja avançar o pedido para a etapa "${proximaEtapa}"?`,
@@ -69,7 +64,6 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          // Logística: status inicial depende do tipo_envio
           let statusInicial;
           if (proximaEtapa === "Logística") {
             statusInicial = pedidoLocal.tipo_envio === "Retirada"
@@ -95,7 +89,6 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
     let pedidoAtualizado;
 
     if (statusAnterior) {
-      // Retorna sub-etapa dentro da mesma etapa -> usuário logado vira responsável
       pedidoAtualizado = {
         ...pedidoLocal,
         status: statusAnterior,
@@ -103,7 +96,6 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
       };
       onRetornar && onRetornar(pedidoLocal.id_pedido, pedidoAtualizado);
     } else if (etapaAnterior) {
-      // Volta para etapa anterior -> confirmar com SweetAlert
       Swal.fire({
         title: "Confirmar retorno de etapa",
         text: `Deseja retornar o pedido para a etapa "${etapaAnterior}"?`,
@@ -119,7 +111,7 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
             ...pedidoLocal,
             etapa_pedido: etapaAnterior,
             status: getLastStatus(etapaAnterior),
-            responsavel_fase_atual: null,
+            responsavel_fase_atual: null, // Ao voltar de etapa grande, solta o responsável
           };
           onRetornar && onRetornar(pedidoLocal.id_pedido, pedidoAtualizado);
         }
@@ -136,20 +128,23 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
     onStatusChange && onStatusChange(pedidoLocal.id_pedido, pedidoAtualizado);
   };
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   const handleEditPedido = (pedido) => {
     navigate(`/pedidos/${pedido.id_pedido}/editar`);
   };
 
-  // Determina qual responsável mostrar
   const responsavelExibicao = pedidoLocal.responsavel_fase_atual?.nome || "-";
+
+  // Textos explicativos dinâmicos para melhorar a UX caso esteja bloqueado
+  const tooltipAvancar = bloqueadoPorOutroResponsavel 
+    ? "Tarefa em andamento por outro colaborador" 
+    : (podeAvancar ? "Avançar para próxima etapa" : "Conclua o status atual para avançar");
+
+  const tooltipRetornar = bloqueadoPorOutroResponsavel 
+    ? "Tarefa em andamento por outro colaborador" 
+    : (podeRetornar ? "Retornar para etapa anterior" : "Não é possível retornar");
 
   return (
     <>
@@ -168,26 +163,21 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
           </div>
         </td>
 
-        {/* Imagem */}
         <td className="py-2 px-2 text-center">
           <img
             src={`https://i.pravatar.cc/150?u=${pedidoLocal.id_pedido}`}
             className="w-12 h-12 object-cover border border-gray-200 shadow-sm rounded mx-auto"
+            alt="Pedido"
           />
         </td>
 
-        {/* N° Pedido */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Bold',sans-serif] font-bold text-[14px] text-[#161616]">
             {pedidoLocal.num_pedido}
           </span>
         </td>
 
-        {/* Status */}
-        <td
-          className="py-2 px-2 text-center"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <td className="py-2 px-2 text-center" onClick={(e) => e.stopPropagation()}>
           <StatusBadge
             status={pedidoLocal.status}
             etapa_pedido={pedidoLocal.etapa_pedido}
@@ -196,42 +186,36 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
           />
         </td>
 
-        {/* Vendedor */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[#323233]">
             {pedidoLocal.vendedor.nome}
           </span>
         </td>
 
-        {/* Responsável da Fase Atual */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Regular',sans-serif] font-normal text-[13px] text-[#323233]">
             {responsavelExibicao}
           </span>
         </td>
 
-        {/* Cliente */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[#323233]">
             {pedidoLocal.cliente.nome}
           </span>
         </td>
 
-        {/* Data Início */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Regular',sans-serif] font-normal text-[13px] text-[#5f5f5f]">
             {formatarDataBR(pedidoLocal.data_pedido)}
           </span>
         </td>
 
-        {/* Data Fim */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Regular',sans-serif] font-normal text-[13px] text-[#5f5f5f]">
             {formatarDataBR(pedidoLocal.data_finalizacao)}
           </span>
         </td>
 
-        {/* Valor */}
         <td className="py-2 px-2 text-center">
           <span className="font-['Inter:Bold',sans-serif] font-bold text-[13px] text-[#161616]">
             {pedidoLocal.valor_total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -248,11 +232,12 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
                 handleRetornar();
               }}
               disabled={!podeRetornar}
-              className={`flex items-center justify-center w-2/3 px-2 py-1.5 rounded transition-colors ${podeRetornar
-                ? 'bg-[#161616] hover:bg-[#474747] text-white cursor-pointer'
-                : 'bg-[#e4e3e2] text-[#b0b0b0] cursor-not-allowed opacity-50'
-                }`}
-              title={podeRetornar ? "Retornar para etapa anterior" : "Não é possível retornar"}
+              className={`flex items-center justify-center w-2/3 px-2 py-1.5 rounded transition-colors ${
+                podeRetornar
+                  ? 'bg-[#161616] hover:bg-[#474747] text-white cursor-pointer'
+                  : 'bg-[#e4e3e2] text-[#b0b0b0] cursor-not-allowed opacity-50'
+              }`}
+              title={tooltipRetornar}
             >
               <div className="flex items-center">
                 <img className="w-4 h-4" src="/pedidos-icons/return-icon.svg" alt="Retornar" />
@@ -269,11 +254,12 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
                 handleAvancar();
               }}
               disabled={!podeAvancar}
-              className={`flex items-center justify-center w-2/3 px-2 py-1.5 rounded transition-colors ${podeAvancar
-                ? 'bg-[#fdf210] hover:bg-[#e6d800] cursor-pointer'
-                : 'bg-[#fdf210] text-[#808080] cursor-not-allowed opacity-50'
-                }`}
-              title={podeAvancar ? "Avançar para próxima etapa" : "Conclua o status atual para avançar"}
+              className={`flex items-center justify-center w-2/3 px-2 py-1.5 rounded transition-colors ${
+                podeAvancar
+                  ? 'bg-[#fdf210] hover:bg-[#e6d800] cursor-pointer'
+                  : 'bg-[#fdf210] text-[#808080] cursor-not-allowed opacity-50'
+              }`}
+              title={tooltipAvancar}
             >
               <div className="flex items-center">
                 <img className="w-4 h-4 brightness-5" src="/pedidos-icons/advance-icon.svg" alt="Avançar" />
@@ -286,7 +272,6 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
         </td>
       </tr>
 
-      {/* Modal de Detalhes */}
       <OrderDetailModal
         isOpen={isModalOpen}
         pedido={pedidoLocal}
