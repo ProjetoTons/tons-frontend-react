@@ -136,14 +136,10 @@ export function StageAllocationChart() {
             },
             // --- 3. Configuração dos Números nas Colunas ---
             datalabels: {
-                anchor: 'end', // Prende no topo da barra
-                align: 'start', // Alinha para dentro (abaixo do topo)
-                offset: 4, // Espaçamento da borda superior
-                color: function(context) {
-                    // Se for o dataset de Quantidade (índice 0, barra amarela), texto preto. 
-                    // Se for Financeiro (barra preta), texto branco.
-                    return context.datasetIndex === 0 ? '#161616' : '#ffffff';
-                },
+                anchor: 'end', // Prende no limite superior da barra
+                align: 'end',  // AGORA SIM: Empurra o texto para FORA (para cima) da barra
+                offset: 2,     // Espaçamento entre o topo da barra e o número
+                color: '#323233', // Usando um tom escuro unificado já que ambos estarão no fundo claro
                 font: {
                     family: 'Space Grotesk',
                     weight: 'bold',
