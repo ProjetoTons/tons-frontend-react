@@ -120,7 +120,7 @@ function PageHeader({
       <div className="flex items-end justify-between mt-10">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">
-            Gerenciamento de Pedidos
+            {responsavelFilter === "meus" ? "Meus Pedidos" : "Todos os Pedidos"}
           </h1>
           <p className="text-sm text-gray-500 max-w-lg whitespace-nowrap">
             Gerencie a entrada e triagem de novos projetos.
@@ -160,10 +160,10 @@ function PageHeader({
         <div className="relative border-r-2 border-[#e4e2e2] pr-[16px] mr-[4px]" data-pedidos-dropdown>
           <button
             onClick={() => setShowPedidosDropdown((v) => !v)}
-            className="whitespace-nowrap px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all cursor-pointer text-center bg-[#161616] text-white shadow-md flex items-center gap-2"
+            className="whitespace-nowrap min-w-[160px] px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all cursor-pointer text-center bg-[#161616] text-white shadow-md flex items-center justify-between gap-2"
           >
-            Pedidos
-            <svg className={`w-3 h-3 transition-transform ${showPedidosDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {responsavelFilter === "meus" ? "Meus Pedidos" : "Todos os Pedidos"}
+            <svg className={`w-4 h-4 transition-transform ${showPedidosDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
