@@ -125,7 +125,7 @@ export const useRegisterClient = () => {
         // Sem chamada à API neste step. Os dados pessoais são apenas validados
         // e propagados via router state. O cadastro real (POST /usuarios) acontece
         // no último step (RegistrationSuccessFeature) com todos os dados acumulados.
-        navigate("/cadastro/empresa", {
+        navigate("/cadastro/endereco", {
             state: {
                 dadosPessoais: formData,
                 cpfSalvo: cpf,

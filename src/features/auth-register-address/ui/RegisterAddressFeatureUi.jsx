@@ -35,7 +35,7 @@ export default function RegisterAddressFeature() {
 
           <EtapaVisual
             NomeEstapa={"Endereço de Entrega"}
-            faseInicial={3}
+            faseInicial={2}
             faseFinal={4}
           />
 
@@ -133,23 +133,27 @@ export default function RegisterAddressFeature() {
             </div>
 
             {/* Botões */}
-            <div className="flex flex-col gap-3 pt-4">
-              <button
-                type="submit"
-                className="w-full bg-[#FFE300] text-black font-bold py-3 px-6 text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#EED100] transition-colors"
-              >
-                Salvar Endereço
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </button>
-
+            <div className="flex items-center gap-3 pt-4">
               <button
                 type="button"
                 onClick={handleVoltar}
-                className="w-full text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider hover:text-black transition-colors cursor-pointer"
+                className="flex-1 flex items-center justify-center gap-1 py-3 px-4 bg-[#EFEFEF] text-[11px] font-bold text-gray-600 uppercase tracking-wider hover:bg-[#E0E0E0] hover:text-black transition-colors cursor-pointer"
               >
-                Voltar para o passo 2
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Voltar
+              </button>
+
+              <button
+                type="submit"
+                disabled={!formData.cep || formData.cep.replace(/\D/g, "").length < 8}
+                className="flex-1 bg-[#FFE300] text-black font-bold py-3 px-6 text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#EED100] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                Próximo Passo
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
               </button>
             </div>
 
