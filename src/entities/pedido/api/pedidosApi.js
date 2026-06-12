@@ -114,8 +114,10 @@ function toFrontend(dto) {
       ? { id: dto.responsavel.id, nome: dto.responsavel.nome }
       : { id: null, nome: "-" },
 
-    // Vendedor não vem na resposta atual — placeholder
-    vendedor: { id_usuario: null, nome: "-" },
+    // Vendedor que registrou o pedido
+    vendedor: dto.vendedor
+      ? { id_usuario: dto.vendedor.id, nome: dto.vendedor.nome }
+      : { id_usuario: null, nome: "-" },
 
     endereco: dto.endereco || null,
 

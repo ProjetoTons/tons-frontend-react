@@ -20,12 +20,14 @@ export default function NovoPedidoPage() {
     numPedido: "",
     idCliente: "",
     descricaoProjeto: "",
+    observacao: "",
     status: "Não Iniciado",
     etapaPedido: "Design",
     tipoEnvio: "",
-    responsavel: "",
+    vendedor: "",
     dataInicio: "",
     dataEntrega: "",
+    valorPedido: "",
   });
 
   // Autocomplete de clientes
@@ -35,9 +37,7 @@ export default function NovoPedidoPage() {
   const [clientesCache, setClientesCache] = useState([]);
   const debounceTimer = useRef(null);
 
-  const [itens, setItens] = useState([
-    { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", valorUnitario: "", descricaoArte: "" },
-  ]);
+  const [itens, setItens] = useState([]);
 
   const [mockupFile, setMockupFile] = useState(null);
   const [errosValidacao, setErrosValidacao] = useState({});
@@ -53,6 +53,11 @@ export default function NovoPedidoPage() {
   // Produtos do banco para autocomplete
   const [produtosCache, setProdutosCache] = useState([]);
   const [produtoSugestoes, setProdutoSugestoes] = useState({ index: null, lista: [] });
+
+  // Modal catálogo de produtos
+  const [showCatalogo, setShowCatalogo] = useState(false);
+  const [catalogoItemIndex, setCatalogoItemIndex] = useState(null);
+  const [catalogoBusca, setCatalogoBusca] = useState("");
 
   useEffect(() => {
     http.get("/produtos")
@@ -76,10 +81,45 @@ export default function NovoPedidoPage() {
   const selecionarProduto = (index, produto) => {
     setItens((prev) => {
       const updated = [...prev];
-      updated[index] = { ...updated[index], produto: produto.nome || produto.title || "", idProduto: produto.id };
+      updated[index] = {
+        ...updated[index],
+        produto: produto.nome || produto.title || "",
+        idProduto: produto.id,
+        composicao: produto.tipoMaterial || produto.composicao || updated[index].composicao || "",
+      };
       return updated;
     });
     setProdutoSugestoes({ index: null, lista: [] });
+  };
+
+  const abrirCatalogo = (index) => {
+    setCatalogoItemIndex(index);
+    setCatalogoBusca("");
+    setShowCatalogo(true);
+  };
+
+  const selecionarDoCatalogo = (produto) => {
+    const index = catalogoItemIndex;
+    if (index === null) {
+      // Adiciona novo item com produto selecionado
+      setItens((prev) => [
+        ...prev,
+        {
+          produto: produto.nome || produto.title || "",
+          idProduto: produto.id,
+          corEstampa: "",
+          corMaterial: "",
+          composicao: produto.tipoMaterial || "",
+          tamanho: "",
+          quantidade: "",
+          descricaoArte: "",
+        },
+      ]);
+    } else {
+      selecionarProduto(index, produto);
+    }
+    setShowCatalogo(false);
+    setCatalogoItemIndex(null);
   };
 
   // Fecha autocomplete ao clicar fora
@@ -93,30 +133,30 @@ export default function NovoPedidoPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Carrega lista de clientes (extraída dos pedidos) uma vez
+  // Carrega lista de clientes cadastrados no sistema
+  useEffect(() => {
+    http.get("/usuarios/clientes")
+      .then(({ data }) => {
+        const clientes = (Array.isArray(data) ? data : [])
+          .map((u) => ({ id: u.id, nome: u.nome || "", nomeEmpresa: u.nomeEmpresa || "" }));
+        setClientesCache(clientes);
+      })
+      .catch((err) => console.error("Erro ao carregar clientes:", err));
+  }, []);
+
+  // Auto-preenche próximo número de pedido
   useEffect(() => {
     fetchPedidos()
       .then((pedidos) => {
-        const map = new Map();
         let maiorNumero = 999;
         pedidos.forEach((p) => {
-          if (p.cliente && p.cliente.id_usuario) {
-            map.set(p.cliente.id_usuario, {
-              id: p.cliente.id_usuario,
-              nome: p.cliente.nome,
-              nomeEmpresa: p.cliente.nome_empresa || "",
-            });
-          }
-          // Extrai parte numérica do num_pedido para calcular próximo
           const num = parseInt(String(p.num_pedido).replace(/\D/g, ""), 10);
           if (!isNaN(num) && num > maiorNumero) maiorNumero = num;
         });
-        setClientesCache(Array.from(map.values()));
-        // Auto-preenche próximo número (mínimo 1000)
         const proximo = maiorNumero + 1;
         setFormData((prev) => ({ ...prev, numPedido: String(proximo) }));
       })
-      .catch((err) => console.error("Erro ao carregar clientes:", err));
+      .catch((err) => console.error("Erro ao calcular número do pedido:", err));
   }, []);
 
   // Filtra clientes localmente pelo termo digitado
@@ -132,9 +172,7 @@ export default function NovoPedidoPage() {
     debounceTimer.current = setTimeout(() => {
       const termoLower = termo.toLowerCase();
       const resultados = clientesCache.filter(
-        (c) =>
-          (c.nome || "").toLowerCase().includes(termoLower) ||
-          (c.nomeEmpresa || "").toLowerCase().includes(termoLower)
+        (c) => (c.nome || "").toLowerCase().includes(termoLower)
       );
       setClienteSugestoes(resultados);
       setShowSugestoes(true);
@@ -143,7 +181,7 @@ export default function NovoPedidoPage() {
 
   const handleNomeClienteChange = (e) => {
     const { value } = e.target;
-    setFormData((prev) => ({ ...prev, nomeCliente: value, idCliente: "" }));
+    setFormData((prev) => ({ ...prev, nomeCliente: value, idCliente: "", empresaCliente: "" }));
     buscarClientes(value);
   };
 
@@ -152,6 +190,7 @@ export default function NovoPedidoPage() {
       ...prev,
       nomeCliente: cliente.nome || cliente.nomeEmpresa || "",
       idCliente: String(cliente.id || ""),
+      empresaCliente: cliente.nomeEmpresa || "",
     }));
     setShowSugestoes(false);
     setClienteSugestoes([]);
@@ -174,7 +213,7 @@ export default function NovoPedidoPage() {
   const addItem = () => {
     setItens((prev) => [
       ...prev,
-      { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", valorUnitario: "", descricaoArte: "" },
+      { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", descricaoArte: "" },
     ]);
   };
 
@@ -206,7 +245,6 @@ export default function NovoPedidoPage() {
       const erroItem = {};
       if (!item.idProduto) erroItem.produto = true;
       if (!item.quantidade || Number(item.quantidade) <= 0) erroItem.quantidade = true;
-      if (!item.valorUnitario || Number(item.valorUnitario) <= 0) erroItem.valorUnitario = true;
       if (Object.keys(erroItem).length > 0) itensComErro.push({ index: i, ...erroItem });
     });
 
@@ -256,19 +294,22 @@ export default function NovoPedidoPage() {
       const payload = {
         numPedido: formData.numPedido,
         descricao: formData.descricaoProjeto || "",
+        observacao: formData.observacao || null,
         urlFotoArte,
         status: "Não Iniciado",
         etapaPedido: "Design",
         tipoEnvio: formData.tipoEnvio || null,
-        valorTotal: itensValidos.reduce((acc, item) => acc + (Number(item.valorUnitario) || 0) * (Number(item.quantidade) || 0), 0),
+        valorTotal: Number(formData.valorPedido) || 0,
         dataPedido: new Date().toISOString(),
+        dataInicio: formData.dataInicio ? new Date(formData.dataInicio).toISOString() : null,
+        dataFinalizacao: formData.dataEntrega ? new Date(formData.dataEntrega).toISOString() : null,
         idEndereco,
         idUsuarioCliente: Number(formData.idCliente),
-        idUsuarioResponsavel: formData.responsavel ? Number(formData.responsavel) : null,
+        idUsuarioResponsavel: null,
+        idUsuarioVendedor: formData.vendedor ? Number(formData.vendedor) : null,
         itens: itensValidos.map((item) => ({
           idProduto: item.idProduto,
           quantidade: Number(item.quantidade),
-          valorUnitario: Number(item.valorUnitario) || 0,
           caracteristicas: {
             descricaoArte: item.descricaoArte || null,
             corEstampa: item.corEstampa || null,
@@ -297,7 +338,7 @@ export default function NovoPedidoPage() {
     "Em Produção",
   ];
 
-  const [responsavelOptions, setResponsavelOptions] = useState([]);
+  const [vendedorOptions, setVendedorOptions] = useState([]);
 
   useEffect(() => {
     employeeApi.listar()
@@ -306,7 +347,7 @@ export default function NovoPedidoPage() {
           id: f.id,
           nome: f.nomeCompleto || f.nome || "Funcionário",
         }));
-        setResponsavelOptions(opcoes);
+        setVendedorOptions(opcoes);
       })
       .catch((err) => console.error("Erro ao carregar funcionários:", err));
   }, []);
@@ -344,7 +385,7 @@ export default function NovoPedidoPage() {
                   {/* Campo Nome com Autocomplete */}
                   <div className="relative" ref={autocompleteRef}>
                     <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
-                      Nome Completo / Razão Social
+                      Nome Completo 
                     </label>
                     <input
                       type="text"
@@ -381,7 +422,7 @@ export default function NovoPedidoPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <InputForm
                       label="Nº do Pedido"
                       name="numPedido"
@@ -397,7 +438,29 @@ export default function NovoPedidoPage() {
                       onChange={handleChange}
                       disabled={!!formData.idCliente}
                     />
+                    <InputForm
+                      label="Valor do Pedido (R$)"
+                      name="valorPedido"
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.valorPedido}
+                      onChange={handleChange}
+                    />
                   </div>
+
+                  {formData.empresaCliente && (
+                    <div className="mt-3">
+                      <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
+                        Nome da Empresa
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.empresaCliente}
+                        readOnly
+                        className="w-full bg-gray-200 text-gray-700 text-sm py-2 px-4 cursor-not-allowed focus:outline-none"
+                      />
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -420,6 +483,20 @@ export default function NovoPedidoPage() {
                     className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-3 px-4 focus:outline-none focus:ring-1 focus:ring-[#FFE300] resize-none"
                   />
                 </div>
+
+                <div className="mt-4">
+                  <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
+                    Observação
+                  </label>
+                  <textarea
+                    name="observacao"
+                    placeholder="Observações gerais sobre o pedido (opcional)"
+                    value={formData.observacao}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-3 px-4 focus:outline-none focus:ring-1 focus:ring-[#FFE300] resize-none"
+                  />
+                </div>
               </section>
 
               {/* Itens e Composição */}
@@ -430,22 +507,22 @@ export default function NovoPedidoPage() {
                   </h2>
                   <button
                     type="button"
-                    onClick={addItem}
-                    className="text-xs font-semibold uppercase tracking-wider bg-transparent border border-gray-300 px-3 py-1.5 hover:bg-gray-100 cursor-pointer flex items-center gap-1"
+                    onClick={() => abrirCatalogo(null)}
+                    className="text-xs font-semibold uppercase tracking-wider bg-[#FFE300] border border-[#FFE300] text-[#161616] px-3 py-1.5 hover:bg-[#f5d800] cursor-pointer flex items-center gap-1"
                   >
-                    + Adicionar Item
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    Buscar Produto
                   </button>
                 </div>
 
                 {/* Cabeçalho da tabela */}
-                <div className="hidden md:grid grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.8fr_0.4fr] gap-2 text-[10px] text-gray-500 uppercase font-semibold tracking-wider mb-2 px-1">
+                <div className="hidden md:grid grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.4fr] gap-2 text-[10px] text-gray-500 uppercase font-semibold tracking-wider mb-2 px-1">
                   <span>Produto</span>
                   <span>Cor Estampa</span>
                   <span>Cor Material</span>
                   <span>Composição</span>
                   <span>Tamanho</span>
                   <span>QTD</span>
-                  <span>Valor Unit.</span>
                   <span>Ações</span>
                 </div>
 
@@ -454,17 +531,27 @@ export default function NovoPedidoPage() {
                   {itens.map((item, index) => (
                     <div key={index} className="border-b border-gray-100 pb-2">
                     <div
-                      className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.8fr_0.4fr] gap-2 items-center"
+                      className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.4fr] gap-2 items-center"
                     >
                       <div className="relative">
-                        <input
-                          type="text"
-                          placeholder="Nome do produto"
-                          value={item.produto}
-                          onChange={(e) => handleProdutoInput(index, e.target.value)}
-                          onBlur={() => setTimeout(() => setProdutoSugestoes({ index: null, lista: [] }), 150)}
-                          className={`text-sm py-2 px-3 focus:outline-none focus:ring-1 w-full ${errosValidacao.itens?.find(e => e.index === index)?.produto ? 'bg-red-50 border border-red-400 focus:ring-red-400' : 'bg-[#EFEFEF] focus:ring-[#FFE300]'}`}
-                        />
+                        <div className="flex gap-1">
+                          <input
+                            type="text"
+                            placeholder="Nome do produto"
+                            value={item.produto}
+                            onChange={(e) => handleProdutoInput(index, e.target.value)}
+                            onBlur={() => setTimeout(() => setProdutoSugestoes({ index: null, lista: [] }), 150)}
+                            className={`text-sm py-2 px-3 focus:outline-none focus:ring-1 w-full ${errosValidacao.itens?.find(e => e.index === index)?.produto ? 'bg-red-50 border border-red-400 focus:ring-red-400' : 'bg-[#EFEFEF] focus:ring-[#FFE300]'}`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => abrirCatalogo(index)}
+                            className="flex-shrink-0 bg-[#EFEFEF] hover:bg-[#FFE300] border-0 px-2 py-1 cursor-pointer transition-colors"
+                            title="Buscar no catálogo"
+                          >
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                          </button>
+                        </div>
                         {produtoSugestoes.index === index && produtoSugestoes.lista.length > 0 && (
                           <ul className="absolute z-50 top-full left-0 right-0 bg-white border border-gray-200 shadow-lg max-h-[180px] overflow-y-auto">
                             {produtoSugestoes.lista.map((p) => (
@@ -510,23 +597,16 @@ export default function NovoPedidoPage() {
                         type="text"
                         placeholder="G"
                         value={item.tamanho}
-                        onChange={(e) => handleItemChange(index, "tamanho", e.target.value)}
+                        onChange={(e) => handleItemChange(index, "tamanho", e.target.value.toUpperCase())}
                         className="bg-[#EFEFEF] text-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#FFE300] w-full"
                       />
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
                         placeholder="0"
                         value={item.quantidade}
-                        onChange={(e) => handleItemChange(index, "quantidade", e.target.value)}
+                        onChange={(e) => handleItemChange(index, "quantidade", e.target.value.replace(/\D/g, ""))}
                         className={`text-sm py-2 px-3 focus:outline-none focus:ring-1 w-full ${errosValidacao.itens?.find(e => e.index === index)?.quantidade ? 'bg-red-50 border border-red-400 focus:ring-red-400' : 'bg-[#EFEFEF] focus:ring-[#FFE300]'}`}
-                      />
-                      <input
-                        type="number"
-                        placeholder="0.00"
-                        step="0.01"
-                        value={item.valorUnitario}
-                        onChange={(e) => handleItemChange(index, "valorUnitario", e.target.value)}
-                        className={`text-sm py-2 px-3 focus:outline-none focus:ring-1 w-full ${errosValidacao.itens?.find(e => e.index === index)?.valorUnitario ? 'bg-red-50 border border-red-400 focus:ring-red-400' : 'bg-[#EFEFEF] focus:ring-[#FFE300]'}`}
                       />
                       <button
                         type="button"
@@ -549,6 +629,7 @@ export default function NovoPedidoPage() {
                         className="bg-[#EFEFEF] text-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#FFE300] w-full"
                       />
                     </div>
+
                     </div>
                   ))}
                 </div>
@@ -620,19 +701,19 @@ export default function NovoPedidoPage() {
                     />
                   </div>
 
-                  {/* Responsável */}
+                  {/* Vendedor */}
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
-                      Responsável
+                      Vendedor
                     </label>
                     <select
-                      name="responsavel"
-                      value={formData.responsavel}
+                      name="vendedor"
+                      value={formData.vendedor}
                       onChange={handleChange}
                       className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2 px-4 focus:outline-none focus:ring-1 focus:ring-[#FFE300] appearance-none cursor-pointer"
                     >
-                      <option value="">Selecionar responsável</option>
-                      {responsavelOptions.map((func) => (
+                      <option value="">Selecionar vendedor</option>
+                      {vendedorOptions.map((func) => (
                         <option key={func.id} value={func.id}>
                           {func.nome}
                         </option>
@@ -724,6 +805,78 @@ export default function NovoPedidoPage() {
             )}
             {toast.message}
             <button onClick={() => setToast(null)} className="ml-2 text-white/80 hover:text-white cursor-pointer bg-transparent border-0">✕</button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Catálogo de Produtos */}
+      {showCatalogo && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" onClick={() => setShowCatalogo(false)}>
+          <div className="bg-white w-full max-w-[700px] max-h-[80vh] rounded-lg shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="font-bold text-lg text-gray-900">Catálogo de Produtos</h3>
+              <button
+                type="button"
+                onClick={() => setShowCatalogo(false)}
+                className="text-gray-400 hover:text-gray-700 cursor-pointer bg-transparent border-0"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            {/* Busca */}
+            <div className="p-4 border-b border-gray-100">
+              <input
+                type="text"
+                placeholder="Buscar produto por nome..."
+                value={catalogoBusca}
+                onChange={(e) => setCatalogoBusca(e.target.value)}
+                autoFocus
+                className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2.5 px-4 rounded focus:outline-none focus:ring-2 focus:ring-[#FFE300]"
+              />
+            </div>
+
+            {/* Lista de produtos */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {produtosCache.length === 0 ? (
+                <p className="text-center text-gray-500 text-sm py-8">Carregando produtos...</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {produtosCache
+                    .filter((p) => {
+                      if (!catalogoBusca) return true;
+                      const nome = (p.nome || p.title || "").toLowerCase();
+                      const cat = (p.categoriaProduto?.nome || p.category || "").toLowerCase();
+                      const termo = catalogoBusca.toLowerCase();
+                      return nome.includes(termo) || cat.includes(termo);
+                    })
+                    .map((produto) => (
+                      <button
+                        key={produto.id}
+                        type="button"
+                        onClick={() => selecionarDoCatalogo(produto)}
+                        className="flex items-center gap-3 p-3 border border-gray-200 rounded hover:border-[#FFE300] hover:bg-[#FFFDE6] transition-colors cursor-pointer bg-white text-left w-full"
+                      >
+                        <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                          {(produto.imagemUrl || produto.image) ? (
+                            <img src={produto.imagemUrl || produto.image} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">IMG</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{produto.nome || produto.title}</p>
+                          <p className="text-[11px] text-gray-500 truncate">{produto.categoriaProduto?.nome || produto.category || "Sem categoria"}</p>
+                          {(produto.tipoMaterial) && (
+                            <p className="text-[10px] text-gray-400 mt-0.5">Material: {produto.tipoMaterial}</p>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -29,6 +29,15 @@ const STATUS_OPTIONS = [
   { value: "aguardando-retirada", label: "Aguardando retirada" },
 ];
 
+// Mapeamento de quais status pertencem a cada etapa
+const STATUS_POR_ETAPA = {
+  Design: ["nao-iniciado", "aguardando-arte", "criando-mockup", "aguardando-aprovacao", "impressao-fotolito"],
+  Produção: ["nao-iniciado", "conferindo", "personalizando"],
+  Embalagem: ["nao-iniciado", "quality-check", "embalagem", "medicao", "emitir-etiqueta"],
+  Logística: ["enviado", "aguardando-retirada"],
+  Finalizados: ["finalizado"],
+};
+
 const ORDENAR_OPTIONS = [
   { value: "", label: "Nenhuma" },
   { value: "data_pedido", label: "Data Início" },
@@ -81,6 +90,11 @@ function PageHeader({
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPedidosDropdown]);
+
+  // Filtra as opções de status com base na etapa ativa
+  const statusOptionsVisiveis = etapaAtiva && STATUS_POR_ETAPA[etapaAtiva]
+    ? STATUS_OPTIONS.filter(opt => opt.value === "" || STATUS_POR_ETAPA[etapaAtiva].includes(opt.value))
+    : STATUS_OPTIONS;
 
   const handleApplyFilter = () => {
     onFilter && onFilter({ status: statusFilter, ordenarPor, direcao });
@@ -136,6 +150,21 @@ function PageHeader({
               onChange={handleSearchChange}
               className="bg-transparent font-['Inter:Medium',sans-serif] font-medium text-[14px] text-[#6b7280] placeholder-[#6b7280] outline-none w-full"
             />
+            {/* Ícone de informação */}
+            <div className="group relative ml-2">
+              <svg className="w-4 h-4 text-[#6b7280] cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="absolute right-0 top-full mt-2 bg-[#161616] text-white text-[11px] rounded-lg px-3 py-2 w-[200px] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <p className="font-semibold mb-1">Busca por:</p>
+                <ul className="space-y-0.5 list-disc list-inside">
+                  <li>Nº do pedido</li>
+                  <li>Nome do cliente</li>
+                  <li>Nome do vendedor</li>
+                  <li>Nome do responsável</li>
+                </ul>
+              </div>
+            </div>
           </div>
           <svg
             className="absolute left-[12px] top-1/2 transform -translate-y-1/2 w-[13.5px] h-[13.5px] text-[#6b7280]"
@@ -249,7 +278,7 @@ function PageHeader({
                 <div className="mb-4">
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Status</label>
                   <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#fdf210]">
-                    {STATUS_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
+                    {statusOptionsVisiveis.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
                   </select>
                 </div>
                 <div className="mb-4">
