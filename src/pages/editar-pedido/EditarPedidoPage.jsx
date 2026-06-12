@@ -27,8 +27,10 @@ export default function EditarPedidoPage() {
     etapaPedido: "",
     tipoEnvio: "",
     responsavel: "",
+    vendedor: "",
     dataInicio: "",
     dataEntrega: "",
+    valorPedido: "",
   });
 
   // Autocomplete de clientes
@@ -78,8 +80,10 @@ export default function EditarPedidoPage() {
           etapaPedido: pedido.etapa_pedido || "",
           tipoEnvio: pedido.tipo_envio || "",
           responsavel: pedido.responsavel?.id ? String(pedido.responsavel.id) : "",
+          vendedor: pedido.vendedor?.id_usuario ? String(pedido.vendedor.id_usuario) : "",
           dataInicio: pedido.data_pedido || "",
           dataEntrega: pedido.data_finalizacao || "",
+          valorPedido: pedido.valor_total ? String(pedido.valor_total) : "",
         });
 
         setUrlFotoArteExistente(pedido.url_foto_arte || null);
@@ -95,12 +99,11 @@ export default function EditarPedidoPage() {
           composicao: item.caracteristicas_item_pedido?.composicao || "",
           tamanho: item.caracteristicas_item_pedido?.tamanho || "",
           quantidade: item.quantidade || "",
-          valorUnitario: item.valor_unitario || "",
           descricaoArte: item.caracteristicas_item_pedido?.descricao_arte || "",
         }));
 
         setItens(itensMapeados.length > 0 ? itensMapeados : [
-          { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", valorUnitario: "", descricaoArte: "" },
+          { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", descricaoArte: "" },
         ]);
 
         setLoading(false);
@@ -112,13 +115,12 @@ export default function EditarPedidoPage() {
       });
   }, [id]);
 
-  // Carrega clientes
+  // Carrega clientes cadastrados
   useEffect(() => {
-    http.get("/usuarios")
+    http.get("/usuarios/clientes")
       .then(({ data }) => {
         const clientes = (Array.isArray(data) ? data : [])
-          .filter((u) => u.cnpj || u.cpf)
-          .map((u) => ({ id: u.id, nome: u.nomeCompleto || u.nome || "", nomeEmpresa: u.nomeEmpresa || "" }));
+          .map((u) => ({ id: u.id, nome: u.nome || "", nomeEmpresa: u.nomeEmpresa || "" }));
         setClientesCache(clientes);
       })
       .catch(() => {});
@@ -168,9 +170,7 @@ export default function EditarPedidoPage() {
     debounceTimer.current = setTimeout(() => {
       const termoLower = termo.toLowerCase();
       const resultados = clientesCache.filter(
-        (c) =>
-          (c.nome || "").toLowerCase().includes(termoLower) ||
-          (c.nomeEmpresa || "").toLowerCase().includes(termoLower)
+        (c) => (c.nome || "").toLowerCase().includes(termoLower)
       );
       setClienteSugestoes(resultados);
       setShowSugestoes(true);
@@ -209,7 +209,7 @@ export default function EditarPedidoPage() {
   const addItem = () => {
     setItens((prev) => [
       ...prev,
-      { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", valorUnitario: "", descricaoArte: "" },
+      { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", descricaoArte: "" },
     ]);
   };
 
@@ -240,7 +240,6 @@ export default function EditarPedidoPage() {
       const erroItem = {};
       if (!item.idProduto) erroItem.produto = true;
       if (!item.quantidade || Number(item.quantidade) <= 0) erroItem.quantidade = true;
-      if (!item.valorUnitario || Number(item.valorUnitario) <= 0) erroItem.valorUnitario = true;
       if (Object.keys(erroItem).length > 0) itensComErro.push({ index: i, ...erroItem });
     });
 
@@ -293,15 +292,17 @@ export default function EditarPedidoPage() {
         status: formData.status || "Não Iniciado",
         etapaPedido: formData.etapaPedido || "Design",
         tipoEnvio: formData.tipoEnvio || null,
-        valorTotal: itensValidos.reduce((acc, item) => acc + (Number(item.valorUnitario) || 0) * (Number(item.quantidade) || 0), 0),
-        dataPedido: formData.dataInicio ? new Date(formData.dataInicio).toISOString() : new Date().toISOString(),
+        valorTotal: Number(formData.valorPedido) || 0,
+        dataPedido: new Date().toISOString(),
+        dataInicio: formData.dataInicio ? new Date(formData.dataInicio).toISOString() : null,
+        dataFinalizacao: formData.dataEntrega ? new Date(formData.dataEntrega).toISOString() : null,
         idEndereco,
         idUsuarioCliente: Number(formData.idCliente),
         idUsuarioResponsavel: formData.responsavel ? Number(formData.responsavel) : null,
+        idUsuarioVendedor: formData.vendedor ? Number(formData.vendedor) : null,
         itens: itensValidos.map((item) => ({
           idProduto: item.idProduto,
           quantidade: Number(item.quantidade),
-          valorUnitario: Number(item.valorUnitario) || 0,
           caracteristicas: {
             descricaoArte: item.descricaoArte || null,
             corEstampa: item.corEstampa || null,
@@ -345,7 +346,7 @@ export default function EditarPedidoPage() {
     "Concluído",
   ];
 
-  const [responsavelOptions, setResponsavelOptions] = useState([]);
+  const [funcionarioOptions, setFuncionarioOptions] = useState([]);
 
   useEffect(() => {
     employeeApi.listar()
@@ -354,7 +355,7 @@ export default function EditarPedidoPage() {
           id: f.id,
           nome: f.nomeCompleto || f.nome || "Funcionário",
         }));
-        setResponsavelOptions(opcoes);
+        setFuncionarioOptions(opcoes);
       })
       .catch((err) => console.error("Erro ao carregar funcionários:", err));
   }, []);
@@ -433,7 +434,7 @@ export default function EditarPedidoPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <InputForm
                       label="Nº do Pedido"
                       name="numPedido"
@@ -448,6 +449,14 @@ export default function EditarPedidoPage() {
                       value={formData.idCliente}
                       onChange={handleChange}
                       disabled={!!formData.idCliente}
+                    />
+                    <InputForm
+                      label="Valor do Pedido (R$)"
+                      name="valorPedido"
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.valorPedido}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -490,14 +499,13 @@ export default function EditarPedidoPage() {
                 </div>
 
                 {/* Cabeçalho da tabela */}
-                <div className="hidden md:grid grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.8fr_0.4fr] gap-2 text-[10px] text-gray-500 uppercase font-semibold tracking-wider mb-2 px-1">
+                <div className="hidden md:grid grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.4fr] gap-2 text-[10px] text-gray-500 uppercase font-semibold tracking-wider mb-2 px-1">
                   <span>Produto</span>
                   <span>Cor Estampa</span>
                   <span>Cor Material</span>
                   <span>Composição</span>
                   <span>Tamanho</span>
                   <span>QTD</span>
-                  <span>Valor Unit.</span>
                   <span>Ações</span>
                 </div>
 
@@ -505,7 +513,7 @@ export default function EditarPedidoPage() {
                 <div className="space-y-2">
                   {itens.map((item, index) => (
                     <div key={index} className="border-b border-gray-100 pb-2">
-                      <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.8fr_0.4fr] gap-2 items-center">
+                      <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.4fr] gap-2 items-center">
                         <div className="relative">
                           <input
                             type="text"
@@ -560,23 +568,16 @@ export default function EditarPedidoPage() {
                           type="text"
                           placeholder="G"
                           value={item.tamanho}
-                          onChange={(e) => handleItemChange(index, "tamanho", e.target.value)}
+                          onChange={(e) => handleItemChange(index, "tamanho", e.target.value.toUpperCase())}
                           className="bg-[#EFEFEF] text-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#FFE300] w-full"
                         />
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           placeholder="0"
                           value={item.quantidade}
-                          onChange={(e) => handleItemChange(index, "quantidade", e.target.value)}
+                          onChange={(e) => handleItemChange(index, "quantidade", e.target.value.replace(/\D/g, ""))}
                           className={`text-sm py-2 px-3 focus:outline-none focus:ring-1 w-full ${errosValidacao.itens?.find(e => e.index === index)?.quantidade ? 'bg-red-50 border border-red-400 focus:ring-red-400' : 'bg-[#EFEFEF] focus:ring-[#FFE300]'}`}
-                        />
-                        <input
-                          type="number"
-                          placeholder="0.00"
-                          step="0.01"
-                          value={item.valorUnitario}
-                          onChange={(e) => handleItemChange(index, "valorUnitario", e.target.value)}
-                          className={`text-sm py-2 px-3 focus:outline-none focus:ring-1 w-full ${errosValidacao.itens?.find(e => e.index === index)?.valorUnitario ? 'bg-red-50 border border-red-400 focus:ring-red-400' : 'bg-[#EFEFEF] focus:ring-[#FFE300]'}`}
                         />
                         <button
                           type="button"
@@ -701,7 +702,27 @@ export default function EditarPedidoPage() {
                       className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2 px-4 focus:outline-none focus:ring-1 focus:ring-[#FFE300] appearance-none cursor-pointer"
                     >
                       <option value="">Selecionar responsável</option>
-                      {responsavelOptions.map((func) => (
+                      {funcionarioOptions.map((func) => (
+                        <option key={func.id} value={func.id}>
+                          {func.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Vendedor */}
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
+                      Vendedor
+                    </label>
+                    <select
+                      name="vendedor"
+                      value={formData.vendedor}
+                      onChange={handleChange}
+                      className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2 px-4 focus:outline-none focus:ring-1 focus:ring-[#FFE300] appearance-none cursor-pointer"
+                    >
+                      <option value="">Selecionar vendedor</option>
+                      {funcionarioOptions.map((func) => (
                         <option key={func.id} value={func.id}>
                           {func.nome}
                         </option>
@@ -755,13 +776,20 @@ export default function EditarPedidoPage() {
                   </div>
                 </div>
 
-                {/* Botão Salvar */}
+                {/* Botões */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full mt-6 bg-[#FFE300] hover:bg-[#f5d800] text-[#161616] font-bold text-sm uppercase tracking-wider py-3 px-4 cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isSubmitting ? "Salvando..." : "Atualizar Pedido"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/pedidos")}
+                  className="w-full mt-2 bg-transparent hover:bg-gray-100 text-gray-600 font-bold text-sm uppercase tracking-wider py-3 px-4 cursor-pointer border border-gray-300 transition-colors"
+                >
+                  Cancelar
                 </button>
               </section>
             </div>

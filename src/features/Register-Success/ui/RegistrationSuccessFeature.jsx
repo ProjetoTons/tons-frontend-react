@@ -88,6 +88,7 @@ export default function RegistrationSuccessFeature() {
       // Backend retorna JSON padrão do Spring: { timestamp, status, error, message, path }
       const status = error.response?.status;
       const apiMsg = error.response?.data?.message;
+      const apiErrors = error.response?.data?.errors; // Array de erros de validação do Spring
 
       if (!error.response) {
         setErrorMessage("Não foi possível conectar ao servidor. Verifique sua conexão.");
@@ -96,7 +97,13 @@ export default function RegistrationSuccessFeature() {
       } else if (status === 409) {
         setErrorMessage("Este e-mail já está cadastrado.");
       } else if (status === 400) {
-        setErrorMessage(apiMsg || "Dados inválidos. Verifique os campos do cadastro.");
+        // Se o backend retornou lista de erros de validação, mostra detalhado
+        if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+          const detalhes = apiErrors.map(e => e.defaultMessage || e.message || `${e.field}: inválido`).join(" | ");
+          setErrorMessage(detalhes);
+        } else {
+          setErrorMessage(apiMsg || "Dados inválidos. Verifique os campos do cadastro.");
+        }
       } else {
         // 500 e outros — mostra mensagem do backend se houver, ajuda a diagnosticar
         console.error("Erro do backend:", error.response?.data);
@@ -207,8 +214,21 @@ export default function RegistrationSuccessFeature() {
 
             {/* Mensagem de erro */}
             {errorMessage && (
-              <div className="w-full mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-[11px] font-semibold uppercase tracking-wider text-center">
-                {errorMessage}
+              <div className="w-full mb-4 p-4 bg-red-50 border border-red-200 rounded-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-[11px] font-bold text-red-700 uppercase tracking-wider">Erro no cadastro</span>
+                </div>
+                <ul className="space-y-1">
+                  {errorMessage.split(" | ").map((msg, i) => (
+                    <li key={i} className="text-[11px] text-red-600 font-medium flex items-start gap-1.5">
+                      <span className="text-red-400 mt-0.5">•</span>
+                      {msg}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
