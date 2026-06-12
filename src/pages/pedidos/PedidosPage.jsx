@@ -86,6 +86,9 @@ export default function PedidosPage() {
     // Filtrar por etapa vindo dos parâmetros de busca
     if (etapaFilter) {
       filtered = filtered.filter((pedido) => pedido.etapa_pedido === etapaFilter);
+    } else {
+      // "Todos" não mostra finalizados nem cancelados
+      filtered = filtered.filter((pedido) => pedido.etapa_pedido !== "Finalizados" && pedido.etapa_pedido !== "Cancelado");
     }
 
     // Filtrar por status

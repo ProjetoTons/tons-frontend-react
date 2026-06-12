@@ -43,7 +43,6 @@ const ORDENAR_OPTIONS = [
   { value: "data_pedido", label: "Data Início" },
   { value: "data_finalizacao", label: "Data Fim" },
   { value: "valor_total", label: "Preço" },
-  { value: "status", label: "Status" },
 ];
 
 // 👇 1. Adicionamos as props de validação na assinatura da função
@@ -287,15 +286,6 @@ function PageHeader({
                     {ORDENAR_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
                   </select>
                 </div>
-                {ordenarPor && (
-                  <div className="mb-4">
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Direção</label>
-                    <div className="flex gap-2">
-                      <button onClick={() => setDirecao("asc")} className={`flex-1 px-3 py-2 text-sm font-medium rounded border transition-colors ${direcao === "asc" ? "bg-[#fdf210] border-[#fdf210] text-black" : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"}`}>↑ Crescente</button>
-                      <button onClick={() => setDirecao("desc")} className={`flex-1 px-3 py-2 text-sm font-medium rounded border transition-colors ${direcao === "desc" ? "bg-[#fdf210] border-[#fdf210] text-black" : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"}`}>↓ Decrescente</button>
-                    </div>
-                  </div>
-                )}
                 <div className="flex gap-2 pt-2 border-t border-gray-100">
                   <button onClick={handleClearFilter} className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors">Limpar</button>
                   <button onClick={handleApplyFilter} className="flex-1 px-3 py-2 text-sm font-bold text-black bg-[#fdf210] rounded hover:bg-[#e6d800] transition-colors">Aplicar</button>

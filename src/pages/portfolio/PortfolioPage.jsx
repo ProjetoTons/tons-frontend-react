@@ -179,6 +179,30 @@ export default function PortfolioPage() {
               </p>
             </div>
           )
+        ) : mostrarDestaque ? (
+          <div className="mb-12">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-1.5 w-10 bg-yellow-400 rounded-full"></div>
+              <h2 className="text-2xl font-black uppercase tracking-wide text-black">Promoções do Mês</h2>
+            </div>
+            {(() => {
+              const destaques = produtos.filter(p => p.destaque === true);
+              return destaques.length > 0 ? (
+                <ProductList
+                  produtos={destaques}
+                  onSave={toggleSaveProduct}
+                  savedItems={itemsSalvos}
+                  onImageClick={handleOpenModal}
+                />
+              ) : (
+                <div className="bg-[#F9F9F9] border-l-4 border-[#F7D708] p-5">
+                  <p className="text-gray-500 font-medium text-sm uppercase tracking-widest">
+                    Nenhum produto em destaque no momento.
+                  </p>
+                </div>
+              );
+            })()}
+          </div>
         ) : (
           <>
             {categoriasExibidas.map(({ nome, slug }) => (

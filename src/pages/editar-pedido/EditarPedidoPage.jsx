@@ -47,6 +47,12 @@ export default function EditarPedidoPage() {
   const [toast, setToast] = useState(null);
   const [urlFotoArteExistente, setUrlFotoArteExistente] = useState(null);
   const [idEnderecoExistente, setIdEnderecoExistente] = useState(null);
+  const [pedidoBloqueado, setPedidoBloqueado] = useState(false);
+
+  // Modal catálogo de produtos
+  const [showCatalogo, setShowCatalogo] = useState(false);
+  const [catalogoItemIndex, setCatalogoItemIndex] = useState(null);
+  const [catalogoBusca, setCatalogoBusca] = useState("");
 
   const showToast = (message, type = "error") => {
     setToast({ message, type });
@@ -106,6 +112,11 @@ export default function EditarPedidoPage() {
           { produto: "", idProduto: null, corEstampa: "", corMaterial: "", composicao: "", tamanho: "", quantidade: "", descricaoArte: "" },
         ]);
 
+        // Bloquear edição de pedidos finalizados ou cancelados
+        if (pedido.etapa_pedido === "Finalizados" || pedido.etapa_pedido === "Cancelado" || pedido.status === "cancelado") {
+          setPedidoBloqueado(true);
+        }
+
         setLoading(false);
       })
       .catch((err) => {
@@ -142,10 +153,39 @@ export default function EditarPedidoPage() {
   const selecionarProduto = (index, produto) => {
     setItens((prev) => {
       const updated = [...prev];
-      updated[index] = { ...updated[index], produto: produto.nome || produto.title || "", idProduto: produto.id };
+      updated[index] = { ...updated[index], produto: produto.nome || produto.title || "", idProduto: produto.id, composicao: produto.tipoMaterial || updated[index].composicao || "" };
       return updated;
     });
     setProdutoSugestoes({ index: null, lista: [] });
+  };
+
+  const abrirCatalogo = (index) => {
+    setCatalogoItemIndex(index);
+    setCatalogoBusca("");
+    setShowCatalogo(true);
+  };
+
+  const selecionarDoCatalogo = (produto) => {
+    const index = catalogoItemIndex;
+    if (index === null) {
+      setItens((prev) => [
+        ...prev,
+        {
+          produto: produto.nome || produto.title || "",
+          idProduto: produto.id,
+          corEstampa: "",
+          corMaterial: "",
+          composicao: produto.tipoMaterial || "",
+          tamanho: "",
+          quantidade: "",
+          descricaoArte: "",
+        },
+      ]);
+    } else {
+      selecionarProduto(index, produto);
+    }
+    setShowCatalogo(false);
+    setCatalogoItemIndex(null);
   };
 
   // Fecha autocomplete ao clicar fora
@@ -234,6 +274,7 @@ export default function EditarPedidoPage() {
     const erros = {};
     if (!formData.nomeCliente.trim() || !formData.idCliente) erros.nomeCliente = true;
     if (!formData.numPedido) erros.numPedido = true;
+    if (!formData.valorPedido || Number(formData.valorPedido) <= 0) erros.valorPedido = true;
 
     const itensComErro = [];
     itens.forEach((item, i) => {
@@ -403,7 +444,7 @@ export default function EditarPedidoPage() {
                 <div className="space-y-4">
                   <div className="relative" ref={autocompleteRef}>
                     <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
-                      Nome Completo / Razão Social
+                      Nome Completo / Razão Social <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -451,12 +492,13 @@ export default function EditarPedidoPage() {
                       disabled={!!formData.idCliente}
                     />
                     <InputForm
-                      label="Valor do Pedido (R$)"
+                      label="Valor do Pedido (R$) *"
                       name="valorPedido"
                       type="number"
                       placeholder="0.00"
                       value={formData.valorPedido}
                       onChange={handleChange}
+                      error={errosValidacao.valorPedido}
                     />
                   </div>
                 </div>
@@ -491,10 +533,12 @@ export default function EditarPedidoPage() {
                   </h2>
                   <button
                     type="button"
-                    onClick={addItem}
-                    className="text-xs font-semibold uppercase tracking-wider bg-transparent border border-gray-300 px-3 py-1.5 hover:bg-gray-100 cursor-pointer flex items-center gap-1"
+                    onClick={() => abrirCatalogo(null)}
+                    disabled={pedidoBloqueado}
+                    className="text-xs font-semibold uppercase tracking-wider bg-[#FFE300] border border-[#FFE300] text-[#161616] px-3 py-1.5 hover:bg-[#f5d800] cursor-pointer flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    + Adicionar Item
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    Buscar Produto
                   </button>
                 </div>
 
@@ -505,7 +549,7 @@ export default function EditarPedidoPage() {
                   <span>Cor Material</span>
                   <span>Composição</span>
                   <span>Tamanho</span>
-                  <span>QTD</span>
+                  <span>QTD <span className="text-red-400">*</span></span>
                   <span>Ações</span>
                 </div>
 
@@ -515,6 +559,7 @@ export default function EditarPedidoPage() {
                     <div key={index} className="border-b border-gray-100 pb-2">
                       <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1.5fr_0.8fr_0.6fr_0.4fr] gap-2 items-center">
                         <div className="relative">
+                          <div className="flex gap-1">
                           <input
                             type="text"
                             placeholder="Nome do produto"
@@ -523,6 +568,15 @@ export default function EditarPedidoPage() {
                             onBlur={() => setTimeout(() => setProdutoSugestoes({ index: null, lista: [] }), 150)}
                             className={`text-sm py-2 px-3 focus:outline-none focus:ring-1 w-full ${errosValidacao.itens?.find(e => e.index === index)?.produto ? 'bg-red-50 border border-red-400 focus:ring-red-400' : 'bg-[#EFEFEF] focus:ring-[#FFE300]'}`}
                           />
+                          <button
+                            type="button"
+                            onClick={() => abrirCatalogo(index)}
+                            className="flex-shrink-0 bg-[#EFEFEF] hover:bg-[#FFE300] border-0 px-2 py-1 cursor-pointer transition-colors"
+                            title="Buscar no catálogo"
+                          >
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                          </button>
+                          </div>
                           {produtoSugestoes.index === index && produtoSugestoes.lista.length > 0 && (
                             <ul className="absolute z-50 top-full left-0 right-0 bg-white border border-gray-200 shadow-lg max-h-[180px] overflow-y-auto">
                               {produtoSugestoes.lista.map((p) => (
@@ -777,9 +831,14 @@ export default function EditarPedidoPage() {
                 </div>
 
                 {/* Botões */}
+                {pedidoBloqueado && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold uppercase tracking-wider text-center">
+                    Este pedido não pode ser editado (finalizado ou cancelado)
+                  </div>
+                )}
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || pedidoBloqueado}
                   className="w-full mt-6 bg-[#FFE300] hover:bg-[#f5d800] text-[#161616] font-bold text-sm uppercase tracking-wider py-3 px-4 cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isSubmitting ? "Salvando..." : "Atualizar Pedido"}
@@ -799,7 +858,7 @@ export default function EditarPedidoPage() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed top-6 right-6 z-50 animate-fade-in">
+        <div className="fixed top-6 right-6 z-50 animate-fade-in" role="alert" aria-live="assertive">
           <div
             className={`px-5 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-3 ${
               toast.type === "success"
@@ -821,6 +880,64 @@ export default function EditarPedidoPage() {
             )}
             {toast.message}
             <button onClick={() => setToast(null)} className="ml-2 text-white/80 hover:text-white cursor-pointer bg-transparent border-0">✕</button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Catálogo de Produtos */}
+      {showCatalogo && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" onClick={() => setShowCatalogo(false)}>
+          <div className="bg-white w-full max-w-[700px] max-h-[80vh] rounded-lg shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="font-bold text-lg text-gray-900">Catálogo de Produtos</h3>
+              <button type="button" onClick={() => setShowCatalogo(false)} className="text-gray-400 hover:text-gray-700 cursor-pointer bg-transparent border-0">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="p-4 border-b border-gray-100">
+              <input
+                type="text"
+                placeholder="Buscar produto por nome..."
+                value={catalogoBusca}
+                onChange={(e) => setCatalogoBusca(e.target.value)}
+                autoFocus
+                className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2.5 px-4 rounded focus:outline-none focus:ring-2 focus:ring-[#FFE300]"
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              {produtosCache.length === 0 ? (
+                <p className="text-center text-gray-500 text-sm py-8">Carregando produtos...</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {produtosCache
+                    .filter((p) => {
+                      if (!catalogoBusca) return true;
+                      const nome = (p.nome || p.title || "").toLowerCase();
+                      return nome.includes(catalogoBusca.toLowerCase());
+                    })
+                    .map((produto) => (
+                      <button
+                        key={produto.id}
+                        type="button"
+                        onClick={() => selecionarDoCatalogo(produto)}
+                        className="flex items-center gap-3 p-3 border border-gray-200 rounded hover:border-[#FFE300] hover:bg-[#FFFDE6] transition-colors cursor-pointer bg-white text-left w-full"
+                      >
+                        <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                          {produto.imagemUrl ? (
+                            <img src={produto.imagemUrl} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">IMG</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{produto.nome || produto.title}</p>
+                          <p className="text-[11px] text-gray-500">{produto.tipoMaterial || ""}</p>
+                        </div>
+                      </button>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

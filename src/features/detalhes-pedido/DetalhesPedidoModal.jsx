@@ -22,11 +22,12 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
   const totalQuantidade = pedido.itens_pedido?.reduce((acc, item) => acc + (item.quantidade || 0), 0) || pedido.quantidade || 0;
 
   return (
-    <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="detalhes-pedido-title">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Card */}
@@ -35,6 +36,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
         <div className="sticky top-0 bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
           <div>
             <h2
+              id="detalhes-pedido-title"
               className="text-[22px] font-black uppercase tracking-tight text-black"
               style={{ fontFamily: "var(--fonte-space)" }}
             >
@@ -47,6 +49,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
           </div>
           <button
             onClick={onClose}
+            aria-label="Fechar modal"
             className="text-gray-400 hover:text-black transition-colors cursor-pointer bg-transparent border-0 p-1"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

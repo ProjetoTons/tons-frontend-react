@@ -238,6 +238,7 @@ export default function NovoPedidoPage() {
     const erros = {};
     if (!formData.nomeCliente.trim() || !formData.idCliente) erros.nomeCliente = true;
     if (!formData.numPedido) erros.numPedido = true;
+    if (!formData.valorPedido || Number(formData.valorPedido) <= 0) erros.valorPedido = true;
 
     // Validar itens
     const itensComErro = [];
@@ -343,10 +344,12 @@ export default function NovoPedidoPage() {
   useEffect(() => {
     employeeApi.listar()
       .then((funcionarios) => {
-        const opcoes = funcionarios.map((f) => ({
-          id: f.id,
-          nome: f.nomeCompleto || f.nome || "Funcionário",
-        }));
+        const opcoes = funcionarios
+          .filter((f) => f.acessos?.some((a) => a.role === "Adm"))
+          .map((f) => ({
+            id: f.id,
+            nome: f.nomeCompleto || f.nome || "Funcionário",
+          }));
         setVendedorOptions(opcoes);
       })
       .catch((err) => console.error("Erro ao carregar funcionários:", err));
@@ -385,7 +388,7 @@ export default function NovoPedidoPage() {
                   {/* Campo Nome com Autocomplete */}
                   <div className="relative" ref={autocompleteRef}>
                     <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
-                      Nome Completo 
+                      Nome Completo <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -439,12 +442,13 @@ export default function NovoPedidoPage() {
                       disabled={!!formData.idCliente}
                     />
                     <InputForm
-                      label="Valor do Pedido (R$)"
+                      label="Valor do Pedido (R$) *"
                       name="valorPedido"
                       type="number"
                       placeholder="0.00"
                       value={formData.valorPedido}
                       onChange={handleChange}
+                      error={errosValidacao.valorPedido}
                     />
                   </div>
 
@@ -522,7 +526,7 @@ export default function NovoPedidoPage() {
                   <span>Cor Material</span>
                   <span>Composição</span>
                   <span>Tamanho</span>
-                  <span>QTD</span>
+                  <span>QTD <span className="text-red-400">*</span></span>
                   <span>Ações</span>
                 </div>
 
@@ -783,7 +787,7 @@ export default function NovoPedidoPage() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed top-6 right-6 z-50 animate-fade-in">
+        <div className="fixed top-6 right-6 z-50 animate-fade-in" role="alert" aria-live="assertive">
           <div
             className={`px-5 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-3 ${
               toast.type === "success"

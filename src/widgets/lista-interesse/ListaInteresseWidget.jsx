@@ -171,11 +171,11 @@ export default function ListaInteresseWidget() {
             {itemsSalvos.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-5 p-5 border border-gray-200 rounded-sm bg-white hover:shadow-sm transition-shadow"
+                className="flex items-center gap-5 p-5 border border-gray-200 rounded-sm bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                onClick={() => handleOpenModal(item)}
               >
                 <div
-                  className="w-[80px] h-[80px] bg-gray-100 flex-shrink-0 rounded-sm overflow-hidden cursor-pointer group"
-                  onClick={() => handleOpenModal(item)}
+                  className="w-[80px] h-[80px] bg-gray-100 flex-shrink-0 rounded-sm overflow-hidden group"
                 >
                   <img
                     src={item.image || "/product/placeholder.svg"}
@@ -198,9 +198,9 @@ export default function ListaInteresseWidget() {
                 </div>
 
                 <button
-                  onClick={() => handleRemoveItem(item)}
+                  onClick={(e) => { e.stopPropagation(); handleRemoveItem(item); }}
                   disabled={removingId === item.id}
-                  className="p-2 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   title="Remover item"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -268,6 +268,7 @@ export default function ListaInteresseWidget() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         produto={selectedProduct}
+        hideInteresseButton={true}
       />
 
       {/* Modal unificado: Endereço + Confirmação WhatsApp */}

@@ -10,7 +10,7 @@ function Navbar({ onOpenDrawer, onOpenMenu, compact, hideBookmark }) {
     const isScrollVisible = useScrollDirection();
 
     return (
-        <nav className={`w-full font-inter flex items-center justify-between px-10 bg-[#F2F2F2] border-b-4 border-[#F7D708] ${compact ? "py-2" : "py-4"} navbar-scroll-animation ${isScrollVisible ? 'navbar-visible' : 'navbar-hidden'}`}>
+        <nav aria-label="Navegação do cliente" className={`w-full font-inter flex items-center justify-between px-10 bg-[#F2F2F2] border-b-4 border-[#F7D708] ${compact ? "py-2" : "py-4"} navbar-scroll-animation ${isScrollVisible ? 'navbar-visible' : 'navbar-hidden'}`}>
 
             {/* Lado Esquerdo: Logo e Saudação */}
             <div className="flex items-center gap-8">

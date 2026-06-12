@@ -39,8 +39,9 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
   const bloqueadoPorOutroResponsavel = !isAdmin && isOutroResponsavel;
 
   // --- APLICAÇÃO DA TRAVA NAS AÇÕES ---
-  const podeAvancar = (proximoStatus !== null || proximaEtapa !== null) && !bloqueadoPorOutroResponsavel;
-  const podeRetornar = (statusAnterior !== null || etapaAnterior !== null) && !bloqueadoPorOutroResponsavel;
+  const isFinalizado = pedidoLocal.etapa_pedido === "Finalizados" || pedidoLocal.etapa_pedido === "Cancelado" || pedidoLocal.status === "finalizado" || pedidoLocal.status === "cancelado";
+  const podeAvancar = !isFinalizado && (proximoStatus !== null || proximaEtapa !== null) && !bloqueadoPorOutroResponsavel;
+  const podeRetornar = !isFinalizado && (statusAnterior !== null || etapaAnterior !== null) && !bloqueadoPorOutroResponsavel;
 
   const handleAvancar = () => {
     let pedidoAtualizado;
