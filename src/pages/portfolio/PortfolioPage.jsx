@@ -24,18 +24,18 @@ export default function PortfolioPage() {
   const [produtos, setProdutos] = useState([]);
   const [carregandoProdutos, setCarregandoProdutos] = useState(true);
 
-  // ESTADO DO MODAL DE PRODUTOS
+  // NOVO ESTADO: Controla se o usuário clicou para ver TODAS as categorias do site
+  const [mostrarTodasCategorias, setMostrarTodasCategorias] = useState(false);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Carrega produtos do backend
   useEffect(() => {
     getProdutos()
       .then((data) => setProdutos(data))
       .finally(() => setCarregandoProdutos(false));
   }, []);
 
-  // Extrai categorias únicas dos produtos carregados (com contagem)
   const categorias = React.useMemo(() => {
     const map = new Map();
     produtos.forEach((p) => {
@@ -49,74 +49,53 @@ export default function PortfolioPage() {
     return Array.from(map.values());
   }, [produtos]);
 
-  // Efeito para fazer scroll suave quando a categoria ativa muda
   useEffect(() => {
     if (produtosRef.current && categoriaAtiva !== "todos") {
-      setTimeout(() => {
-        produtosRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      setTimeout(() => produtosRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
   }, [categoriaAtiva]);
 
-  // Efeito para fazer scroll quando ativa o filtro de destaque
   useEffect(() => {
     if (mostrarDestaque && produtosRef.current) {
-      setTimeout(() => {
-        produtosRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      setTimeout(() => produtosRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
   }, [mostrarDestaque]);
 
-  // Preparar busca por substring (contém), case-insensitive
   const buscaTrim = busca.trim();
   const query = buscaTrim.toLowerCase();
   const matchedProducts = buscaTrim
     ? produtos.filter(p => p.title?.toLowerCase().includes(query))
     : [];
 
-  // Função para abrir o modal com o produto específico
   const handleOpenModal = (produto) => {
     setSelectedProduct(produto);
     setIsModalOpen(true);
   };
 
-  // LÓGICA DE RENDERIZAÇÃO: Unifica a verificação de itens e a passagem de funções
   const renderizarCategoria = (titulo, tipo) => {
-    // Se há um filtro ativo diferente de "todos", mostrar apenas essa categoria
-    if (categoriaAtiva !== "todos" && categoriaAtiva !== tipo) {
-      return null;
-    }
+    if (categoriaAtiva !== "todos" && categoriaAtiva !== tipo) return null;
 
     let listaFiltrada = produtos.filter(p => p.type === tipo);
-    
-    // Filtrar por busca
-    if (busca.trim()) {
-      listaFiltrada = listaFiltrada.filter(p => 
-        p.title?.toLowerCase().includes(busca.toLowerCase())
-      );
-    }
-
-    // Se destaque está ativo, filtrar apenas produtos destacados
-    if (mostrarDestaque) {
-      listaFiltrada = listaFiltrada.filter(p => p.destaque === true);
-    }
+    if (busca.trim()) listaFiltrada = listaFiltrada.filter(p => p.title?.toLowerCase().includes(busca.toLowerCase()));
+    if (mostrarDestaque) listaFiltrada = listaFiltrada.filter(p => p.destaque === true);
 
     return (
-      <div className="mb-12">
+      <div className="mb-16">
         <div className="flex items-center gap-4 mb-8">
           <div className="h-1.5 w-10 bg-yellow-400 rounded-full"></div>
           <h2 className="text-2xl font-black uppercase tracking-wide text-black">{titulo}</h2>
         </div>
         
         {listaFiltrada.length > 0 ? (
+          // isCarousel={true} injetado aqui!
           <ProductList 
             produtos={listaFiltrada} 
             onSave={toggleSaveProduct} 
             savedItems={itemsSalvos}
             onImageClick={handleOpenModal}
+            isCarousel={true} 
           />
         ) : (
-          /* MENSAGEM PADRÃO CASO NÃO HAJA PRODUTOS NA CATEGORIA */
           <div className="bg-[#F9F9F9] border-l-4 border-[#F7D708] p-5">
             <p className="text-gray-500 font-medium text-sm uppercase tracking-widest">
               Ainda não temos produtos cadastrados em {titulo}.
@@ -127,39 +106,28 @@ export default function PortfolioPage() {
     );
   };
 
-  // Função para mudar o filtro ativo
   const handleMudarFiltro = (filtro) => {
-    // Limpar busca quando filtro é alterado
     setBusca("");
-    
-    // Desativar filtro de destaque quando ativar outro filtro
     setMostrarDestaque(false);
-    
-    // Se clicou no mesmo filtro, volta para "todos"
-    if (categoriaAtiva === filtro) {
-      setCategoriaAtiva("todos");
-    } else {
-      // Caso contrário, ativa o novo filtro
-      setCategoriaAtiva(filtro);
-    }
+    if (categoriaAtiva === filtro) setCategoriaAtiva("todos");
+    else setCategoriaAtiva(filtro);
   };
 
-  // Função para ativar filtro de destaque
   const handleVerColecaoDestaque = () => {
-    // Limpar busca quando ativa destaque
     setBusca("");
-    
     setMostrarDestaque(true);
     setCategoriaAtiva("todos");
   };
 
+  // LÓGICA DO LIMITE DE 3 CATEGORIAS
+  const isFiltrando = categoriaAtiva !== "todos" || buscaTrim !== "" || mostrarDestaque;
+  // Se estiver filtrando ou já clicou em expandir, mostra tudo. Senão, corta nas 3 primeiras.
+  const categoriasExibidas = (isFiltrando || mostrarTodasCategorias) ? categorias : categorias.slice(0, 3);
+  const temMaisCategorias = !isFiltrando && !mostrarTodasCategorias && categorias.length > 3;
+
   return (
     <>
-      <Navbar 
-        onOpenDrawer={openDrawer} 
-        onOpenMenu={() => setIsMenuOpen(true)} 
-      />
-      {/* Espaçador para compensar navbar fixa */}
+      <Navbar onOpenDrawer={openDrawer} onOpenMenu={() => setIsMenuOpen(true)} />
       <div className="h-[80px]"></div>
       
       <SectionNomeBanner />
@@ -172,20 +140,14 @@ export default function PortfolioPage() {
         categorias={categorias}
       />
 
-      {/* SEÇÃO DE PRODUTOS POR CATEGORIA */}
       <section className="px-10 py-12 bg-gradient-to-b from-white to-gray-50" ref={produtosRef}>
-        {/* Indicador de Filtro Destaque Ativo */}
         {mostrarDestaque && (
           <div className="mb-8 p-4 bg-yellow-400 border-l-4 border-black rounded-lg">
             <p className="text-black font-bold text-sm uppercase tracking-wide">
               Mostrando apenas produtos destaque do mês
-              <button 
-                onClick={() => {
-                  setMostrarDestaque(false);
-                  setCategoriaAtiva("todos");
-                }}
-                className="ml-2 underline hover:no-underline font-black"
-              >              </button>
+              <button onClick={() => { setMostrarDestaque(false); setCategoriaAtiva("todos"); }} className="ml-2 underline hover:no-underline font-black">
+                Limpar
+              </button>
             </p>
           </div>
         )}
@@ -201,6 +163,7 @@ export default function PortfolioPage() {
                 <div className="h-1.5 w-10 bg-yellow-400 rounded-full"></div>
                 <h2 className="text-2xl font-black uppercase tracking-wide text-black">Resultados para "{buscaTrim}"</h2>
               </div>
+              {/* Resultados da busca ficam em Grid normal (sem carrossel) para melhor visualização */}
               <ProductList
                 produtos={matchedProducts}
                 onSave={toggleSaveProduct}
@@ -218,9 +181,23 @@ export default function PortfolioPage() {
           )
         ) : (
           <>
-            {categorias.map(({ nome, slug }) => (
-              <div key={slug}>{renderizarCategoria(nome, slug)}</div>
+            {categoriasExibidas.map(({ nome, slug }) => (
+              <React.Fragment key={slug}>
+                {renderizarCategoria(nome, slug)}
+              </React.Fragment>
             ))}
+
+            {/* Botão de Expandir Categorias no fim da seção */}
+            {temMaisCategorias && (
+              <div className="flex justify-center mt-4 mb-8">
+                <button 
+                  onClick={() => setMostrarTodasCategorias(true)}
+                  className="px-10 py-4 bg-transparent border-2 border-[#1A1A1A] text-[#1A1A1A] font-black text-[12px] tracking-[3px] uppercase hover:bg-[#1A1A1A] hover:text-white transition-all duration-300"
+                >
+                  Ver todas as Categorias do Catálogo
+                </button>
+              </div>
+            )}
           </>
         )}
       </section>
@@ -228,16 +205,8 @@ export default function PortfolioPage() {
       <FAQ />
       <Footer />
 
-      {/* COMPONENTES DE SOBREPOSIÇÃO (MODALS E DRAWERS) */}
-      
-      {/* Modal Centralizado de Detalhes do Produto */}
-      <ProductModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        produto={selectedProduct} 
-      />
+      <ProductModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} produto={selectedProduct} />
 
-      {/* Drawer Lateral de Itens Salvos */}
       <SaveDrawer
         isOpen={isDrawerOpen}
         onClose={closeDrawer}
@@ -248,11 +217,7 @@ export default function PortfolioPage() {
         onImageClick={handleOpenModal}
       />
 
-      {/* Menu Mobile / Configurações */}
-      <MobileMenu 
-        isOpen={isMenuOpen} 
-        onClose={() => setIsMenuOpen(false)} 
-      />
+      <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </>
   )
 }

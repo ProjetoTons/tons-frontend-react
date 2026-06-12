@@ -1,30 +1,73 @@
 import React from "react";
 import Card from "../card/card.jsx";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
 
-// Agora o componente é "burro": ele só recebe props e repassa.
-// Toda a lógica de estado (salvos e modal) vem da PortfolioPage.
-export default function ProductList({ 
-  produtos, 
-  onSave, 
-  savedItems, 
-  onImageClick 
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+export default function ProductList({
+  produtos,
+  onSave,
+  savedItems,
+  onImageClick,
+  isCarousel = false
 }) {
+  
+  if (!isCarousel) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {produtos.map((produto) => (
+          <div key={produto.id} className="w-full h-full flex">
+            <Card
+              produto={produto}
+              iconActive="/icons/bookmark.png"
+              iconInactive="/icons/empty.png"
+              isBookmarked={savedItems?.some(item => item.id === produto.id)}
+              onToggleBookmark={() => onSave(produto)}
+              onImageClick={onImageClick}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 p-5">
-      {produtos.map((produto) => (
-        <Card
-          key={produto.id}
-          produto={produto} // Passa o objeto inteiro para evitar erro de undefined
-          iconActive="/icons/bookmark.png"
-          iconInactive="/icons/empty.png"
-          // Verifica se o ID do produto está na lista de salvos que vem da página pai
-          isBookmarked={savedItems?.some(item => item.id === produto.id)}
-          // Repassa a função de salvar
-          onToggleBookmark={() => onSave(produto)}
-          // Repassa a função que abre o modal ao clicar na imagem
-          onImageClick={onImageClick}
-        />
-      ))}
+    <div 
+      className="w-full relative"
+      style={{
+        "--swiper-navigation-color": "#1A1A1A",
+        "--swiper-navigation-size": "22px",
+        "--swiper-navigation-sides-offset": "4px", 
+      }}
+    >
+      <Swiper
+        modules={[Navigation]}
+        spaceBetween={24} 
+        slidesPerView={1} 
+        breakpoints={{
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 4 }, 
+        }}
+        navigation={true}
+        className="pb-16 !px-8 !-mx-8" 
+      >
+        {produtos.map((produto) => (
+          <SwiperSlide key={produto.id} className="!h-auto">
+            <div className="w-full h-full pt-1 pb-2 flex">
+              <Card
+                produto={produto}
+                iconActive="/icons/bookmark.png"
+                iconInactive="/icons/empty.png"
+                isBookmarked={savedItems?.some(item => item.id === produto.id)}
+                onToggleBookmark={() => onSave(produto)}
+                onImageClick={onImageClick}
+              />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 }
