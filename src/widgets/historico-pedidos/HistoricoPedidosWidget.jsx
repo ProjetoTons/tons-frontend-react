@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getToken } from "@/shared/api/authToken";
 import { fetchMeusPedidosHistorico } from "@/entities/pedido/api/pedidosApi";
 import DetalhesPedidoModal from "@/features/detalhes-pedido/DetalhesPedidoModal";
 
@@ -14,12 +16,20 @@ function StatusBadge({ status }) {
 }
 
 export default function HistoricoPedidosWidget() {
+  const navigate = useNavigate();
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [filtro, setFiltro] = useState("Todos");
+
+  // Proteção: redirecionar se não estiver autenticado
+  useEffect(() => {
+    if (!getToken()) {
+      navigate("/portfolio", { replace: true });
+    }
+  }, [navigate]);
 
   const FILTROS = ["Todos", "Finalizados", "Cancelados"];
 
