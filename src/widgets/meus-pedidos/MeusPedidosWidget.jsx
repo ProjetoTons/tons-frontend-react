@@ -233,7 +233,9 @@ export default function MeusPedidosWidget() {
                       <div>
                         <EtapaBadge etapa={pedido.status ? `Em ${pedido.etapa_pedido}` : pedido.etapa_pedido} />
                         <h3 className="text-[18px] font-bold text-black uppercase mt-3 mb-1">
-                          {pedido.descricao}
+                          {pedido.itens_pedido && pedido.itens_pedido.length > 0
+                            ? pedido.itens_pedido.map((item) => item.produto?.nome || "Produto").join(", ")
+                            : pedido.descricao || "—"}
                         </h3>
                       </div>
 

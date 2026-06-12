@@ -71,22 +71,26 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, onC
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-800/50 bg-opacity-0 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-gray-800/50 bg-opacity-0 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="order-detail-title">
       {/* Container do Modal */}
       <div className="bg-white rounded-lg shadow-lg max-w-[70vw] w-full max-h-[90vh] overflow-y-auto">
 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#e4e2e2] sticky top-0 bg-white">
           <div className="flex items-center w-2/5 gap-4">
-            <h2 className="text-2xl w-full font-bold text-[#161616]">
+            <h2 id="order-detail-title" className="text-2xl w-full font-bold text-[#161616]">
               Pedido {dadosPedido.num_pedido}
             </h2>
-            <StatusBadge
-              status={dadosPedido.status}
-              etapa_pedido={dadosPedido.etapa_pedido}
-              onStatusChange={handleStatusChange}
-              usuarioLogado={usuarioLogado}
-            />
+            {dadosPedido.etapa_pedido !== "Finalizados" && dadosPedido.etapa_pedido !== "Cancelado" && dadosPedido.status !== "finalizado" && dadosPedido.status !== "Finalizado" ? (
+              <StatusBadge
+                status={dadosPedido.status}
+                etapa_pedido={dadosPedido.etapa_pedido}
+                onStatusChange={handleStatusChange}
+                usuarioLogado={usuarioLogado}
+              />
+            ) : (
+              <span className="text-sm text-gray-400">—</span>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -313,34 +317,43 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, onC
         </div>
 
         {/* Footer com Botões */}
-        <div className="flex gap-3 justify-between p-6 border-t border-[#e4e2e2] sticky bottom-0 bg-white">
-          <button
-            onClick={() => {
-              onCancelar && onCancelar(dadosPedido.id_pedido);
-              onClose();
-            }}
-            className="px-6 py-2 rounded font-bold text-[14px] bg-red-500 text-white hover:bg-red-600 transition-colors"
-          >
-            Cancelar Pedido
-          </button>
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="px-6 py-2 rounded font-bold text-[14px] bg-[#f3f3f3] text-[#323233] hover:bg-[#e4e2e2] transition-colors"
-            >
-              Fechar
-            </button>
-            <button
-              onClick={() => {
-                onEdit && onEdit(dadosPedido);
-                onClose();
-              }}
-              className="px-6 py-2 rounded font-bold text-[14px] bg-[#161616] text-white hover:bg-[#0a0a0a] transition-colors"
-            >
-              Editar Pedido
-            </button>
-          </div>
-        </div>
+        {(() => {
+          const isBloqueado = dadosPedido.etapa_pedido === "Finalizados" || dadosPedido.etapa_pedido === "Cancelado" || dadosPedido.status === "cancelado" || dadosPedido.status === "finalizado" || dadosPedido.status === "Finalizado";
+          return (
+            <div className="flex gap-3 justify-between p-6 border-t border-[#e4e2e2] sticky bottom-0 bg-white">
+              {!isBloqueado ? (
+                <button
+                  onClick={() => {
+                    onCancelar && onCancelar(dadosPedido.id_pedido);
+                    onClose();
+                  }}
+                  className="px-6 py-2 rounded font-bold text-[14px] bg-red-500 text-white hover:bg-red-600 transition-colors"
+                >
+                  Cancelar Pedido
+                </button>
+              ) : <div />}
+              <div className="flex gap-3">
+                <button
+                  onClick={onClose}
+                  className="px-6 py-2 rounded font-bold text-[14px] bg-[#f3f3f3] text-[#323233] hover:bg-[#e4e2e2] transition-colors"
+                >
+                  Fechar
+                </button>
+                {!isBloqueado && (
+                  <button
+                    onClick={() => {
+                      onEdit && onEdit(dadosPedido);
+                      onClose();
+                    }}
+                    className="px-6 py-2 rounded font-bold text-[14px] bg-[#161616] text-white hover:bg-[#0a0a0a] transition-colors"
+                  >
+                    Editar Pedido
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

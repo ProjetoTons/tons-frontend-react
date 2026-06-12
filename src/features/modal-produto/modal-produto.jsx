@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { adicionarProdutoInteresse } from "@/entities/produto/api/produtoInteresseApi";
 import { getToken } from "@/shared/api/authToken";
 
-export default function ProductModal({ isOpen, onClose, produto, onInteresse }) {
+export default function ProductModal({ isOpen, onClose, produto, onInteresse, hideInteresseButton = false }) {
   const navigate = useNavigate();
 
   if (!isOpen || !produto) return null;
@@ -27,10 +27,11 @@ const customSwalClasses = {
   };
 
   return (
-    <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-produto-title">
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Caixa do Modal */}
@@ -38,11 +39,12 @@ const customSwalClasses = {
 
         {/* Header */}
         <div className="flex justify-between items-center px-10 py-6">
-          <h2 className="text-2xl font-black uppercase tracking-tighter text-black">
+          <h2 id="modal-produto-title" className="text-2xl font-black uppercase tracking-tighter text-black">
             {produto.title}
           </h2>
           <button
             onClick={onClose}
+            aria-label="Fechar modal"
             className="text-3xl font-light cursor-pointer hover:text-gray-500 transition-colors"
           >
             ✕
@@ -80,6 +82,7 @@ const customSwalClasses = {
             </div>
 
             {/* Botão de Ação */}
+            {!hideInteresseButton && (
             <button
               onClick={async () => {
                 if (!getToken()) {
@@ -115,12 +118,12 @@ const customSwalClasses = {
                   onClose();
                   console.error("Erro ao adicionar à lista de interesse:", err);
                   
-                  // MODAL DE AVISO
+                  // MODAL DE AVISO - Produto duplicado
                   Swal.fire({
-                    title: "Item já adicionado!",
-                    text: "Este produto já faz parte da sua Lista de Interesse. Deseja ir para a lista agora?",
+                    title: "Produto já está na lista!",
+                    text: `"${produto.title}" já faz parte da sua Lista de Interesse. Você pode conferir seus itens salvos a qualquer momento.`,
                     icon: "info",
-                    iconColor: "#F7D708", // Amarelo
+                    iconColor: "#F7D708",
                     showCancelButton: true,
                     buttonsStyling: false,
                     confirmButtonText: btnListaInteresseHtml,
@@ -138,6 +141,7 @@ const customSwalClasses = {
             >
               Enviar para Lista de Interesse
             </button>
+            )}
           </div>
 
         </div>

@@ -112,7 +112,7 @@ export function useSaveDrawer() {
     isDrawerOpen,
     isLoading,
     error,
-    openDrawer: () => setIsDrawerOpen(true),
+    openDrawer: () => { setIsDrawerOpen(true); if (getToken()) loadSavedItems(); },
     closeDrawer: () => setIsDrawerOpen(false),
     toggleSaveProduct
   };

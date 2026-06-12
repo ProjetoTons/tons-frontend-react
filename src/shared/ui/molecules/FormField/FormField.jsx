@@ -1,7 +1,7 @@
 // src/shared/ui/molecules/FormField/FormField.jsx
 import React, { useState } from "react";
 
-export default function InputForm({ label, type = "text", placeholder, name, disabled, readOnly, value, onChange }) {
+export default function InputForm({ label, type = "text", placeholder, name, disabled, readOnly, value, onChange, error }) {
   const inputId = `input-${name}`;
 
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +16,9 @@ export default function InputForm({ label, type = "text", placeholder, name, dis
   return (
     <div className={`w-full ${disabled ? 'opacity-40' : 'opacity-100'}`}>
       <label htmlFor={inputId} className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
-        {label}
+        {label?.endsWith("*") ? (
+          <>{label.slice(0, -1)}<span className="text-red-400">*</span></>
+        ) : label}
       </label>
 
       {/* Container relative para o ícone flutuar de forma correta */}
@@ -30,7 +32,10 @@ export default function InputForm({ label, type = "text", placeholder, name, dis
           readOnly={readOnly}
           onChange={readOnly ? undefined : onChange}
           value={value}
-          className={`w-full text-sm py-2 px-4 pr-10 focus:outline-none ${readOnly ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-[#EFEFEF] text-gray-800 focus:ring-1 focus:ring-[#FFE300]'} disabled:cursor-not-allowed`}
+          aria-label={label?.replace(" *", "") || name}
+          aria-required={label?.endsWith("*") || undefined}
+          aria-invalid={error || undefined}
+          className={`w-full text-sm py-2 px-4 pr-10 focus:outline-none ${readOnly ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : error ? 'bg-red-50 border border-red-400 text-gray-800 focus:ring-1 focus:ring-red-400' : 'bg-[#EFEFEF] text-gray-800 focus:ring-1 focus:ring-[#FFE300]'} disabled:cursor-not-allowed`}
         />
 
         {/* Renderiza o botão do olhinho APENAS se o type original for 'password' */}

@@ -14,7 +14,7 @@ import OrderRow from "@/entities/pedido/ui/OrderRow";
 function OrderTable({ pedidos, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado }) {
   return (
     <div className="bg-white w-full overflow-x-auto rounded">
-      <table className="w-full min-w-[1100px] table-fixed border-collapse">
+      <table className="w-full min-w-[1100px] table-fixed border-collapse" role="table" aria-label="Tabela de pedidos">
         <colgroup>
           <col style={{width: '1%'}} />
           <col style={{width: '5%'}} />

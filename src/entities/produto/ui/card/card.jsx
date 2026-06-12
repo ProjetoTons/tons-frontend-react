@@ -14,7 +14,7 @@ export default function Card({
   const { image, category, title } = produto;
 
   return (
-    <div className="w-full bg-[#e9e6e3] overflow-hidden font-sans relative">
+    <div className="w-full bg-[#e9e6e3] overflow-hidden font-sans relative cursor-pointer hover:shadow-lg transition-shadow" onClick={() => onImageClick(produto)}>
       {/* Clique na imagem dispara o Modal */}
       {/* REDUZIDO: de h-[260px] para h-[220px] para o card ficar mais compacto */}
       <div
