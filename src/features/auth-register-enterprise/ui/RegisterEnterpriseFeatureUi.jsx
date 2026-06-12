@@ -45,7 +45,7 @@ export default function RegisterEnterpriseFeature() {
         {/* PROGRESSO: Configuração da Empresa */}
         <EtapaVisual
           NomeEstapa={"VÍNCULO CORPORATIVO"}
-          faseInicial={2}
+          faseInicial={3}
           faseFinal={4}
         />
 
@@ -125,12 +125,23 @@ export default function RegisterEnterpriseFeature() {
             </div>
 
             {/* Ações do Formulário (Rodapé do Cartão) */}
-            <div className="flex flex-col gap-3 pt-4 mt-2">
+            <div className="flex items-center gap-3 pt-4 mt-2">
+
+              <button
+                type="button"
+                onClick={handleVoltar}
+                className="flex-1 flex items-center justify-center gap-1 py-3 px-4 bg-[#EFEFEF] text-[11px] font-bold text-gray-600 uppercase tracking-wider hover:bg-[#E0E0E0] hover:text-black transition-colors cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Voltar
+              </button>
 
               <button
                 type="submit"
                 disabled={!cnpjValido || isLoading}
-                className="w-full bg-[#FFE300] text-black font-bold py-3 px-6 text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#EED100] disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+                className="flex-1 bg-[#FFE300] text-black font-bold py-3 px-6 text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#EED100] disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
               >
                 {isLoading ? (
                   "Processando..."
@@ -143,14 +154,6 @@ export default function RegisterEnterpriseFeature() {
                   </>
                 )}
               </button>
-
-              <button
-                type="button"
-                onClick={handleVoltar}
-                className="w-full text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider hover:text-black transition-colors cursor-pointer"
-              >
-                Voltar para o passo 1
-              </button>
             </div>
           </form>
 
@@ -162,9 +165,10 @@ export default function RegisterEnterpriseFeature() {
           <Link
             state={{
               dadosPessoais: location.state?.dadosPessoais,
-              cpfSalvo: location.state?.cpfSalvo
+              cpfSalvo: location.state?.cpfSalvo,
+              dadosEndereco: location.state?.dadosEndereco
             }}
-            to="/cadastro/endereco"
+            to="/cadastro/sucesso"
             className="text-[12px] font-bold text-gray-700 uppercase tracking-widest underline decoration-gray-300 underline-offset-[8px] hover:text-black hover:decoration-black transition-all"
           >
             Não represento uma empresa. Continuar.

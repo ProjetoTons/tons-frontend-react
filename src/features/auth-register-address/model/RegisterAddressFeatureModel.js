@@ -111,15 +111,15 @@ export const useRegisterAddress = () => {
       return;
     }
 
-    navigate("/cadastro/sucesso", { state: buildState(formData) });
+    navigate("/cadastro/empresa", { state: buildState(formData) });
   };
 
   const handlePular = () => {
-    navigate("/cadastro/sucesso", { state: buildState(null) });
+    navigate("/cadastro/empresa", { state: buildState(null) });
   };
 
   const handleVoltar = () => {
-    navigate("/cadastro/empresa", {
+    navigate("/cadastro/cliente", {
       state: {
         dadosPessoais: location.state?.dadosPessoais,
         cpfSalvo: location.state?.cpfSalvo,

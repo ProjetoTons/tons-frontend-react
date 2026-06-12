@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { cadastrarUsuario } from "@/entities/usuario/api/usuarioApi";
+import { cadastrarUsuario, salvarEnderecoUsuario } from "@/entities/usuario/api/usuarioApi";
 import { cadastrarEmpresa } from "@/entities/empresa/api/empresaApi";
 import { apenasDigitos } from "@/shared/lib/utils/masked";
 import { http } from "@/shared/api/http";
+import { setSession } from "@/shared/api/authToken";
 
 export default function RegistrationSuccessFeature() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Dados acumulados pelos steps anteriores (Step 1 e Step 2).
-  const { dadosPessoais, cpfSalvo, dadosEmpresa } = location.state || {};
+  // Dados acumulados pelos steps anteriores (Step 1, Step 2 e Step 3).
+  const { dadosPessoais, cpfSalvo, dadosEmpresa, dadosEndereco } = location.state || {};
 
   // Estados para controlar a transição da tela
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,31 +39,71 @@ export default function RegistrationSuccessFeature() {
     setErrorMessage("");
 
     try {
-      // 1) Se houver CNPJ, garante que a empresa existe no banco antes de
-      //    cadastrar o usuário (cadastrarEmpresa ignora 409 silenciosamente).
-      let empresaId = null;
-      if (dadosEmpresa?.cnpj) {
-        const razaoSocial = dadosEmpresa.formData?.razaoSocial ?? "";
-        const resultado = await cadastrarEmpresa({
-          cnpj: apenasDigitos(dadosEmpresa.cnpj),
-          razaoSocial,
-          nomeFantasia: razaoSocial, // backend exige @NotNull; usa razaoSocial como fallback
-          email: dadosEmpresa.formData?.email,
-          telefone: apenasDigitos(dadosEmpresa.formData?.phone ?? ""),
-        });
-        empresaId = resultado.id;
-      }
-
-      // 2) Cadastra o usuário, vinculando à empresa pelo ID se aplicável.
+      // 1) Cadastra o usuário primeiro (sem empresa ainda)
+      //    Se falhar aqui, nada mais é cadastrado — evita dados órfãos.
       await cadastrarUsuario({
         nome: dadosPessoais.fullName,
         cpf: apenasDigitos(cpfSalvo),
         email: dadosPessoais.email,
         telefone: apenasDigitos(dadosPessoais.phone),
         senha: dadosPessoais.password,
-        // empresaId é opcional — só envia se a empresa foi cadastrada/encontrada
-        ...(empresaId && { empresaId }),
       });
+
+      // 2) Login silencioso para obter token e ID do usuário recém-criado
+      let usuarioId = null;
+      try {
+        const loginRes = await http.post("/login", {
+          email: dadosPessoais.email,
+          senha: dadosPessoais.password,
+        });
+        const { token, ...usuario } = loginRes.data;
+        setSession({ token, usuario });
+        usuarioId = usuario.id;
+      } catch (loginErr) {
+        console.error("Login silencioso falhou:", loginErr);
+      }
+
+      // 3) Se houver CNPJ, cadastra a empresa e vincula ao usuário
+      if (dadosEmpresa?.cnpj && usuarioId) {
+        try {
+          const razaoSocial = dadosEmpresa.formData?.razaoSocial ?? "";
+          const resultado = await cadastrarEmpresa({
+            cnpj: apenasDigitos(dadosEmpresa.cnpj),
+            razaoSocial,
+            nomeFantasia: razaoSocial,
+            email: dadosEmpresa.formData?.email,
+            telefone: apenasDigitos(dadosEmpresa.formData?.phone ?? ""),
+          });
+          // Vincula empresa ao usuário
+          if (resultado.id) {
+            await http.put(`/usuarios/${usuarioId}`, {
+              nome: dadosPessoais.fullName,
+              email: dadosPessoais.email,
+              telefone: apenasDigitos(dadosPessoais.phone),
+              empresaId: resultado.id,
+            });
+          }
+        } catch (empErr) {
+          console.error("Erro ao cadastrar/vincular empresa:", empErr);
+        }
+      }
+
+      // 4) Se houver endereço preenchido, salva no backend
+      if (dadosEndereco && usuarioId) {
+        try {
+          await salvarEnderecoUsuario(usuarioId, {
+            cep: apenasDigitos(dadosEndereco.cep),
+            logradouro: dadosEndereco.logradouro,
+            numero: dadosEndereco.numero,
+            complemento: dadosEndereco.complemento || "",
+            bairro: dadosEndereco.bairro,
+            cidade: dadosEndereco.cidade,
+            estado: dadosEndereco.estado,
+          });
+        } catch (endErr) {
+          console.error("Erro ao salvar endereço:", endErr);
+        }
+      }
 
       // Notificações de boas-vindas (não bloqueia a tela de sucesso)
       const primeiroNome = dadosPessoais.fullName.trim().split(" ")[0];
@@ -95,7 +136,7 @@ export default function RegistrationSuccessFeature() {
       } else if (status === 422) {
         setErrorMessage("CNPJ inválido. Verifique o CNPJ informado e tente novamente.");
       } else if (status === 409) {
-        setErrorMessage("Este e-mail já está cadastrado.");
+        setErrorMessage(apiMsg || "Dado já cadastrado no sistema.");
       } else if (status === 400) {
         // Se o backend retornou lista de erros de validação, mostra detalhado
         if (Array.isArray(apiErrors) && apiErrors.length > 0) {
@@ -209,6 +250,39 @@ export default function RegistrationSuccessFeature() {
                     </div>
                   </div>
                 )}
+
+                {/* Dados Endereço (condicional) */}
+                {dadosEndereco && (
+                  <div className="border border-gray-100 p-3 rounded-sm">
+                    <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                      Endereço
+                    </h2>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">CEP</span>
+                        <span className="text-gray-900 font-medium">{dadosEndereco.cep}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Logradouro</span>
+                        <span className="text-gray-900 font-medium">{dadosEndereco.logradouro}, {dadosEndereco.numero}</span>
+                      </div>
+                      {dadosEndereco.complemento && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Complemento</span>
+                          <span className="text-gray-900 font-medium">{dadosEndereco.complemento}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Bairro</span>
+                        <span className="text-gray-900 font-medium">{dadosEndereco.bairro}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Cidade/UF</span>
+                        <span className="text-gray-900 font-medium">{dadosEndereco.cidade} - {dadosEndereco.estado}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -241,7 +315,7 @@ export default function RegistrationSuccessFeature() {
             </button>
 
             {!isSubmitting && (
-              <button onClick={() => navigate(-1)} className="mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:text-black transition-colors">
+              <button onClick={() => navigate("/cadastro/empresa", { state: { dadosPessoais, cpfSalvo, dadosEmpresa, dadosEndereco } })} className="mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:text-black transition-colors">
                 Voltar e editar dados
               </button>
             )}
