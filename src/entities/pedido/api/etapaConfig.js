@@ -34,10 +34,10 @@ export const ETAPA_CONFIG = {
     displayName: 'Finalizados',
   },
   Cancelado: {
-    cor: '#161616', // Preto
+    cor: '#FA2C37', // Vermelho
     txtColor: '#f6f6f6',
     icone: '/pedidos-icons/x-icon.svg',
-    displayName: 'Cancelados',
+    displayName: 'Cancelado',
   },
   Tudo: {
     cor: '#161616', // Amarelo

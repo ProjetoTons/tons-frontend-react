@@ -223,7 +223,7 @@ function PageHeader({
           {userRole === 'Adm' && (
             <button
               onClick={() => onEtapaFilter && onEtapaFilter(null)}
-              style={!etapaAtiva ? { backgroundColor: '#fdf210', color: '#000000' } : {}}
+              style={!etapaAtiva ? { backgroundColor: '#161616', color: '#f2f2f2' } : {}}
               className={`px-[16px] py-[8px] rounded font-['Inter:Medium',sans-serif] font-medium text-[14px] transition-all ${!etapaAtiva
                 ? 'shadow-md cursor-pointer hover:opacity-90 font-bold'
                 : "bg-[#e4e2e2] text-[#323233] hover:bg-[#d4d2d2] border-2 border-transparent shadow-md cursor-pointer"
