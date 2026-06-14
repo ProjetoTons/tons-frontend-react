@@ -35,7 +35,11 @@ export default function useRegisterEmployeFeature() {
             .listar()
             .then((lista) => {
                 if (!ativo) return;
-                setOpcoesCargo(lista.map(acessoToOption));
+                setOpcoesCargo(
+                    lista
+                        .filter((a) => (a.role ?? "").toLowerCase() !== "cliente")
+                        .map(acessoToOption)
+                );
             })
             .catch(() => {
                 if (!ativo) return;
@@ -84,6 +88,24 @@ export default function useRegisterEmployeFeature() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === "cargo") {
+            const admOption = opcoesCargo.find((opt) => opt.label.toLowerCase() === "adm");
+            const admId = admOption?.value;
+
+            if (admId != null) {
+                const tinhaAdm = formData.cargo.includes(admId);
+                const temAdm = value.includes(admId);
+
+                if (!tinhaAdm && temAdm) {
+                    return setFormData((prev) => ({ ...prev, cargo: [admId] }));
+                }
+                if (tinhaAdm && value.length > 1) {
+                    return setFormData((prev) => ({ ...prev, cargo: value.filter((v) => v !== admId) }));
+                }
+            }
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -126,6 +148,17 @@ export default function useRegisterEmployeFeature() {
         if (erroTelefone) return setErrorMessage(erroTelefone);
 
         if (!formData.dataNascimento) return setErrorMessage("Por favor, informe a data de nascimento.");
+
+        const nascimento = new Date(formData.dataNascimento);
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mesAniversario = nascimento.getMonth();
+        const diaAniversario = nascimento.getDate();
+        if (hoje.getMonth() < mesAniversario || (hoje.getMonth() === mesAniversario && hoje.getDate() < diaAniversario)) {
+            idade--;
+        }
+        if (idade < 16) return setErrorMessage("O funcionário deve ter no mínimo 16 anos.");
+
         if (!formData.cargo || formData.cargo.length === 0) return setErrorMessage("Por favor, selecione ao menos um cargo para o funcionário.");
         if (!formData.foto) return setErrorMessage("Por favor, adicione uma foto do funcionário.");
 

@@ -39,10 +39,16 @@ export default function PedidosListWidget() {
 
     // 1. Filtra os dados (Texto livre + Status de Conclusão)
     const filtrados = pedidos.filter((pedido) => {
-      const isConcluido = pedido.status === 'finalizado' || pedido.status === 'enviado';
-      
-      if (showCompleted && !isConcluido) return false;
-      if (!showCompleted && isConcluido) return false;
+      const isConcluido = pedido.status === 'finalizado' || pedido.status === 'enviado' || pedido.etapa_pedido === 'Finalizados';
+      const isCancelado = pedido.status === 'cancelado' || pedido.etapa_pedido === 'Cancelado';
+
+      if (showCompleted) {
+        // Modo concluídos: mostra apenas finalizados (sem cancelados)
+        if (!isConcluido) return false;
+      } else {
+        // Modo em andamento: exclui finalizados e cancelados
+        if (isConcluido || isCancelado) return false;
+      }
 
       if (searchTerm) {
         const term = searchTerm.toLowerCase();

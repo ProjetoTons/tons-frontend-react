@@ -5,6 +5,7 @@ import FileInputForm from "@/shared/ui/molecules/FormField/fileInputform";
 import SelectForm from "@/shared/ui/molecules/FormField/SelectForm";
 import useEditEmployeeFeature from "@/features/Edit-Employee/model/EditEmployeeFeatureModel";
 import { aplicarMascaraTelefone } from "@/shared/lib/utils/masked";
+import { getUsuario } from "@/shared/api/authToken";
 
 export default function EditEmployeeFeature() {
     const {
@@ -23,6 +24,9 @@ export default function EditEmployeeFeature() {
         handleSubmit,
         handleFileChange
     } = useEditEmployeeFeature();
+
+    const usuarioLogado = getUsuario();
+    const isProprioUsuario = usuarioLogado && String(usuarioLogado.id) === String(id);
 
     const exibirCargosDoPerfil = () => {
         if (!formData.cargo || formData.cargo.length === 0) return "Nenhum cargo";
@@ -195,14 +199,16 @@ export default function EditEmployeeFeature() {
                             </div>
 
                             <div className="flex flex-col sm:flex-row items-center justify-evenly pt-4 border-t border-gray-200 gap-4 mt-2">
-                                <button
-                                    type="button"
-                                    onClick={handleDeactivate}
-                                    disabled={isLoading}
-                                    className="text-[10px] font-bold text-red-600 uppercase tracking-widest hover:text-red-800 transition-colors cursor-pointer"
-                                >
-                                    Excluir Conta
-                                </button>
+                                {!isProprioUsuario && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDeactivate}
+                                        disabled={isLoading}
+                                        className="text-[10px] font-bold text-red-600 uppercase tracking-widest hover:text-red-800 transition-colors cursor-pointer"
+                                    >
+                                        Excluir Conta
+                                    </button>
+                                )}
 
                                 <div className="flex items-center gap-3 w-full sm:w-auto">
                                     <button

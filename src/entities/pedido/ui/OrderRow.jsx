@@ -47,9 +47,16 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
     let pedidoAtualizado;
 
     if (proximoStatus) {
+      // Em Logística, o próximo status após nao-iniciado depende do tipo_envio
+      let statusParaAvancar = proximoStatus;
+      if (pedidoLocal.etapa_pedido === "Logística" && pedidoLocal.status === "nao-iniciado") {
+        statusParaAvancar = pedidoLocal.tipo_envio === "Retirada"
+          ? "aguardando-retirada"
+          : "enviado";
+      }
       pedidoAtualizado = {
         ...pedidoLocal,
-        status: proximoStatus,
+        status: statusParaAvancar,
         responsavel_fase_atual: usuarioLogado,
       };
       onAvancar && onAvancar(pedidoLocal.id_pedido, pedidoAtualizado);
@@ -66,13 +73,7 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
       }).then((result) => {
         if (result.isConfirmed) {
           let statusInicial;
-          if (proximaEtapa === "Logística") {
-            statusInicial = pedidoLocal.tipo_envio === "Retirada"
-              ? "aguardando-retirada"
-              : "enviado";
-          } else {
-            statusInicial = getInitialStatus(proximaEtapa);
-          }
+          statusInicial = getInitialStatus(proximaEtapa);
 
           pedidoAtualizado = {
             ...pedidoLocal,
@@ -156,11 +157,11 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
         {/* Indicador de Etapa */}
         <td>
           <div
-            style={{ backgroundColor: getEtapaConfig(pedidoLocal.etapa_pedido).cor }}
+            style={{ backgroundColor: getEtapaConfig(pedidoLocal.status === "cancelado" ? "Cancelado" : pedidoLocal.etapa_pedido).cor }}
             className="w-3.5 h-16 p-0.5 flex items-center justify-center relative"
-            title={getEtapaConfig(pedidoLocal.etapa_pedido).displayName}
+            title={getEtapaConfig(pedidoLocal.status === "cancelado" ? "Cancelado" : pedidoLocal.etapa_pedido).displayName}
           >
-            <img src={getEtapaConfig(pedidoLocal.etapa_pedido).icone} alt="" />
+            <img src={getEtapaConfig(pedidoLocal.status === "cancelado" ? "Cancelado" : pedidoLocal.etapa_pedido).icone} alt="" className="w-3 h-3" />
           </div>
         </td>
 

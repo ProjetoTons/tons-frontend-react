@@ -258,7 +258,7 @@ export default function PedidosPage() {
               onRetornar={handleRetornar}
               onStatusChange={handleStatusChange}
               onTriangleChange={handleStatusChange}
-              onCancelar={handleCancelar}
+              onCancelar={isAdmin ? handleCancelar : undefined}
               usuarioLogado={usuarioLogado}
             />
           )}

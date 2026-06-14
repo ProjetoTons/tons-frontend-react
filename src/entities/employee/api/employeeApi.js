@@ -44,7 +44,7 @@ export function toFuncionarioRequest(form) {
     senha: form.senha,
     dataNascimento: form.dataNascimento,
     acessos: (form.cargo ?? []).map((v) => Number(v)),
-    fotoUrl: form.fotoUrl ? form.fotoUrl : null,
-    fotoPublicId: form.fotoPublicId ? form.fotoPublicId : null
+    fotoUrl: form.fotoUrl || "",
+    fotoPublicId: form.fotoPublicId || "sem-foto"
   }
 };
