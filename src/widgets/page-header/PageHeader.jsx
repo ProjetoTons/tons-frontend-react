@@ -34,7 +34,7 @@ const STATUS_POR_ETAPA = {
   Design: ["nao-iniciado", "aguardando-arte", "criando-mockup", "aguardando-aprovacao", "impressao-fotolito"],
   Produção: ["nao-iniciado", "conferindo", "personalizando"],
   Embalagem: ["nao-iniciado", "quality-check", "embalagem", "medicao", "emitir-etiqueta"],
-  Logística: ["enviado", "aguardando-retirada"],
+  Logística: ["nao-iniciado", "enviado", "aguardando-retirada"],
   Finalizados: ["finalizado"],
 };
 

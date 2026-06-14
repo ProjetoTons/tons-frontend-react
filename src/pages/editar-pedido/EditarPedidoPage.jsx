@@ -764,26 +764,6 @@ export default function EditarPedidoPage() {
                     </select>
                   </div>
 
-                  {/* Vendedor */}
-                  <div>
-                    <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
-                      Vendedor
-                    </label>
-                    <select
-                      name="vendedor"
-                      value={formData.vendedor}
-                      onChange={handleChange}
-                      className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2 px-4 focus:outline-none focus:ring-1 focus:ring-[#FFE300] appearance-none cursor-pointer"
-                    >
-                      <option value="">Selecionar vendedor</option>
-                      {funcionarioOptions.map((func) => (
-                        <option key={func.id} value={func.id}>
-                          {func.nome}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
                   {/* Tipo de Envio */}
                   <div>
                     <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
@@ -799,20 +779,6 @@ export default function EditarPedidoPage() {
                       <option value="Retirada">Retirada</option>
                       <option value="Entrega">Entrega</option>
                     </select>
-                  </div>
-
-                  {/* Data de Início */}
-                  <div>
-                    <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
-                      Data de Início
-                    </label>
-                    <input
-                      type="date"
-                      name="dataInicio"
-                      value={formData.dataInicio}
-                      onChange={handleChange}
-                      className="w-full bg-[#EFEFEF] text-gray-800 text-sm py-2 px-4 focus:outline-none focus:ring-1 focus:ring-[#FFE300]"
-                    />
                   </div>
 
                   {/* Data de Entrega */}

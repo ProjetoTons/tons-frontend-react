@@ -2,9 +2,12 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import EmployeeTable from "@/entities/employee/ui/EmployeeTable";
 import { employeeApi } from "@/entities/employee/api/employeeApi";
 import { Link, useNavigate } from "react-router-dom";
+import { getUsuario } from "@/shared/api/authToken";
 
 export default function EmployeeManagerWidget() {
   const navigate = useNavigate();
+  const usuarioLogado = getUsuario();
+  const usuarioLogadoId = usuarioLogado?.id ?? usuarioLogado?.idUsuario ?? usuarioLogado?.id_usuario;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [funcionarios, setFuncionarios] = useState([]);
@@ -111,6 +114,7 @@ export default function EmployeeManagerWidget() {
           funcionarios={funcionariosFiltrados}
           onEdit={handleEditar}
           onDelete={handleDeletar}
+          usuarioLogadoId={usuarioLogadoId}
         />
       )}
     </div>

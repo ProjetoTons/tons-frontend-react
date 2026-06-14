@@ -39,7 +39,11 @@ export default function useEditEmployeeFeature() {
         Promise.all([acessoApi.listar(), employeeApi.buscarPorId(id)])
             .then(([acessos, func]) => {
                 if (!ativo) return;
-                setOpcoesCargo(acessos.map(acessoToOption));
+                setOpcoesCargo(
+                    acessos
+                        .filter((a) => (a.role ?? "").toLowerCase() !== "cliente")
+                        .map(acessoToOption)
+                );
 
                 if (!func) {
                     setErrorMessage("Funcionário não encontrado.");
@@ -57,7 +61,8 @@ export default function useEditEmployeeFeature() {
                     desde: func.dataCriacao
                         ? new Date(func.dataCriacao).toLocaleDateString("pt-BR")
                         : "",
-                    fotoUrl: func.fotoUrl ?? ""
+                    fotoUrl: func.fotoUrl ?? "",
+                    fotoPublicId: func.fotoPublicId ?? ""
                 }));
             })
             .catch(() => {
@@ -81,6 +86,27 @@ export default function useEditEmployeeFeature() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === "cargo") {
+            // Encontrar o id do cargo "Adm"
+            const admOption = opcoesCargo.find((opt) => opt.label.toLowerCase() === "adm");
+            const admId = admOption?.value;
+
+            if (admId != null) {
+                const tinhaAdm = formData.cargo.includes(admId);
+                const temAdm = value.includes(admId);
+
+                // Se acabou de selecionar Adm, remove os outros
+                if (!tinhaAdm && temAdm) {
+                    return setFormData((prev) => ({ ...prev, cargo: [admId] }));
+                }
+                // Se já era Adm e selecionou outro, remove Adm
+                if (tinhaAdm && value.length > 1) {
+                    return setFormData((prev) => ({ ...prev, cargo: value.filter((v) => v !== admId) }));
+                }
+            }
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -135,6 +161,18 @@ export default function useEditEmployeeFeature() {
 
         if (!formData.cargo || formData.cargo.length === 0) {
             return setErrorMessage("Selecione ao menos um cargo.");
+        }
+
+        if (formData.dataNascimento) {
+            const nascimento = new Date(formData.dataNascimento);
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mesAniversario = nascimento.getMonth();
+            const diaAniversario = nascimento.getDate();
+            if (hoje.getMonth() < mesAniversario || (hoje.getMonth() === mesAniversario && hoje.getDate() < diaAniversario)) {
+                idade--;
+            }
+            if (idade < 16) return setErrorMessage("O funcionário deve ter no mínimo 16 anos.");
         }
 
         // Limitação do backend: FuncionarioRequestDto exige `senha` no PUT.

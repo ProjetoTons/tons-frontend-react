@@ -13,6 +13,7 @@ import RegistrationSuccessPage from '@/pages/register/RegisterSuccessPage'
 import EmployeePage from '@/pages/employee/EmployeePage'
 import EmployeeEditPage from '@/pages/employee/EmployeeEditPage'
 import GraficaRoute from '@/app/router/GraficaRoute'
+import ClientRoute from '@/app/router/ClientRoute'
 import EmBrevePage from '@/pages/em-breve/EmBrevePage'
 import ListaInteressePage from '@/pages/lista-interesse/ListaInteressePage'
 import MeusPedidosPage from '@/pages/meus-pedidos/MeusPedidosPage'
@@ -30,7 +31,7 @@ export function AppRouter() {
         <Route path="*" element={<PageNotFind />} />
         {/* Pagina de portfolio */}
         <Route path="/" element={<Navigate to="/portfolio" replace />} />
-        <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/portfolio" element={<ClientRoute><PortfolioPage /></ClientRoute>} />
         {/* Logins e cadastros*/}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/login/esqueci-senha" element={<ForgotPasswordPage />} />
@@ -39,12 +40,12 @@ export function AppRouter() {
         <Route path="/cadastro/empresa" element={<RegisterEnterprisePage />} />
         <Route path="/cadastro/endereco" element={<RegisterAddressPage />} />
         <Route path="/cadastro/sucesso" element={<RegistrationSuccessPage />} />
-        <Route path="/funcionario/cadastro" element={<RegisterEmployeePage />} />
+        <Route path="/funcionario/cadastro" element={<GraficaRoute requireAdmin={true}><RegisterEmployeePage /></GraficaRoute>} />
         {/* Páginas do cliente */}
-        <Route path="/lista-interesse" element={<ListaInteressePage />} />
-        <Route path="/meus-pedidos" element={<MeusPedidosPage />} />
-        <Route path="/historico-pedidos" element={<HistoricoPedidosPage />} />
-        <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+        <Route path="/lista-interesse" element={<ClientRoute><ListaInteressePage /></ClientRoute>} />
+        <Route path="/meus-pedidos" element={<ClientRoute><MeusPedidosPage /></ClientRoute>} />
+        <Route path="/historico-pedidos" element={<ClientRoute><HistoricoPedidosPage /></ClientRoute>} />
+        <Route path="/configuracoes" element={<ClientRoute><ConfiguracoesPage /></ClientRoute>} />
         {/* Painel kanban — acesso restrito ao CNPJ da gráfica */}
         <Route path="/pedidos" element={<GraficaRoute><PedidosPage /></GraficaRoute>} />
         <Route path="/pedidos/novo" element={<GraficaRoute requireAdmin={true}><NovoPedidoPage /></GraficaRoute>} />

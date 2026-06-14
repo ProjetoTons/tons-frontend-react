@@ -321,7 +321,7 @@ function OrderDetailModal({ isOpen, pedido, onClose, onEdit, onStatusChange, onC
           const isBloqueado = dadosPedido.etapa_pedido === "Finalizados" || dadosPedido.etapa_pedido === "Cancelado" || dadosPedido.status === "cancelado" || dadosPedido.status === "finalizado" || dadosPedido.status === "Finalizado";
           return (
             <div className="flex gap-3 justify-between p-6 border-t border-[#e4e2e2] sticky bottom-0 bg-white">
-              {!isBloqueado ? (
+              {!isBloqueado && onCancelar ? (
                 <button
                   onClick={() => {
                     onCancelar && onCancelar(dadosPedido.id_pedido);
