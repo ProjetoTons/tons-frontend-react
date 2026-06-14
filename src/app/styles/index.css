@@ -18,6 +18,11 @@
     font-family: var(--fonte-inter), sans-serif;
   }
 
+  /* Garante cursor pointer em todos os elementos clicáveis */
+  button, a, [role="button"], input[type="submit"], input[type="button"], summary {
+    cursor: pointer;
+  }
+
   /* ------------------------------------------------ */
 
   /* Animação de entrada: slide da direita + fade in */

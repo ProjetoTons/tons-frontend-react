@@ -15,7 +15,7 @@ import { useSaveDrawer } from '@/features/salvar-produto/model/useSaveDrawerFeat
 import { getProdutos } from '@/entities/produto/api/getProdutos'
 
 export default function PortfolioPage() {
-  const { isDrawerOpen, itemsSalvos, openDrawer, closeDrawer, toggleSaveProduct, isLoading, error } = useSaveDrawer()
+  const { isDrawerOpen, itemsSalvos, openDrawer, closeDrawer, toggleSaveProduct, isLoading, error, clearSavedItems } = useSaveDrawer()
   const produtosRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [categoriaAtiva, setCategoriaAtiva] = useState("todos");
@@ -239,6 +239,7 @@ export default function PortfolioPage() {
         error={error}
         onToggleSave={toggleSaveProduct}
         onImageClick={handleOpenModal}
+        onClearItems={clearSavedItems}
       />
 
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />

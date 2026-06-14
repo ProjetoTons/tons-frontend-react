@@ -1,13 +1,27 @@
 // src/features/salvar-produto/ui/SaveDrawerFeatureUi.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { adicionarProdutoInteresse } from "@/entities/produto/api/produtoInteresseApi";
 import { getToken } from "@/shared/api/authToken";
 
-export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading = false, error = null, onToggleSave = () => {}, onImageClick = () => {} }) {
+export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading = false, error = null, onToggleSave = () => {}, onImageClick = () => {}, onClearItems = () => {} }) {
   const navigate = useNavigate();
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(null);
+
+  const btnListaInteresseHtml = `
+    <div class="flex items-center justify-center gap-2 w-full">
+      <img src="/icons/clipboard.png" alt="Lista" class="w-4 h-4 object-contain brightness-0 invert group-hover:invert-0 transition-all" />
+      <span>Ir para Lista</span>
+    </div>
+  `;
+
+  const customSwalClasses = {
+    actions: '!flex !flex-row !flex-nowrap justify-center items-stretch gap-3 w-full max-w-[450px] mx-auto mt-4 cursor-pointer',
+    confirmButton: 'group !w-1/2 min-h-[44px] !m-0 flex items-center justify-center bg-[#1A1A1A] hover:bg-[#F7D708] text-white hover:text-black font-black uppercase text-[10px] tracking-widest px-2 py-2 transition-all duration-300 shadow-sm text-center leading-tight cursor-pointer',
+    cancelButton: '!w-1/2 min-h-[44px] !m-0 flex items-center justify-center bg-[#EAEAEA] hover:bg-[#D4D4D4] text-gray-800 font-bold uppercase text-[10px] tracking-widest px-2 py-2 transition-all duration-300 text-center leading-tight cursor-pointer'
+  };
 
   const handleEnviarParaListaInteresse = async () => {
     if (savedItems.length === 0 || isSending) return;
@@ -21,18 +35,76 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading
     setIsSending(true);
     setSendError(null);
     try {
-      // Envia cada item em paralelo; ignora 200/204 e segue mesmo se algum falhar
-      const resultados = await Promise.allSettled(
-        savedItems.map((item) => adicionarProdutoInteresse(item.id))
-      );
-      const falhas = resultados.filter((r) => r.status === "rejected");
-      if (falhas.length > 0) {
-        console.error("Falhas ao enviar para lista de interesse:", falhas);
-        setSendError(`${falhas.length} item(ns) não puderam ser enviados.`);
-        return;
+      // Envia cada item sequencialmente para evitar race condition no backend
+      const duplicatas = [];
+      for (const item of savedItems) {
+        try {
+          await adicionarProdutoInteresse(item.id);
+        } catch (err) {
+          // Itens rejeitados = duplicatas (já existem na lista de interesse)
+          duplicatas.push(item);
+        }
       }
+
+      onClearItems();
       onClose();
-      navigate("/lista-interesse");
+
+      // Se todos já estavam na lista
+      if (duplicatas.length === savedItems.length) {
+        Swal.fire({
+          title: "Produto já está na lista!",
+          text: savedItems.length === 1
+            ? `"${savedItems[0].title}" já faz parte da sua Lista de Interesse. Você pode conferir seus itens salvos a qualquer momento.`
+            : `Todos os ${savedItems.length} itens já fazem parte da sua Lista de Interesse.`,
+          icon: "info",
+          iconColor: "#F7D708",
+          showCancelButton: true,
+          buttonsStyling: false,
+          confirmButtonText: btnListaInteresseHtml,
+          cancelButtonText: "Continuar Escolhendo",
+          reverseButtons: true,
+          customClass: customSwalClasses
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/lista-interesse");
+          }
+        });
+      } else if (duplicatas.length > 0) {
+        // Alguns novos, alguns duplicados
+        const novos = savedItems.length - duplicatas.length;
+        Swal.fire({
+          title: "Itens Enviados!",
+          text: `${novos} ${novos === 1 ? "item adicionado" : "itens adicionados"} à Lista de Interesse. ${duplicatas.length} já ${duplicatas.length === 1 ? "estava" : "estavam"} na lista.`,
+          icon: "success",
+          showCancelButton: true,
+          buttonsStyling: false,
+          confirmButtonText: btnListaInteresseHtml,
+          cancelButtonText: "Continuar Escolhendo",
+          reverseButtons: true,
+          customClass: customSwalClasses
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/lista-interesse");
+          }
+        });
+      } else {
+        // Todos enviados com sucesso
+        Swal.fire({
+          title: "Itens Enviados!",
+          text: `${savedItems.length} ${savedItems.length === 1 ? "item foi adicionado" : "itens foram adicionados"} à sua Lista de Interesse.`,
+          icon: "success",
+          showCancelButton: true,
+          buttonsStyling: false,
+          confirmButtonText: btnListaInteresseHtml,
+          cancelButtonText: "Continuar Escolhendo",
+          reverseButtons: true,
+          customClass: customSwalClasses
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/lista-interesse");
+          }
+        });
+      }
     } catch (err) {
       console.error("Erro ao enviar para lista de interesse:", err);
       setSendError("Erro ao enviar. Tente novamente.");
