@@ -3,14 +3,14 @@
   @import "tailwindcss";
 
 
-:root {
-  --amarelo-base: #F7D708;
-  --preto-neutro: #1A1A1A;
-  --cinza-base: #E5E5E5;
-  --cinza-escuro: #6b6b6b;
-  --branco: #F2F2F2;
-  --fonte-inter: 'Inter';
-  --fonte-space: 'Space Grotesk';
+  :root {
+    --amarelo-base: #F7D708;
+    --preto-neutro: #1A1A1A;
+    --cinza-base: #E5E5E5;
+    --cinza-escuro: #6b6b6b;
+    --branco: #F2F2F2;
+    --fonte-inter: 'Inter';
+    --fonte-space: 'Space Grotesk';
 
   }
 
@@ -26,6 +26,7 @@
       opacity: 0;
       transform: translateX(40px);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);
@@ -37,6 +38,7 @@
       opacity: 0;
       transform: translateX(-40px);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);
@@ -44,8 +46,13 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   .animate-slide-in-right {
@@ -59,3 +66,36 @@
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out both;
   }
+
+  /* ------------------------------------------------ */
+  /* CUSTOMIZAÇÃO DO HOVER DO BOTÃO DO VLIBRAS        */
+  /* ------------------------------------------------ */
+
+  /* 1. Oculta a mensagem em imagem NATIVA do VLibras para sempre */
+  div[vw-access-button] .pop-up {
+    display: none !important;
+  }
+
+  /* 2. Garante que a mãozinha nativa continue aparecendo */
+  div[vw-access-button] .access-button {
+    display: block !important;
+    width: 40px !important;
+    height: 40px !important;
+    z-index: 10 !important;
+  }
+
+  /* 3. Expande o botão para o lado quando passa o mouse */
+  div[vw-access-button]:hover {
+    width: 200px !important;
+    /* Espaço suficiente para a mão + texto */
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    /* Alinha os itens pela esquerda */
+    transition: width 0.3s ease-in !important;
+    overflow: hidden !important;
+    /* Evita que o texto vaze enquanto o botão expande */
+  }
+
+
