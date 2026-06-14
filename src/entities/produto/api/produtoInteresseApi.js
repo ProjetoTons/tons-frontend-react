@@ -33,5 +33,5 @@ export async function removerProdutoInteresse(idProduto) {
 }
 
 export async function limparCarrinho() {
-  await http.delete(`/produtos/limpar/interesse`)
+  await http.delete('/produtos/interesse')
 }

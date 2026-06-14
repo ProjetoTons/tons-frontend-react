@@ -25,13 +25,13 @@ export function useSaveDrawer() {
     try {
       setIsLoading(true);
       const response = await http.get('/produtos/favoritos');
-      // Backend retorna List<Produto> com { id, nome, descricao, tipoMaterial, categoriaProduto }
+      // Backend retorna List<Produto> com { id, nome, descricao, tipoMaterial, categoriaProduto, imagemUrl }
       const mapped = (response.data || []).map(p => ({
         id: p.id,
         title: p.nome ?? 'Produto',
         category: p.categoriaProduto?.nome ?? p.tipoMaterial ?? 'Produto',
         description: p.descricao ?? '',
-        image: p.urlImagem ?? '/product/placeholder.png',
+        image: p.imagemUrl || p.image || '/product/placeholder.svg',
         type: p.tipoMaterial ?? '',
       }));
       setItemsSalvos(mapped);
@@ -107,6 +107,15 @@ export function useSaveDrawer() {
     }
   };
 
+  const clearSavedItems = async () => {
+    setItemsSalvos([])
+    try {
+      await http.delete('/produtos/favoritos')
+    } catch (err) {
+      console.error('Erro ao limpar favoritos no servidor:', err)
+    }
+  }
+
   return {
     itemsSalvos,
     isDrawerOpen,
@@ -114,6 +123,7 @@ export function useSaveDrawer() {
     error,
     openDrawer: () => { setIsDrawerOpen(true); if (getToken()) loadSavedItems(); },
     closeDrawer: () => setIsDrawerOpen(false),
-    toggleSaveProduct
+    toggleSaveProduct,
+    clearSavedItems
   };
 }

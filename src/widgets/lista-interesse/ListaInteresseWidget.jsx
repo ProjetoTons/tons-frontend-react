@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import ProductModal from "@/features/modal-produto/modal-produto.jsx";
 import { enviarListaWhatsApp } from "@/shared/lib/whatsapp";
 import { getToken, getUsuario } from "@/shared/api/authToken";
@@ -100,7 +101,24 @@ export default function ListaInteresseWidget() {
   };
 
   const handleLimparLista = async () => {
-    if (!window.confirm("Tem certeza que deseja remover todos os itens do carrinho?")) return;
+    const result = await Swal.fire({
+      title: "Limpar carrinho?",
+      text: "Todos os itens serão removidos da sua Lista de Interesses. Essa ação não pode ser desfeita.",
+      icon: "warning",
+      iconColor: "#F7D708",
+      showCancelButton: true,
+      buttonsStyling: false,
+      confirmButtonText: "Sim, limpar tudo",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+      customClass: {
+        actions: '!flex !flex-row !flex-nowrap justify-center items-stretch gap-3 w-full max-w-[400px] mx-auto mt-4',
+        confirmButton: '!w-1/2 min-h-[44px] !m-0 flex items-center justify-center bg-[#1A1A1A] hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest px-2 py-2 transition-all duration-300 cursor-pointer',
+        cancelButton: '!w-1/2 min-h-[44px] !m-0 flex items-center justify-center bg-[#EAEAEA] hover:bg-[#D4D4D4] text-gray-800 font-bold uppercase text-[10px] tracking-widest px-2 py-2 transition-all duration-300 cursor-pointer'
+      }
+    });
+
+    if (!result.isConfirmed) return;
 
     const itensBackup = [...itemsSalvos];
 
@@ -108,11 +126,9 @@ export default function ListaInteresseWidget() {
     setError(null);
 
     try {
-      // Usa APENAS o endpoint de limpeza total
       await limparCarrinho();
     } catch (err) {
       console.error("Erro ao limpar a lista de interesse:", err);
-      // Reverte a ação se a API falhar
       setItemsSalvos(itensBackup);
       setError("Não foi possível limpar o carrinho. Tente novamente.");
     }
@@ -247,21 +263,21 @@ export default function ListaInteresseWidget() {
           <p className="text-[10px] text-gray-500 mt-3 leading-relaxed">
             Ao clicar, você será redirecionado para o WhatsApp para formalizar seu orçamento com nossos consultores técnicos.
           </p>
-        </div>
 
-        {/*Limpar Carrinho */}
-        {itemsSalvos.length > 0 && (
-          <button
-            onClick={handleLimparLista}
-            className="w-full mt-2 py-3 flex items-center justify-center gap-2 bg-transparent hover:bg-red-50 text-red-500 hover:text-red-600 font-bold text-[11px] tracking-[1px] uppercase transition-colors rounded-sm"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-            Limpar Carrinho
-          </button>
-        )}
+          {/* Limpar Carrinho */}
+          {itemsSalvos.length > 0 && (
+            <button
+              onClick={handleLimparLista}
+              className="w-full mt-6 py-3 flex items-center justify-center gap-2 border-2 border-red-500 bg-transparent hover:bg-red-500 text-red-500 hover:text-white font-black text-[11px] tracking-[2px] uppercase transition-all duration-300 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Limpar Carrinho
+            </button>
+          )}
+        </div>
       </aside>
 
       <ProductModal
