@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { clearSession } from '@/shared/api/authToken';
+import { clearSession, getUsuario } from '@/shared/api/authToken';
 
 export default function MobileMenu({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // 👇 Busca o usuário e verifica se ele possui o acesso de 'Adm'
+  const usuario = getUsuario() || { acessos: [] };
+  const isAdm = usuario.acessos?.some(acesso => acesso.role === 'Adm');
 
   const menuItems = [
     { path: '/portfolio', label: 'PORTFÓLIO', icon: '/logo-tons/Logo Hefestos Nome.png', isImage: true },
@@ -12,10 +16,17 @@ export default function MobileMenu({ isOpen, onClose }) {
     { path: '/meus-pedidos', label: 'MEUS PEDIDOS', icon: '/icons/parcel.png', isImage: true },
     { path: '/historico-pedidos', label: 'HISTÓRICO DE PEDIDOS', icon: 'clock', isImage: false },
     { path: '/configuracoes', label: 'CONFIGURAÇÕES', icon: '/icons/settings.png', isImage: true },
+    { path: '/pedidos', label: 'GERENCIAMENTO DE PEDIDOS', icon: '/icons/freepik-gerenciamento-de-projetos.png', isImage: true, adminOnly: true },
   ];
 
   const currentPath = location.pathname;
-  const filteredItems = menuItems.filter(item => item.path !== currentPath);
+  
+  // 👇 Filtra removendo a página atual E removendo itens adminOnly se não for Adm
+  const filteredItems = menuItems.filter(item => {
+    if (item.path === currentPath) return false;
+    if (item.adminOnly && !isAdm) return false;
+    return true;
+  });
 
   const handleLogout = () => {
     clearSession();
@@ -45,7 +56,7 @@ export default function MobileMenu({ isOpen, onClose }) {
           <h3 className="mt-6 font-black text-lg tracking-wide text-black uppercase">Painel do Cliente</h3>
         </div>
 
-        {/* Links de Navegação (Recuperados do seu código anterior) */}
+        {/* Links de Navegação */}
         <nav className="flex flex-col px-8 mt-10 gap-8">
           
           {filteredItems.map((item) => (

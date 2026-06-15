@@ -6,8 +6,8 @@
  * - onNovoPedido: function - callback quando clica em novo pedido
  * - onEtapaFilter: function - callback para filtrar por etapa
  * - etapaAtiva: string - etapa atualmente selecionada
- * - etapasPermitidas: array - lista de etapas que o usuário atual pode ver (Oculta botões se restrito)
- * - userRole: string - Papel principal do usuário na aplicação
+ * - etapasPermitidas: array - lista de etapas consolidadas que o usuário possui acesso
+ * - isAdmin: boolean - Se o usuário tem poder máximo no sistema
  */
 import { getEtapaConfig } from "@/entities/pedido/api/etapaConfig";
 import { useState, useRef, useEffect } from "react";
@@ -29,7 +29,6 @@ const STATUS_OPTIONS = [
   { value: "aguardando-retirada", label: "Aguardando retirada" },
 ];
 
-// Mapeamento de quais status pertencem a cada etapa
 const STATUS_POR_ETAPA = {
   Design: ["nao-iniciado", "aguardando-arte", "criando-mockup", "aguardando-aprovacao", "impressao-fotolito"],
   Produção: ["nao-iniciado", "conferindo", "personalizando"],
@@ -45,7 +44,6 @@ const ORDENAR_OPTIONS = [
   { value: "valor_total", label: "Preço" },
 ];
 
-// 👇 1. Adicionamos as props de validação na assinatura da função
 function PageHeader({ 
   onSearch, 
   onFilter, 
@@ -55,7 +53,7 @@ function PageHeader({
   responsavelFilter = "todos", 
   onResponsavelFilter,
   etapasPermitidas = [], 
-  userRole
+  isAdmin
 }) {
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [showPedidosDropdown, setShowPedidosDropdown] = useState(false);
@@ -64,7 +62,6 @@ function PageHeader({
   const [direcao, setDirecao] = useState("asc");
   const panelRef = useRef(null);
 
-  // Fecha painel ao clicar fora
   useEffect(() => {
     function handleClickOutside(e) {
       if (panelRef.current && !panelRef.current.contains(e.target)) {
@@ -77,7 +74,6 @@ function PageHeader({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showFilterPanel]);
 
-  // Fecha dropdown de pedidos ao clicar fora
   useEffect(() => {
     function handleClickOutside(e) {
       if (!e.target.closest('[data-pedidos-dropdown]')) {
@@ -90,7 +86,6 @@ function PageHeader({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPedidosDropdown]);
 
-  // Filtra as opções de status com base na etapa ativa
   const statusOptionsVisiveis = etapaAtiva && STATUS_POR_ETAPA[etapaAtiva]
     ? STATUS_OPTIONS.filter(opt => opt.value === "" || STATUS_POR_ETAPA[etapaAtiva].includes(opt.value))
     : STATUS_OPTIONS;
@@ -112,7 +107,6 @@ function PageHeader({
     onSearch && onSearch(e.target.value);
   };
 
-  // 2. Separamos o botão "Todos" da lista base de etapas
   const etapasBase = [
     { value: "Design", label: "Design" },
     { value: "Produção", label: "Produção" },
@@ -122,14 +116,16 @@ function PageHeader({
     { value: "Cancelado", label: "Cancelados" },
   ];
 
-  // 3. Filtramos: Adm vê todas, os demais veem apenas o que está no array `etapasPermitidas`
-  const etapasVisiveis = userRole === 'Adm' 
+  // Se o usuário acumula funções (possui mais de uma etapa), o botão "Todos" faz sentido e é exibido
+  const mostraBotaoTodos = isAdmin || etapasPermitidas.length > 1;
+
+  // Filtra as abas para renderizar as opções consolidadas
+  const etapasVisiveis = isAdmin 
     ? etapasBase 
     : etapasBase.filter(etapa => etapasPermitidas.includes(etapa.value));
 
   return (
     <div>
-      {/* Linha 1: Título + Busca na mesma linha */}
       <div className="flex items-end justify-between mt-10">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">
@@ -140,7 +136,6 @@ function PageHeader({
           </p>
         </div>
 
-        {/* Search Input */}
         <div className="relative w-[289px]">
           <div className="bg-[#e4e2e2] flex items-center px-[40px] py-[11px] rounded relative">
             <input
@@ -149,7 +144,6 @@ function PageHeader({
               onChange={handleSearchChange}
               className="bg-transparent font-['Inter:Medium',sans-serif] font-medium text-[14px] text-[#6b7280] placeholder-[#6b7280] outline-none w-full"
             />
-            {/* Ícone de informação */}
             <div className="group relative ml-2">
               <svg className="w-4 h-4 text-[#6b7280] cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -171,20 +165,13 @@ function PageHeader({
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
       </div>
 
-      {/* Linha 2: Tabs + Filtro + Novo Pedido */}
       <div className="flex items-center gap-[12px] mt-4">
 
-        {/* Dropdown Pedidos */}
         <div className="relative border-r-2 border-[#e4e2e2] pr-[16px] mr-[4px]" data-pedidos-dropdown>
           <button
             onClick={() => setShowPedidosDropdown((v) => !v)}
@@ -217,10 +204,9 @@ function PageHeader({
           )}
         </div>
 
-        {/* Filtros por etapa */}
         <div className="flex items-center gap-[12px]">
           
-          {userRole === 'Adm' && (
+          {mostraBotaoTodos && (
             <button
               onClick={() => onEtapaFilter && onEtapaFilter(null)}
               style={!etapaAtiva ? { backgroundColor: '#161616', color: '#f2f2f2' } : {}}
@@ -257,7 +243,6 @@ function PageHeader({
           })}
         </div>
 
-        {/* Filtro + Novo Pedido alinhados à direita (mesma largura da busca) */}
         <div className="flex items-center gap-[12px] ml-auto w-[289px]">
           <div className="relative flex-1" ref={panelRef}>
             <button
@@ -294,7 +279,7 @@ function PageHeader({
             )}
           </div>
 
-          {userRole === 'Adm' && (
+          {isAdmin && (
             <button
               onClick={() => onNovoPedido && onNovoPedido()}
               className="bg-[#161616] hover:bg-[#0a0a0a] transition-colors text-white px-[32px] py-[9px] rounded flex items-center justify-center gap-[4px]"

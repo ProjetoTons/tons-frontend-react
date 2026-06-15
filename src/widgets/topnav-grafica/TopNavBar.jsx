@@ -15,7 +15,7 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
 
   // Busca as informações do usuário logado na sessão (Inicia com array vazio se nulo)
   const usuarioLogado = getUsuario() || { acessos: [] };
-  
+
   // 👇 NOVA LÓGICA: Mapeia o array buscando se a role 'Adm' existe na lista de acessos 👇
   const isAdm = usuarioLogado.acessos?.some(acesso => acesso.role === 'Adm');
 
@@ -49,20 +49,19 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
       </div>
 
       <div className="flex items-center gap-3 lg:gap-5 xl:gap-6 flex-wrap justify-end">
-        <button
+        {isAdm && (<button
           onClick={() => handleNav("portfolio")}
-          className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${
-            currentPage === "portfolio" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
-          }`}
+          className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${currentPage === "portfolio" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
+            }`}
         >
           Portifólio
         </button>
+        )}
 
         <button
           onClick={() => handleNav("pedidos")}
-          className={`font-['Inter:Bold',sans-serif] font-bold text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors ${
-            currentPage === "pedidos" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
-          }`}
+          className={`font-['Inter:Bold',sans-serif] font-bold text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors ${currentPage === "pedidos" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
+            }`}
         >
           Gerenciamento Pedidos
         </button>
@@ -71,9 +70,8 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         {isAdm && (
           <button
             onClick={() => handleNav("dashboard")}
-            className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${
-              currentPage === "dashboard" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
-            }`}
+            className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${currentPage === "dashboard" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
+              }`}
           >
             Dashboard
           </button>
@@ -83,9 +81,8 @@ function TopNavBar({ onNavClick, currentPage = "pedidos" }) {
         {isAdm && (
           <button
             onClick={() => handleNav("funcionarios")}
-            className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${
-              currentPage === "funcionarios" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
-            }`}
+            className={`font-['Inter:Medium',sans-serif] font-medium text-xs lg:text-sm xl:text-[16px] pb-[6px] transition-colors cursor-pointer ${currentPage === "funcionarios" ? "text-[#161616] border-b-2 border-[#fdf210]" : "text-[#6b7280] hover:text-[#161616]"
+              }`}
           >
             Funcionários
           </button>

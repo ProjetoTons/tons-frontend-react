@@ -13,11 +13,12 @@ import {
 } from "@/entities/pedido/api/statusFlowConfig";
 import { getEtapaConfig } from "@/entities/pedido/api/etapaConfig";
 import { formatarDataBR } from "@/shared/lib/dateFormatter";
+import { ROLE_TABS_ACCESS } from "@/shared/config/permissions"; // 👈 Importamos o mapeamento de permissões
 
 /**
  * OrderRow - Uma linha da tabela de pedidos
  */
-function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado = { id: null, nome: "Usuário", role: "" } }) {
+function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, usuarioLogado = { id: null, nome: "Usuário", role: "", acessos: [] } }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const pedidoLocal = pedido;
@@ -29,19 +30,35 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
   const statusAnterior = getPreviousStatus(pedidoLocal.etapa_pedido, pedidoLocal.status);
   const etapaAnterior = getPreviousEtapa(pedidoLocal.etapa_pedido);
 
-  // --- TRAVA DE SEGURANÇA ---
-  const isAdmin = usuarioLogado?.role === 'Adm';
+  // --- TRAVAS DE SEGURANÇA E CONCORRÊNCIA ---
+  const isAdmin = usuarioLogado?.acessos?.some(a => a.role === 'Adm');
   const responsavelAtualId = pedidoLocal.responsavel_fase_atual?.id;
   const hasResponsavel = Boolean(responsavelAtualId);
   const isOutroResponsavel = hasResponsavel && responsavelAtualId !== usuarioLogado.id;
   
-  // Bloqueia se NÃO for admin, TIVER um responsável, e NÃO FOR o usuário logado
-  const bloqueadoPorOutroResponsavel = !isAdmin && isOutroResponsavel;
+  // 🔒 TRAVA DE ÁREA (O usuário tem cargo para mexer nesta etapa específica?)
+  let temPermissaoNaEtapa = false;
+  if (isAdmin) {
+    temPermissaoNaEtapa = true;
+  } else {
+    // Varre todos os cargos do usuário. Se algum deles permitir agir nessa etapa, libera.
+    const userRoles = usuarioLogado.acessos?.map(a => a.role) || [];
+    userRoles.forEach(role => {
+      const etapasPermitidasParaEssaRole = ROLE_TABS_ACCESS[role] || [];
+      if (etapasPermitidasParaEssaRole.includes(pedidoLocal.etapa_pedido)) {
+        temPermissaoNaEtapa = true;
+      }
+    });
+  }
+
+  // 🔒 TRAVA DE BLOQUEIO GERAL
+  // Bloqueia se NÃO for admin E (a etapa não é a dele OU outro funcionário já puxou o card)
+  const bloqueadoGeral = !isAdmin && (!temPermissaoNaEtapa || isOutroResponsavel);
 
   // --- APLICAÇÃO DA TRAVA NAS AÇÕES ---
   const isFinalizado = pedidoLocal.etapa_pedido === "Finalizados" || pedidoLocal.etapa_pedido === "Cancelado" || pedidoLocal.status === "finalizado" || pedidoLocal.status === "cancelado";
-  const podeAvancar = !isFinalizado && (proximoStatus !== null || proximaEtapa !== null) && !bloqueadoPorOutroResponsavel;
-  const podeRetornar = !isFinalizado && (statusAnterior !== null || etapaAnterior !== null) && !bloqueadoPorOutroResponsavel;
+  const podeAvancar = !isFinalizado && (proximoStatus !== null || proximaEtapa !== null) && !bloqueadoGeral;
+  const podeRetornar = !isFinalizado && (statusAnterior !== null || etapaAnterior !== null) && !bloqueadoGeral;
 
   const handleAvancar = () => {
     let pedidoAtualizado;
@@ -140,13 +157,19 @@ function OrderRow({ pedido, onAvancar, onRetornar, onStatusChange, onCancelar, u
   const responsavelExibicao = pedidoLocal.responsavel_fase_atual?.nome || "-";
 
   // Textos explicativos dinâmicos para melhorar a UX caso esteja bloqueado
-  const tooltipAvancar = bloqueadoPorOutroResponsavel 
-    ? "Tarefa em andamento por outro colaborador" 
-    : (podeAvancar ? "Avançar para próxima etapa" : "Conclua o status atual para avançar");
+  let tooltipAvancar = "Conclua o status atual para avançar";
+  let tooltipRetornar = "Não é possível retornar";
 
-  const tooltipRetornar = bloqueadoPorOutroResponsavel 
-    ? "Tarefa em andamento por outro colaborador" 
-    : (podeRetornar ? "Retornar para etapa anterior" : "Não é possível retornar");
+  if (!temPermissaoNaEtapa && !isAdmin) {
+    tooltipAvancar = "Você não tem acesso para editar esta etapa";
+    tooltipRetornar = "Você não tem acesso para editar esta etapa";
+  } else if (bloqueadoGeral) { // É porque isOutroResponsavel é true
+    tooltipAvancar = "Tarefa em andamento por outro colaborador";
+    tooltipRetornar = "Tarefa em andamento por outro colaborador";
+  } else {
+    if (podeAvancar) tooltipAvancar = "Avançar para próxima etapa";
+    if (podeRetornar) tooltipRetornar = "Retornar para etapa anterior";
+  }
 
   return (
     <>

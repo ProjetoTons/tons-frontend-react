@@ -24,15 +24,32 @@ export default function PedidosPage() {
   const [responsavelFilter, setResponsavelFilter] = useState("todos");
   const [cancelTarget, setCancelTarget] = useState(null);
 
-  // Extrai a role principal dinamicamente a partir do array
+  // 1. Extrai as roles dinamicamente do array de acessos
   const rawUser = getUsuario() || { id: null, nome: "Usuário", acessos: [] };
   const isAdmin = rawUser.acessos?.some(a => a.role === 'Adm');
-  const rolePrincipal = isAdmin ? 'Adm' : (rawUser.acessos?.[0]?.role || "");
-
+  const userRoles = rawUser.acessos?.map(a => a.role) || [];
+  
+  // Mantemos o "rolePrincipal" simulado para os componentes filhos não quebrarem
+  const rolePrincipal = isAdmin ? 'Adm' : (userRoles[0] || "");
   const usuarioLogado = { 
     ...rawUser, 
-    role: rolePrincipal 
+    role: rolePrincipal,
+    isAdmin
   };
+
+  // 2. Agrega TODAS as etapas permitidas varrendo todos os cargos do funcionário
+  const etapasPermitidas = useMemo(() => {
+    if (isAdmin) return ROLE_TABS_ACCESS['Adm'] || [];
+    
+    let permissoesConsolidadas = [];
+    userRoles.forEach(role => {
+      const abasDesteCargo = ROLE_TABS_ACCESS[role] || [];
+      // Faz a união dos arrays removendo possíveis duplicatas
+      permissoesConsolidadas = [...new Set([...permissoesConsolidadas, ...abasDesteCargo])];
+    });
+    
+    return permissoesConsolidadas;
+  }, [isAdmin, userRoles]);
 
   // Função reutilizável para buscar pedidos do backend
   const carregarPedidos = async () => {
@@ -54,25 +71,25 @@ export default function PedidosPage() {
     carregarPedidos();
   }, []);
 
-  // 🔒 CONTROLADOR DE ACESSO INICIAL VIA URL
+  // 🔒 CONTROLADOR DE ACESSO INICIAL VIA URL (Dinâmico para Múltiplos Cargos)
   useEffect(() => {
-    if (usuarioLogado.role !== 'Adm') {
-      const etapasPermitidas = ROLE_TABS_ACCESS[usuarioLogado.role] || [];
-      
-      if (!etapaFilter || !etapasPermitidas.includes(etapaFilter)) {
-        if (etapasPermitidas.length > 0) {
-          setSearchParams({ etapa: etapasPermitidas[0] });
-        }
+    if (!isAdmin) {
+      // Se o funcionário tem apenas UM cargo restrito, força ele a ficar sempre nessa aba
+      if (etapasPermitidas.length === 1 && !etapaFilter) {
+        setSearchParams({ etapa: etapasPermitidas[0] });
+      }
+      // Se o funcionário tentou forçar na URL uma aba que não está nas permissões consolidadas dele, limpa a busca
+      else if (etapaFilter && !etapasPermitidas.includes(etapaFilter)) {
+        setSearchParams({});
       }
     }
-  }, [etapaFilter, usuarioLogado.role, setSearchParams]);
+  }, [etapaFilter, isAdmin, etapasPermitidas, setSearchParams]);
 
   const pedidosFiltrados = useMemo(() => {
     let filtered = pedidos;
 
-    // 🔒 BARREIRA DE SEGURANÇA VISUAL (FILTRO COMPORTAMENTAL DE PERFIL)
-    if (usuarioLogado.role !== 'Adm') {
-      const etapasPermitidas = ROLE_TABS_ACCESS[usuarioLogado.role] || [];
+    // 🔒 BARREIRA DE SEGURANÇA VISUAL (FILTRO COMPORTAMENTAL MULTI-CARGO)
+    if (!isAdmin) {
       filtered = filtered.filter((pedido) => etapasPermitidas.includes(pedido.etapa_pedido));
     }
 
@@ -133,7 +150,7 @@ export default function PedidosPage() {
     }
 
     return filtered;
-  }, [pedidos, searchTerm, etapaFilter, filterConfig, responsavelFilter, usuarioLogado.id, usuarioLogado.role]);
+  }, [pedidos, searchTerm, etapaFilter, filterConfig, responsavelFilter, usuarioLogado.id, isAdmin, etapasPermitidas]);
 
   const stats = useMemo(() => calcularEstatisticas(pedidos), [pedidos]);
 
@@ -146,13 +163,16 @@ export default function PedidosPage() {
   };
 
   const handleEtapaFilter = (etapa) => {
-    if (usuarioLogado.role !== 'Adm') {
-      carregarPedidos();
-      return;
+    // Funcionários com acesso a apenas 1 etapa não podem desmarcá-la
+    if (!isAdmin && etapasPermitidas.length <= 1) {
+      if (!etapa) return;
     }
 
     if (!etapa || etapaFilter === etapa) {
-      setSearchParams({});
+      // Permite limpar o filtro ("Todos") se for ADM ou tiver Múltiplos Cargos
+      if (isAdmin || etapasPermitidas.length > 1) {
+        setSearchParams({});
+      }
     } else {
       setSearchParams({ etapa });
     }
@@ -231,7 +251,7 @@ export default function PedidosPage() {
       <TopNavBar onNavClick={handleNavClick} currentPage={currentPage} />
 
       <main className="flex-1 px-4 lg:px-[64px] py-[32px] flex flex-col gap-[32px]">
-        {/* 👇 CORREÇÃO: Propriedades adicionadas para alimentar o PageHeader 👇 */}
+        {/* Passando isAdmin para simplificar o uso no cabeçalho */}
         <PageHeader
           onSearch={handleSearch}
           onFilter={handleFilter}
@@ -240,8 +260,8 @@ export default function PedidosPage() {
           etapaAtiva={etapaFilter}
           responsavelFilter={responsavelFilter}
           onResponsavelFilter={setResponsavelFilter}
-          etapasPermitidas={ROLE_TABS_ACCESS[usuarioLogado.role] || []}
-          userRole={usuarioLogado.role}
+          etapasPermitidas={etapasPermitidas}
+          isAdmin={isAdmin}
         />
 
         <div className="bg-white rounded shadow-sm">
