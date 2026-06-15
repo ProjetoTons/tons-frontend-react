@@ -51,7 +51,14 @@ export const useRegisterAddress = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
       const data = await response.json();
       if (data.erro) {
         setErrorMessage("CEP não encontrado.");
@@ -65,7 +72,7 @@ export const useRegisterAddress = () => {
         estado: data.uf || prev.estado,
       }));
     } catch {
-      setErrorMessage("Erro ao consultar CEP.");
+      setErrorMessage("Erro ao consultar CEP. Tente novamente ou preencha manualmente.");
     } finally {
       setIsLoading(false);
     }

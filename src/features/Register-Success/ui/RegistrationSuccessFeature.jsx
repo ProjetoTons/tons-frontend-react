@@ -41,13 +41,21 @@ export default function RegistrationSuccessFeature() {
     try {
       // 1) Cadastra o usuário primeiro (sem empresa ainda)
       //    Se falhar aqui, nada mais é cadastrado — evita dados órfãos.
-      await cadastrarUsuario({
-        nome: dadosPessoais.fullName,
-        cpf: apenasDigitos(cpfSalvo),
-        email: dadosPessoais.email,
-        telefone: apenasDigitos(dadosPessoais.phone),
-        senha: dadosPessoais.password,
-      });
+      //    Se retornar 409 (já existe), segue para login silencioso.
+      try {
+        await cadastrarUsuario({
+          nome: dadosPessoais.fullName,
+          cpf: apenasDigitos(cpfSalvo),
+          email: dadosPessoais.email,
+          telefone: apenasDigitos(dadosPessoais.phone),
+          senha: dadosPessoais.password,
+        });
+      } catch (cadastroErr) {
+        // 409 = usuário já existe (retry após falha anterior) — continua o fluxo
+        if (cadastroErr.response?.status !== 409) {
+          throw cadastroErr;
+        }
+      }
 
       // 2) Login silencioso para obter token e ID do usuário recém-criado
       let usuarioId = null;
@@ -106,6 +114,7 @@ export default function RegistrationSuccessFeature() {
       }
 
       // Notificações de boas-vindas (não bloqueia a tela de sucesso)
+      // Timeout curto (8s) para não travar se email/WhatsApp estiver fora
       const primeiroNome = dadosPessoais.fullName.trim().split(" ")[0];
       const telefoneComDDI = "55" + apenasDigitos(dadosPessoais.phone);
 
@@ -114,8 +123,8 @@ export default function RegistrationSuccessFeature() {
           destinatario: dadosPessoais.email.trim(),
           assunto: "Cadastro confirmado - Tons Personalizados",
           corpo: `Olá ${primeiroNome}!\n\nSeu cadastro na Tons foi confirmado.`,
-        }, { skipAuth: true }),
-        http.post(`/whatsapp/confirmar-cadastro/${telefoneComDDI}?nome=${encodeURIComponent(primeiroNome)}`, null, { skipAuth: true }),
+        }, { skipAuth: true, timeout: 8000 }),
+        http.post(`/whatsapp/confirmar-cadastro/${telefoneComDDI}?nome=${encodeURIComponent(primeiroNome)}`, null, { skipAuth: true, timeout: 8000 }),
       ]).then((results) => {
         results.forEach((r, i) => {
           if (r.status === "rejected") {
