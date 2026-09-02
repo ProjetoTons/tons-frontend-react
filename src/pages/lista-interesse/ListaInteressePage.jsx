@@ -13,7 +13,7 @@ export default function ListaInteressePage() {
       {/* Espaçador para compensar navbar fixa */}
       <div className="h-[80px]"></div>
 
-      <main className="flex-1 px-10 py-12">
+      <main className="flex-1 px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-12">
         <ListaInteresseWidget />
       </main>
 

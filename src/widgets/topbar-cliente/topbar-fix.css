@@ -1,16 +1,21 @@
 .topbar-fix{
     width: 100%;
-    height: 20px;
+    padding: 6px 4px;
     background-color: var(--amarelo-base);
-    padding-top: 0.5%;
-    padding-bottom: 0.5%;
-    
 }
 
 .topbar-fix-h1{
     font-family: var(--fonte-inter);
     text-align: center;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: bold;
-    letter-spacing: 3px;
+    letter-spacing: 1.5px;
+    line-height: 1.3;
+}
+
+@media (min-width: 641px) {
+    .topbar-fix-h1{
+        font-size: 11px;
+        letter-spacing: 3px;
+    }
 }

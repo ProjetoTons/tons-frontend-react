@@ -16,7 +16,7 @@ export default function ProductList({
   
   if (!isCarousel) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         {produtos.map((produto) => (
           <div key={produto.id} className="w-full h-full flex">
             <Card
@@ -44,14 +44,15 @@ export default function ProductList({
     >
       <Swiper
         modules={[Navigation]}
-        spaceBetween={24} 
+        spaceBetween={12} 
         slidesPerView={1} 
         breakpoints={{
-          768: { slidesPerView: 2 },
-          1024: { slidesPerView: 4 }, 
+          640: { spaceBetween: 16, slidesPerView: 1 },
+          768: { spaceBetween: 20, slidesPerView: 2 },
+          1024: { spaceBetween: 24, slidesPerView: 4 }, 
         }}
         navigation={true}
-        className="pb-16 !px-8 !-mx-8" 
+        className="pb-16 !px-4 sm:!px-6 md:!px-8 !-mx-4 sm:!-mx-6 md:!-mx-8" 
       >
         {produtos.map((produto) => (
           <SwiperSlide key={produto.id} className="!h-auto">

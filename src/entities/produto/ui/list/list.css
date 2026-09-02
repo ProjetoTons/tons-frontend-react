@@ -1,5 +1,20 @@
 .product-list {
   display: flex;
-  gap: 20px;
-  padding: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+}
+
+@media (min-width: 641px) {
+  .product-list {
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .product-list {
+    gap: 20px;
+    padding: 20px;
+  }
 }
