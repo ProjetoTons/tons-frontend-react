@@ -289,11 +289,11 @@ export default function ListaInteresseWidget() {
 
       {/* Modal unificado: Endereço + Confirmação WhatsApp */}
       {isConfirmOpen && (
-        <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[20000] flex items-center justify-center p-2 sm:p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsConfirmOpen(false)} />
-          <div className="relative bg-[#FAF8F2] w-full max-w-[500px] shadow-2xl flex flex-col">
+          <div className="relative bg-[#FAF8F2] w-full max-w-[500px] h-auto max-h-[calc(100vh-1rem)] sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
             <div className="h-1 bg-[#F7D708]" />
-            <div className="px-10 py-8">
+            <div className="px-4 py-5 sm:px-10 sm:py-8 overflow-hidden">
               {/* Header */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-black flex items-center justify-center">
@@ -305,7 +305,7 @@ export default function ListaInteresseWidget() {
               </div>
 
               {/* Título */}
-              <h2 className="text-[36px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
+              <h2 className="text-[28px] sm:text-[36px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
                 Quase lá!
               </h2>
               <div className="w-14 h-[3px] bg-[#F7D708] mt-4 mb-6" />

@@ -2,9 +2,8 @@ import React from 'react';
 import './filtrosFeatureUi.css';
 
 function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar, categorias = [] }) {
-  const categoriasAgrupadas = categorias.map((cat, index) => ({
+  const categoriasAgrupadas = categorias.map((cat) => ({
     id: cat.slug,
-    label: `CAT-${String(index + 1).padStart(2, '0')}`,
     nome: cat.nome,
     itemCount: cat.count || 0,
   }));
@@ -39,13 +38,12 @@ function Filtros({ categoriaAtiva, aoMudar, busca, aoBuscar, categorias = [] }) 
           <button
             key={categoria.id}
             onClick={() => aoMudar(categoria.id)}
-            className={`px-2 sm:px-3 py-2 font-bold text-xs tracking-wider transition-all duration-300 border-2 cursor-pointer rounded-full flex items-center gap-1 sm:gap-2 ${categoriaAtiva === categoria.id
+            className={`px-2 sm:px-3 py-2 font-bold text-xs tracking-wider transition-all duration-300 border-2 cursor-pointer rounded-full flex items-center gap-1 sm:gap-2 whitespace-nowrap ${categoriaAtiva === categoria.id
                 ? 'bg-yellow-400 text-black border-yellow-400'
                 : 'bg-white text-black border-gray-300 hover:border-yellow-400 hover:bg-gray-50'
               }`}
           >
-            <span className="hidden sm:inline">{categoria.nome}</span>
-            <span className="sm:hidden text-[10px]">{categoria.label}</span>
+            <span>{categoria.nome}</span>
             <span className={`inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full text-xs font-black ${categoriaAtiva === categoria.id
                 ? 'bg-black text-yellow-400'
                 : 'bg-yellow-400 text-black'

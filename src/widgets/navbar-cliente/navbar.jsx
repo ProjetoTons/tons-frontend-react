@@ -21,9 +21,9 @@ function Navbar({ onOpenDrawer, onOpenMenu, compact, hideBookmark }) {
                     onClick={() => navigate("/portfolio")}
                 />  
 
-                <div className="hidden sm:flex items-center gap-4 md:gap-6 min-w-0">
+                <div className="flex items-center gap-4 md:gap-6 min-w-0">
                     {primeiroNome && (
-                        <p className="nome text-black font-medium text-sm md:text-base truncate">Olá, {primeiroNome}.</p>
+                        <p className="nome text-black font-medium truncate max-w-[150px] sm:max-w-none">Olá, {primeiroNome}.</p>
                     )}
                 </div>
             </div>
