@@ -63,11 +63,11 @@ function Navbar({ onOpenDrawer, onOpenMenu, compact, hideBookmark }) {
                     />
                 )}
 
-                {/* ÍCONE HAMBÚRGUER — só logado */}
+                {/* ÍCONE HAMBÚRGUER — só logado. Esconde em telas móveis para usar o menu inferior */}
                 {usuario && (
                     <button
                         onClick={onOpenMenu}
-                        className="flex flex-col gap-1.5 p-2 hover:bg-black/5 rounded-md transition-colors"
+                        className="hidden md:flex flex-col gap-1.5 p-2 hover:bg-black/5 rounded-md transition-colors"
                     >
                         <div className="w-6 h-[2px] bg-black"></div>
                         <div className="w-6 h-[2px] bg-black"></div>
