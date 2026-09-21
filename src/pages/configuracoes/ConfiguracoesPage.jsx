@@ -3,6 +3,7 @@ import Navbar from "@/widgets/navbar-cliente/navbar.jsx";
 import Footer from "@/widgets/footer/footer.jsx";
 import ConfiguracoesWidget from "@/widgets/configuracoes/ConfiguracoesWidget.jsx";
 import MobileMenu from "@/features/mobile-menu/mobile-menu.jsx";
+import BottomNav from "@/features/bottom-nav/BottomNav.jsx";
 
 export default function ConfiguracoesPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,11 +14,13 @@ export default function ConfiguracoesPage() {
       {/* Espaçador para compensar navbar fixa */}
       <div className="h-[80px]"></div>
 
-      <main className="flex-1 px-10 py-12">
+      <main className="flex-1 px-4 py-8 pb-32 md:px-10 md:py-12 md:pb-12">
         <ConfiguracoesWidget />
       </main>
 
       <Footer />
+
+      <BottomNav />
 
       <MobileMenu
         isOpen={isMenuOpen}

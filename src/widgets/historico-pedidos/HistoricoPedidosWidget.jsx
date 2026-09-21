@@ -204,7 +204,7 @@ export default function HistoricoPedidosWidget() {
               </div>
 
               {/* Botões - quadrado cinza */}
-              <div className="bg-[#E5E5E5] flex flex-col justify-center gap-3 p-6 w-full md:min-w-[180px] md:w-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-[#E5E5E5] md: hidden flex flex-col justify-center gap-3 p-6 w-full md:min-w-[180px] md:w-auto" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => handlePedirNovamente(pedido)}
                   className="w-full md:w-auto bg-[#F7D708] text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-yellow-400 transition-colors cursor-pointer"
@@ -213,7 +213,7 @@ export default function HistoricoPedidosWidget() {
                 </button>
                 <button
                   onClick={() => handleOpenModal(pedido)}
-                  className="w-full md:w-auto border border-black bg-white text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-black hover:text-white transition-colors cursor-pointer"
+                  className="w-full border-black bg-white text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-black hover:text-white transition-colors cursor-pointer"
                 >
                   Detalhes
                 </button>

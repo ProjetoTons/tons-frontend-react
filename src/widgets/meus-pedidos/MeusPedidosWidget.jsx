@@ -49,7 +49,7 @@ function TimelineEtapas({ etapaAtual, tipoEnvio }) {
   });
 
   return (
-    <div className="flex items-center mt-6">
+    <div className="flex w-full items-start mt-6">
       {etapasComEnvio.map((etapa, i) => (
         <React.Fragment key={i}>
           <div className="flex flex-col items-center">
@@ -58,14 +58,14 @@ function TimelineEtapas({ etapaAtual, tipoEnvio }) {
                 ? "w-[12px] h-[12px] bg-[#F7D708]" 
                 : "w-[10px] h-[10px] border-2 border-gray-300 bg-white"
             }`} />
-            <span className={`text-[9px] uppercase tracking-wider mt-2 whitespace-nowrap ${
+            <span className={`text-[7px] uppercase tracking-tight text-center mt-2 whitespace-normal leading-tight md:text-[9px] md:tracking-wider md:whitespace-nowrap ${
               i <= indexAtual ? "text-black font-bold" : "text-gray-400"
             }`}>
               {etapa}
             </span>
           </div>
           {i < etapasComEnvio.length - 1 && (
-            <div className={`flex-1 h-[3px] mx-2 ${i < indexAtual ? "bg-[#F7D708]" : "bg-gray-200"}`} />
+            <div className={`flex-1 h-[2px] mt-[5px] mx-1 md:mx-2 ${i < indexAtual ? "bg-[#F7D708]" : "bg-gray-200"}`} />
           )}
         </React.Fragment>
       ))}
@@ -139,18 +139,18 @@ export default function MeusPedidosWidget() {
   return (
     <div className="w-full">
       {/* Header: Título + Busca na mesma linha */}
-      <div className="flex items-end justify-between mb-8">
+      <div className="flex flex-col items-start gap-6 mb-8 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-[48px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
+          <h1 className="text-2xl leading-none font-black uppercase tracking-tight text-black md:text-[48px]" style={{ fontFamily: "var(--fonte-space)" }}>
             Meus Pedidos
           </h1>
           <p className="text-sm text-gray-600 mt-3">
-            Gestão centralizada de solicitações e logística industrial.
+            Veja seus pedidos em andamento.
           </p>
         </div>
 
         {/* Busca */}
-        <div>
+        <div className="w-full md:w-auto">
           <div className="flex items-center gap-2 mb-2">
             <h2 className="text-[12px] font-bold uppercase tracking-wider text-black">
               Localizar Pedido
@@ -174,7 +174,7 @@ export default function MeusPedidosWidget() {
               placeholder="Insira o ID do Pedido"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="w-[280px] bg-[#E5E5E5] border border-gray-300 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--amarelo-base)]"
+              className="w-full md:w-[280px] bg-[#E5E5E5] border border-gray-300 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--amarelo-base)]"
             />
             <img
               src="/icons/search.png"
@@ -205,13 +205,13 @@ export default function MeusPedidosWidget() {
             {pedidosFiltrados.map((pedido) => (
               <div
                 key={pedido.id_pedido}
-                className="border border-gray-200 bg-white px-6 py-5 flex gap-6 flex-wrap md:flex-nowrap cursor-pointer hover:shadow-md transition-shadow"
+                className="border border-gray-200 bg-white p-0 flex flex-col gap-0 md:p-5 md:flex-row md:gap-6 cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => handleOpenModal(pedido)}
               >
                 {/* Esquerda: Imagem + Info + Timeline */}
-                <div className="flex-1 min-w-0 flex gap-8">
+                <div className="flex-1 min-w-0 flex flex-col gap-0 md:flex-row md:gap-8">
                   {/* Imagem */}
-                  <div className="w-[160px] self-stretch bg-gray-100 flex-shrink-0 overflow-hidden group">
+                  <div className="w-full h-48 md:w-40 md:h-auto md:self-stretch bg-gray-100 shrink-0 overflow-hidden group">
                     {pedido.url_foto_arte ? (
                       <img
                         src={pedido.url_foto_arte}
@@ -228,11 +228,11 @@ export default function MeusPedidosWidget() {
                   </div>
 
                   {/* Info + Timeline + ID */}
-                  <div className="flex-1 min-w-0 flex flex-col">
-                    <div className="flex justify-between">
-                      <div>
+                  <div className="flex-1 min-w-0 flex flex-col p-5 md:p-0">
+                    <div className="flex flex-col gap-3 md:flex-row md:justify-between">
+                      <div className="min-w-0">
                         <EtapaBadge etapa={pedido.status ? `Em ${pedido.etapa_pedido}` : pedido.etapa_pedido} />
-                        <h3 className="text-[18px] font-bold text-black uppercase mt-3 mb-1">
+                        <h3 className="text-[18px] font-bold text-black uppercase leading-tight mt-3 mb-1 break-words">
                           {pedido.itens_pedido && pedido.itens_pedido.length > 0
                             ? pedido.itens_pedido.map((item) => item.produto?.nome || "Produto").join(", ")
                             : pedido.descricao || "—"}
@@ -240,7 +240,7 @@ export default function MeusPedidosWidget() {
                       </div>
 
                       {/* ID do Pedido */}
-                      <div className="flex flex-col items-end flex-shrink-0">
+                      <div className="flex flex-col items-start shrink-0 md:items-end">
                         <span className="text-[10px] text-gray-400 uppercase tracking-wider">ID do Pedido</span>
                         <span className="text-[18px] font-bold text-black">#{pedido.num_pedido}</span>
                       </div>
@@ -252,18 +252,18 @@ export default function MeusPedidosWidget() {
                 </div>
 
                 {/* Direita: Quadrado cinza */}
-                <div className="bg-[#F2F2F2] p-5 flex flex-col gap-4 min-w-[200px]" onClick={(e) => e.stopPropagation()}>
+                <div className="bg-[#F2F2F2] p-4 grid grid-cols-3 gap-2 md:p-5 md:min-w-[200px] md:flex md:flex-col md:gap-4" onClick={(e) => e.stopPropagation()}>
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Responsável</span>
-                    <span className="text-[14px] font-bold text-black uppercase">{pedido.responsavel?.nome || "-"}</span>
+                    <span className="text-[12px] font-bold text-black uppercase break-words md:text-[14px]">{pedido.responsavel?.nome || "-"}</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Data de Início</span>
-                    <span className="text-[14px] font-bold text-black">{formatarDataBR(pedido.data_pedido)}</span>
+                    <span className="text-[12px] font-bold text-black md:text-[14px]">{formatarDataBR(pedido.data_pedido)}</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Previsão</span>
-                    <span className="text-[14px] font-bold text-black">{formatarDataBR(pedido.data_finalizacao)}</span>
+                    <span className="text-[12px] font-bold text-black md:text-[14px]">{formatarDataBR(pedido.data_finalizacao)}</span>
                   </div>
                 </div>
               </div>

@@ -13,7 +13,7 @@ export default function BottomNav() {
     { path: '/lista-interesse', label: 'LISTA DE INTERESSE', key: 'lista-interesse', icon: 'list' },
     { path: '/historico-pedidos', label: 'HISTÓRICO', key: 'historico', icon: 'clock' },
     { path: '/meus-pedidos', label: 'MEUS PEDIDOS', key: 'meus-pedidos', icon: 'bag' },
-    { path: '/configuracoes', label: 'CONFIGURAÇÕES', key: 'ajustes', icon: 'settings' },
+    { path: '/configuracoes', label: 'CONFIGURAR', key: 'ajustes', icon: 'settings' },
   ];
 
   const handleNavigate = (path) => {
@@ -27,17 +27,22 @@ export default function BottomNav() {
     switch (name) {
       case 'home':
         return (
-          <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 12l9-9 9 9" />
-            <path d="M9 21V9h6v12" />
+          <svg
+            className="w-6 h-6"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 10.5L12 3l9 7.5" />
+            <path d="M5 9v12h14V9" />
           </svg>
         );
       case 'bag':
         return (
-          <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 2l1.5 4h9L18 2" />
-            <path d="M3 6h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z" />
-          </svg>
+          <img className={common} src="/icons/parcel.png" alt="Ícone de casa" />
         );
       case 'clock':
         return (
@@ -54,10 +59,7 @@ export default function BottomNav() {
         );
       case 'settings':
         return (
-          <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06A2 2 0 0 1 2.28 16.9l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09c.66 0 1.24-.4 1.51-1A1.65 1.65 0 0 0 3.6 6.1l-.06-.06A2 2 0 0 1 6.83 2.9l.06.06c.5.5 1.2.7 1.82.33.3-.17.62-.33.9-.33H10a2 2 0 0 1 4 0h.09c.66 0 1.24.4 1.51 1 .18.45.5.83.9 1.01.62.34 1.32.16 1.82-.33l.06-.06A2 2 0 0 1 21.72 7.1l-.06.06c-.5.5-.7 1.2-.33 1.82.17.3.33.62.33.9V10a2 2 0 0 1 0 4h-.09c-.66 0-1.24.4-1.51 1z" />
-          </svg>
+          <img className={common} src="/icons/settings.png" alt="Ícone de casa" />
         );
       case 'list':
         return (
