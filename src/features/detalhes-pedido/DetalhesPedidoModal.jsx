@@ -22,7 +22,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
   const totalQuantidade = pedido.itens_pedido?.reduce((acc, item) => acc + (item.quantidade || 0), 0) || pedido.quantidade || 0;
 
   return (
-    <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="detalhes-pedido-title">
+    <div className="fixed inset-0 z-[20000] flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="detalhes-pedido-title">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
@@ -31,13 +31,13 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
       />
 
       {/* Card */}
-      <div className="relative bg-white w-full max-w-[580px] shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto rounded-sm">
+      <div className="relative bg-white w-full max-w-[580px] shadow-2xl flex flex-col max-h-[94vh] overflow-y-auto rounded-sm min-w-0">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-4 sm:px-8 sm:py-5 flex items-center justify-between gap-4 z-10">
           <div>
             <h2
               id="detalhes-pedido-title"
-              className="text-[22px] font-black uppercase tracking-tight text-black"
+              className="text-lg font-black uppercase tracking-tight text-black break-words sm:text-[22px]"
               style={{ fontFamily: "var(--fonte-space)" }}
             >
               Pedido {pedido.id_pedido_display}
@@ -50,7 +50,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
           <button
             onClick={onClose}
             aria-label="Fechar modal"
-            className="text-gray-400 hover:text-black transition-colors cursor-pointer bg-transparent border-0 p-1"
+            className="text-gray-400 hover:text-black transition-colors cursor-pointer bg-transparent border-0 p-1 shrink-0"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -58,10 +58,10 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
           </button>
         </div>
 
-        <div className="px-8 py-6">
+        <div className="px-4 py-5 sm:px-8 sm:py-6">
           {/* Imagem da arte */}
           {pedido.image && (
-            <div className="w-full h-[200px] bg-gray-100 mb-6 overflow-hidden rounded-sm">
+            <div className="w-full h-40 sm:h-[200px] bg-gray-100 mb-6 overflow-hidden rounded-sm">
               <img
                 src={pedido.image}
                 alt="Arte do pedido"
@@ -71,18 +71,18 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
           )}
 
           {/* Resumo do pedido */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-[#FAFAFA] border border-gray-100 p-4 text-center">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+            <div className="min-w-0 bg-[#FAFAFA] border border-gray-100 p-2 text-center sm:p-4">
               <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1 font-bold">Data</span>
-              <span className="text-[14px] font-bold text-black">{formatarDataBR(pedido.data)}</span>
+              <span className="text-[12px] font-bold text-black break-words sm:text-[14px]">{formatarDataBR(pedido.data)}</span>
             </div>
-            <div className="bg-[#FAFAFA] border border-gray-100 p-4 text-center">
+            <div className="min-w-0 bg-[#FAFAFA] border border-gray-100 p-2 text-center sm:p-4">
               <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1 font-bold">Itens</span>
-              <span className="text-[14px] font-bold text-black">{totalQuantidade || "—"}</span>
+              <span className="text-[12px] font-bold text-black break-words sm:text-[14px]">{totalQuantidade || "—"}</span>
             </div>
-            <div className="bg-[#FAFAFA] border border-gray-100 p-4 text-center">
+            <div className="min-w-0 bg-[#FAFAFA] border border-gray-100 p-2 text-center sm:p-4">
               <span className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1 font-bold">Total</span>
-              <span className="text-[16px] font-black text-black">{pedido.total}</span>
+              <span className="text-[14px] font-black text-black break-words sm:text-[16px]">{pedido.total}</span>
             </div>
           </div>
 
@@ -90,7 +90,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
           {pedido.descricao && (
             <div className="mb-6">
               <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Descrição do Pedido</h3>
-              <p className="text-[13px] text-gray-700 leading-relaxed bg-[#FAFAFA] border border-gray-100 p-4">
+              <p className="text-[13px] text-gray-700 leading-relaxed bg-[#FAFAFA] border border-gray-100 p-3 break-words sm:p-4">
                 {pedido.descricao}
               </p>
             </div>
@@ -102,7 +102,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
               <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3">Produtos do Pedido</h3>
               <div className="border border-gray-200 rounded-sm overflow-hidden">
                 {/* Header da tabela */}
-                <div className="grid grid-cols-[1fr_auto_auto] gap-4 bg-gray-50 px-4 py-2 border-b border-gray-200">
+                <div className="grid grid-cols-[minmax(0,1fr)_3rem_4rem] gap-2 bg-gray-50 px-3 py-2 border-b border-gray-200 sm:grid-cols-[minmax(0,1fr)_4rem_5rem] sm:gap-4 sm:px-4">
                   <span className="text-[10px] font-bold text-gray-500 uppercase">Produto</span>
                   <span className="text-[10px] font-bold text-gray-500 uppercase text-center w-16">QTD</span>
                   <span className="text-[10px] font-bold text-gray-500 uppercase text-right w-20">Valor</span>
@@ -117,13 +117,13 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
                   ].filter(Boolean).join(" • ");
 
                   return (
-                    <div key={idx} className={`grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-3 items-center ${idx < pedido.itens_pedido.length - 1 ? "border-b border-gray-100" : ""}`}>
-                      <div>
-                        <span className="text-[13px] font-semibold text-black block">{item.produto?.nome || "Produto"}</span>
-                        {detalhes && <span className="text-[11px] text-gray-500">{detalhes}</span>}
+                    <div key={idx} className={`grid grid-cols-[minmax(0,1fr)_3rem_4rem] gap-2 px-3 py-3 items-start sm:grid-cols-[minmax(0,1fr)_4rem_5rem] sm:gap-4 sm:px-4 ${idx < pedido.itens_pedido.length - 1 ? "border-b border-gray-100" : ""}`}>
+                      <div className="min-w-0">
+                        <span className="text-[13px] font-semibold text-black block break-words">{item.produto?.nome || "Produto"}</span>
+                        {detalhes && <span className="text-[11px] text-gray-500 break-words">{detalhes}</span>}
                       </div>
-                      <span className="text-[13px] font-bold text-black text-center w-16">{item.quantidade || 1}</span>
-                      <span className="text-[11px] text-gray-500 text-right w-20">
+                      <span className="text-[13px] font-bold text-black text-center break-words">{item.quantidade || 1}</span>
+                      <span className="text-[11px] text-gray-500 text-right break-words">
                         {item.valor_unitario ? `R$ ${Number(item.valor_unitario).toFixed(2)}` : "—"}
                       </span>
                     </div>
@@ -144,7 +144,7 @@ export default function DetalhesPedidoModal({ isOpen, onClose, pedido, showPedir
           )}
 
           {/* Botões */}
-          <div className="flex gap-3 pt-4 border-t border-gray-100">
+          <div className="flex flex-col gap-3 pt-4 border-t border-gray-100 sm:flex-row">
             {showPedirNovamente && (
               <button
                 onClick={handlePedirNovamente}
