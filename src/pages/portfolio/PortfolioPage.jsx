@@ -140,7 +140,7 @@ export default function PortfolioPage() {
         categorias={categorias}
       />
 
-      <section className="px-10 py-12 bg-gradient-to-b from-white to-gray-50" ref={produtosRef}>
+      <section className="px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-12 bg-gradient-to-b from-white to-gray-50" ref={produtosRef}>
         {mostrarDestaque && (
           <div className="mb-8 p-4 bg-yellow-400 border-l-4 border-black rounded-lg">
             <p className="text-black font-bold text-sm uppercase tracking-wide">

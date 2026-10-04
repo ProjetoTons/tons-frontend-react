@@ -140,13 +140,13 @@ export default function ListaInteresseWidget() {
   };
 
   return (
-    <div className="w-full flex gap-10 flex-wrap lg:flex-nowrap">
+    <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-10">
       {/* Coluna Esquerda: Lista de Produtos */}
-      <section className="flex-1 min-w-0">
-        <h1 className="text-[48px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
+      <section className="flex-1 w-full min-w-0">
+        <h1 className="text-[32px] sm:text-[40px] md:text-[48px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
           Lista de Interesses
         </h1>
-        <p className="text-sm text-gray-600 mt-3 mb-8">
+        <p className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-3 mb-6 sm:mb-8">
           Revise seus produtos selecionados antes de prosseguir com o orçamento.
         </p>
 
@@ -231,17 +231,17 @@ export default function ListaInteresseWidget() {
       </section>
 
       {/* Coluna Direita: Resumo da Solicitação */}
-      <aside className="w-full lg:w-[320px] flex-shrink-0">
-        <div className="bg-[#F2F2F2] p-6 sticky top-4">
-          <h2 className="text-[14px] font-black uppercase tracking-wide text-black mb-4" style={{ fontFamily: "var(--fonte-space)" }}>
+      <aside className="w-full lg:w-[320px] flex-shrink-0 lg:sticky lg:top-4">
+        <div className="bg-[#F2F2F2] p-4 sm:p-6">
+          <h2 className="text-[12px] sm:text-[14px] font-black uppercase tracking-wide text-black mb-4" style={{ fontFamily: "var(--fonte-space)" }}>
             Resumo da Solicitação
           </h2>
 
           <div className="flex justify-between items-center py-3 border-b border-gray-300">
-            <span className="text-[12px] text-gray-600 uppercase tracking-wider font-medium">
+            <span className="text-[11px] sm:text-[12px] text-gray-600 uppercase tracking-wider font-medium">
               Itens Selecionados
             </span>
-            <span className="text-[14px] font-bold text-black">
+            <span className="text-[13px] sm:text-[14px] font-bold text-black">
               {itemsSalvos.length === 0 ? "Nenhum" : `${String(itemsSalvos.length).padStart(2, "0")} Unidades`}
             </span>
           </div>
@@ -249,18 +249,18 @@ export default function ListaInteresseWidget() {
           <button
             onClick={handleEnviarWhatsApp}
             disabled={itemsSalvos.length === 0 || isLoading}
-            className="w-full mt-6 flex items-center justify-center gap-3 py-4 bg-[#25D366] hover:bg-[#1da851] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold text-[12px] tracking-[1px] uppercase transition-colors rounded-sm"
+            className="w-full mt-4 sm:mt-6 flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 bg-[#25D366] hover:bg-[#1da851] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold text-[10px] sm:text-[12px] tracking-[1px] uppercase transition-colors rounded-sm"
           >
             <img
               src="/icons/whatsapp.png"
               alt=""
-              className="w-5 h-5"
+              className="w-4 sm:w-5 h-4 sm:h-5"
               onError={(e) => { e.target.style.display = "none"; }}
             />
             ENVIAR PARA WHATSAPP
           </button>
 
-          <p className="text-[10px] text-gray-500 mt-3 leading-relaxed">
+          <p className="text-[9px] sm:text-[10px] text-gray-500 mt-2 sm:mt-3 leading-relaxed">
             Ao clicar, você será redirecionado para o WhatsApp para formalizar seu orçamento com nossos consultores técnicos.
           </p>
 
@@ -268,9 +268,9 @@ export default function ListaInteresseWidget() {
           {itemsSalvos.length > 0 && (
             <button
               onClick={handleLimparLista}
-              className="w-full mt-6 py-3 flex items-center justify-center gap-2 border-2 border-red-500 bg-transparent hover:bg-red-500 text-red-500 hover:text-white font-black text-[11px] tracking-[2px] uppercase transition-all duration-300 cursor-pointer"
+              className="w-full mt-4 sm:mt-6 py-2 sm:py-3 flex items-center justify-center gap-2 border-2 border-red-500 bg-transparent hover:bg-red-500 text-red-500 hover:text-white font-black text-[10px] sm:text-[11px] tracking-[1.5px] sm:tracking-[2px] uppercase transition-all duration-300 cursor-pointer"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               </svg>
@@ -289,11 +289,11 @@ export default function ListaInteresseWidget() {
 
       {/* Modal unificado: Endereço + Confirmação WhatsApp */}
       {isConfirmOpen && (
-        <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[20000] flex items-center justify-center p-2 sm:p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsConfirmOpen(false)} />
-          <div className="relative bg-[#FAF8F2] w-full max-w-[500px] shadow-2xl flex flex-col">
+          <div className="relative bg-[#FAF8F2] w-full max-w-[500px] h-auto max-h-[calc(100vh-1rem)] sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
             <div className="h-1 bg-[#F7D708]" />
-            <div className="px-10 py-8">
+            <div className="px-4 py-5 sm:px-10 sm:py-8 overflow-hidden">
               {/* Header */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-black flex items-center justify-center">
@@ -305,7 +305,7 @@ export default function ListaInteresseWidget() {
               </div>
 
               {/* Título */}
-              <h2 className="text-[36px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
+              <h2 className="text-[28px] sm:text-[36px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
                 Quase lá!
               </h2>
               <div className="w-14 h-[3px] bg-[#F7D708] mt-4 mb-6" />

@@ -100,7 +100,7 @@ export default function HistoricoPedidosWidget() {
   return (
     <div className="w-full">
       {/* Título */}
-      <h1 className="text-[48px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
+      <h1 className="text-2xl md:text-[48px] leading-none font-black uppercase tracking-tight text-black" style={{ fontFamily: "var(--fonte-space)" }}>
         Histórico de Pedidos
       </h1>
 
@@ -115,7 +115,7 @@ export default function HistoricoPedidosWidget() {
           <button
             key={f}
             onClick={() => setFiltro(f)}
-            className={`px-5 py-2 text-sm font-bold uppercase tracking-wider border transition-colors cursor-pointer ${
+            className={`px-1.5 md:px-5 py-2 text-xs font-bold uppercase tracking-wider border transition-colors cursor-pointer ${
               filtro === f
                 ? "bg-[#F7D708] border-[#F7D708] text-black"
                 : "bg-[#F2F2F2] border-gray-300 text-gray-700 hover:bg-gray-200"
@@ -138,11 +138,11 @@ export default function HistoricoPedidosWidget() {
           pedidosFiltrados.map((pedido) => (
             <div
               key={pedido.id_pedido}
-              className="bg-white flex flex-wrap md:flex-nowrap cursor-pointer hover:shadow-md transition-shadow"
+              className="bg-white flex flex-col md:flex-row cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => handleOpenModal(pedido)}
             >
               {/* Imagem */}
-              <div className="w-[160px] h-[160px] bg-gray-100 flex-shrink-0 overflow-hidden group">
+              <div className="w-full md:w-[160px] h-[160px] bg-gray-100 flex-shrink-0 overflow-hidden group">
                 {pedido.url_foto_arte ? (
                   <img
                     src={pedido.url_foto_arte}
@@ -161,17 +161,19 @@ export default function HistoricoPedidosWidget() {
               {/* Info */}
               <div className="flex-1 min-w-0 p-6 flex flex-col justify-between gap-6">
                 {/* Linha superior: Pedido + Produtos/Título + Data */}
-                <div className="flex flex-wrap items-start gap-x-8 gap-y-2">
-                  <span className="text-[11px] font-bold text-black uppercase tracking-wider">
-                    <span className="text-gray-400 mr-1">Pedido</span>
-                    #{pedido.num_pedido}
-                  </span>
-                  <h3 className="text-[15px] font-bold text-black uppercase flex-1 min-w-[150px]">
-                    {pedido.itens_pedido && pedido.itens_pedido.length > 0
-                      ? pedido.itens_pedido.map((item) => item.produto?.nome || "Produto").join(", ")
-                      : pedido.descricao || "—"}
-                  </h3>
-                  <div>
+                <div className="flex flex-row gap-2 md:flex-row md:items-start md:gap-x-8">
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[11px] font-bold text-black uppercase tracking-wider block">
+                      <span className="text-gray-400 mr-1">Pedido</span>
+                      #{pedido.num_pedido}
+                    </span>
+                    <h3 className="mt-2 text-[15px] font-bold text-black uppercase leading-[1.15] break-words">
+                      {pedido.itens_pedido && pedido.itens_pedido.length > 0
+                        ? pedido.itens_pedido.map((item) => item.produto?.nome || "Produto").join(", ")
+                        : pedido.descricao || "—"}
+                    </h3>
+                  </div>
+                  <div className="md:text-right">
                     <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Data</span>
                     <span className="text-[13px] font-bold text-black">{formatarDataBR(pedido.data_finalizacao || pedido.data_pedido)}</span>
                   </div>
@@ -202,16 +204,16 @@ export default function HistoricoPedidosWidget() {
               </div>
 
               {/* Botões - quadrado cinza */}
-              <div className="bg-[#E5E5E5] flex flex-col justify-center gap-3 p-6 min-w-[180px]" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-[#E5E5E5] md: hidden flex flex-col justify-center gap-3 p-6 w-full md:min-w-[180px] md:w-auto" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => handlePedirNovamente(pedido)}
-                  className="bg-[#F7D708] text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-yellow-400 transition-colors cursor-pointer"
+                  className="w-full md:w-auto bg-[#F7D708] text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-yellow-400 transition-colors cursor-pointer"
                 >
                   Pedir Novamente
                 </button>
                 <button
                   onClick={() => handleOpenModal(pedido)}
-                  className="border border-black bg-white text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-black hover:text-white transition-colors cursor-pointer"
+                  className="w-full border-black bg-white text-black text-[10px] font-bold uppercase tracking-wider px-5 py-2.5 hover:bg-black hover:text-white transition-colors cursor-pointer"
                 >
                   Detalhes
                 </button>

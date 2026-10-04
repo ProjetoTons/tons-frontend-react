@@ -370,9 +370,9 @@ export default function ConfiguracoesWidget() {
   const getInputClass = (field) => errors[field] ? inputErrorClass : inputClass;
 
   return (
-    <div className="w-full max-w-[860px] mx-auto">
+    <div className="w-full max-w-[860px] mx-auto min-w-0">
       {/* Back + breadcrumb */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex flex-wrap items-center gap-3 mb-6 md:gap-4 md:mb-8">
         <button
           onClick={() => navigate(-1)}
           className="text-sm text-gray-500 hover:text-black transition-colors flex items-center gap-1"
@@ -384,17 +384,17 @@ export default function ConfiguracoesWidget() {
 
       {/* Title */}
       <h1
-        className="text-[42px] leading-none font-black uppercase tracking-tight text-black"
+        className="text-2xl leading-none font-black uppercase tracking-tight text-black md:text-[42px]"
         style={{ fontFamily: "var(--fonte-space)" }}
       >
         Configurações
       </h1>
-      <p className="text-sm text-gray-500 mt-2 mb-2">
+      <p className="text-sm text-gray-500 mt-2 mb-2 break-words">
         Gerencie suas informações e preferências.
       </p>
 
       {/* Yellow divider */}
-      <div className="w-14 h-[3px] bg-[#F7D708] mb-10" />
+      <div className="w-14 h-[3px] bg-[#F7D708] mb-8 md:mb-10" />
 
       {isLoadingData ? (
         <p className="text-gray-500 text-sm">Carregando suas informações...</p>
@@ -409,9 +409,9 @@ export default function ConfiguracoesWidget() {
 
       {/* Popup toast de sucesso/erro */}
       {(saveSuccess || saveError) && (
-        <div className="fixed top-6 right-6 z-50 animate-fade-in">
+        <div className="fixed top-4 left-4 right-4 z-50 animate-fade-in md:left-auto md:right-6 md:top-6">
           <div
-            className={`px-6 py-4 rounded-lg shadow-lg text-sm font-medium flex items-center gap-3 ${
+            className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-3 md:px-6 md:py-4 ${
               saveSuccess
                 ? "bg-green-600 text-white"
                 : "bg-red-600 text-white"
@@ -452,7 +452,7 @@ export default function ConfiguracoesWidget() {
         isOpen={openSections.dados}
         onToggle={() => toggleSection("dados")}
       >
-        <div className="border border-gray-200 bg-[#E5E5E5] p-6 space-y-5">
+        <div className="border border-gray-200 bg-[#E5E5E5] p-4 space-y-5 md:p-6">
           {/* Nome Completo */}
           <div>
             <label className={labelClass}>Nome Completo</label>
@@ -535,7 +535,7 @@ export default function ConfiguracoesWidget() {
         isOpen={openSections.endereco}
         onToggle={() => toggleSection("endereco")}
       >
-        <div className="border border-gray-200 bg-[#E5E5E5] p-6 space-y-5">
+        <div className="border border-gray-200 bg-[#E5E5E5] p-4 space-y-5 md:p-6">
           {/* CEP + Logradouro */}
           <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-5">
             <div>
@@ -630,7 +630,7 @@ export default function ConfiguracoesWidget() {
         isOpen={openSections.empresa}
         onToggle={() => toggleSection("empresa")}
       >
-        <div className="border border-gray-200 bg-[#E5E5E5] p-6 space-y-5">
+        <div className="border border-gray-200 bg-[#E5E5E5] p-4 space-y-5 md:p-6">
           {/* Razão Social */}
           <div>
             <label className={labelClass}>Razão Social</label>
@@ -687,8 +687,8 @@ export default function ConfiguracoesWidget() {
       </Section>
 
       {/* ===== FOOTER BAR ===== */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-10 py-4 flex items-center justify-between z-50">
-        <div className="flex items-center gap-2 text-[11px] text-gray-500">
+      <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex flex-col items-stretch gap-3 z-40 md:bottom-0 md:px-10 md:py-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-2 text-[10px] text-gray-500 md:text-[11px]">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
@@ -697,7 +697,7 @@ export default function ConfiguracoesWidget() {
           As alterações serão aplicadas instantaneamente em todos os terminais.
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center md: justify-around gap-4">
           <button
             onClick={() => navigate(-1)}
             className="text-[12px] font-bold uppercase tracking-[1px] text-black hover:text-gray-600 transition-colors"
@@ -707,15 +707,12 @@ export default function ConfiguracoesWidget() {
           <button
             onClick={handleSalvar}
             disabled={isSaving}
-            className="px-6 py-3 bg-[#F7D708] hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-[12px] uppercase tracking-[1px] transition-all"
+            className="px-4 py-3 bg-[#F7D708] hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-[11px] uppercase tracking-[1px] transition-all md:px-6 md:text-[12px]"
           >
             {isSaving ? "Salvando..." : "Salvar Alterações"}
           </button>
         </div>
       </div>
-
-      {/* Spacer for fixed footer */}
-      <div className="h-20" />
 
       </>
       )}

@@ -12,7 +12,7 @@
 /* imagem */
 .card-image {
   width: 100%;
-  height: 260px;
+  height: 220px;
   overflow: hidden;
 }
 
@@ -27,42 +27,46 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px;
+  padding: 12px;
+  gap: 8px;
 }
 
 /* textos */
 .card-category {
-  font-size: 11px;
-  letter-spacing: 1px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
   color: #9b9b9b;
   font-weight: bold;
+  text-transform: uppercase;
 }
 
 .card-title {
-  font-size: 18px;
-  margin-top: 6px;
+  font-size: 13px;
+  margin-top: 4px;
   font-weight: 800;
   color: #111;
   line-height: 1.2;
   white-space: pre-line; /* permite quebra com \n */
+  text-transform: uppercase;
 }
 
 /* botão */
 .card-btn {
   background: #f1efed;
   border: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .bookmark-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
 }
 
@@ -72,4 +76,51 @@
 
 .card-btn:active {
   transform: scale(0.9);
+}
+
+/* Responsividade para tablet */
+@media (min-width: 641px) {
+  .card-image {
+    height: 260px;
+  }
+
+  .card-content {
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .card-category {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    margin-top: 6px;
+  }
+
+  .card-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .bookmark-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Responsividade para desktop */
+@media (min-width: 1025px) {
+  .card-image {
+    height: 280px;
+  }
+
+  .card-content {
+    padding: 18px;
+  }
+
+  .card-title {
+    font-size: 16px;
+  }
 }
