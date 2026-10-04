@@ -125,7 +125,7 @@ export default function SaveDrawer({ isOpen, onClose, savedItems = [], isLoading
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 right-0 h-full w-[80%] max-w-[350px] bg-[#E0E0E0] z-[10001] shadow-2xl transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`fixed top-0 right-0 h-full w-full max-w-none sm:w-[80%] sm:max-w-[350px] bg-[#E0E0E0] z-[10001] shadow-2xl transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } flex flex-col`}
       >

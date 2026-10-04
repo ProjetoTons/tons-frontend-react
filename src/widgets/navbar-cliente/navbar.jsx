@@ -87,9 +87,9 @@ function Navbar({ onOpenDrawer, onOpenMenu, compact, hideBookmark }) {
                         onClick={onOpenMenu}
                         className="hidden md:flex flex-col gap-1.5 p-2 hover:bg-black/5 rounded-md transition-colors"
                     >
-                        <div className="w-6 h-[2px] bg-black"></div>
-                        <div className="w-6 h-[2px] bg-black"></div>
-                        <div className="w-4 h-[2px] bg-black self-end"></div>
+                        <div className="w-5 md:w-6 h-[2px] bg-black"></div>
+                        <div className="w-5 md:w-6 h-[2px] bg-black"></div>
+                        <div className="w-4 md:w-4 h-[2px] bg-black self-end"></div>
                     </button>
                 )}
             </div>
