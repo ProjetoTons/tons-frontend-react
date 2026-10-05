@@ -10,6 +10,7 @@ import ProductList from '@/entities/produto/ui/list/productlist.jsx'
 import SaveDrawer from '@/features/salvar-produto/ui/SaveDrawerFeatureUi.jsx'
 import MobileMenu from '@/features/mobile-menu/mobile-menu.jsx' 
 import ProductModal from '@/features/modal-produto/modal-produto.jsx';
+import BottomNav from '@/features/bottom-nav/BottomNav.jsx';
 
 import { useSaveDrawer } from '@/features/salvar-produto/model/useSaveDrawerFeatureModel'
 import { getProdutos } from '@/entities/produto/api/getProdutos'
@@ -243,6 +244,8 @@ export default function PortfolioPage() {
       />
 
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <div className="h-16 md:hidden" aria-hidden="true" />
+      <BottomNav />
     </>
   )
 }

@@ -97,13 +97,13 @@ export default function BottomNav() {
           <button
             key={item.key}
             onClick={() => handleNavigate(item.path)}
-            className={`flex-1 py-3 flex flex-col items-center justify-center text-[8px] ${isActive(item.path) ? 'text-black' : 'text-gray-600'} transition-colors`}
+            className={`flex-1 py-2 flex flex-col items-center justify-center text-[8px] ${isActive(item.path) ? 'text-black bg-[#F7D708]' : 'text-gray-600'} transition-colors`}
             aria-current={isActive(item.path) ? 'page' : undefined}
           >
-            <div className={`p-1 rounded-full ${isActive(item.path) ? 'bg-[#F7D708]' : ''}`}>
+            <div className={`p-0.5 rounded-full ${isActive(item.path) ? 'bg-[#F7D708]' : ''}`}>
               <Icon name={item.icon} />
             </div>
-            <span className="mt-1 font-bold tracking-wide">{item.label}</span>
+            <span className="mt-0.5 font-bold tracking-wide">{item.label}</span>
           </button>
         ))}
       </div>
