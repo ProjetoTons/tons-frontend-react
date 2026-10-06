@@ -5,8 +5,7 @@ import { getUsuario } from '@/shared/api/authToken';
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const usuario = getUsuario() || { acessos: [] };
-  const isAdm = usuario.acessos?.some(a => a.role === 'Adm');
+  const usuario = getUsuario();
 
   const items = [
     { path: '/portfolio', label: 'PORTIFÓLIO', key: 'portfolio', icon: 'home' },
@@ -21,6 +20,7 @@ export default function BottomNav() {
   };
 
   const isActive = (path) => location.pathname === path;
+  if (!usuario) return null;
 
   const Icon = ({ name }) => {
     const common = "w-5 h-5";
