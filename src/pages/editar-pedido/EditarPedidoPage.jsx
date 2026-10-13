@@ -12,6 +12,9 @@ export default function EditarPedidoPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const usuarioLogado = getUsuario() || { id: null, nome: "Usuário" };
+  const podeAlterarMockup = usuarioLogado.acessos?.some(
+    (acesso) => ["DESIGN", "DESIGNER"].includes(String(acesso.role || "").toUpperCase())
+  ) || false;
   const fileInputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
@@ -258,6 +261,8 @@ export default function EditarPedidoPage() {
   };
 
   const handleMockupChange = (e) => {
+    if (!podeAlterarMockup) return;
+
     const file = e.target.files[0];
     if (file) {
       setMockupFile(file);
@@ -317,7 +322,7 @@ export default function EditarPedidoPage() {
 
       // Upload da arte/mockup se novo arquivo selecionado
       let urlFotoArte = urlFotoArteExistente;
-      if (mockupFile) {
+      if (podeAlterarMockup && mockupFile) {
         try {
           const resultado = await uploadImagem(mockupFile, "tons/pedidos");
           urlFotoArte = resultado.url;
@@ -668,22 +673,31 @@ export default function EditarPedidoPage() {
                   Preview de Produção
                 </h2>
 
+                {!podeAlterarMockup && (
+                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                    Apenas funcionários com cargo Design podem alterar o mockup.
+                  </p>
+                )}
+
                 <div
-                  className="border-2 border-dashed border-gray-300 bg-[#FAFAFA] flex flex-col items-center justify-center py-6 px-4 cursor-pointer hover:border-[#FFE300] transition-colors mb-3"
-                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed border-gray-300 bg-[#FAFAFA] flex flex-col items-center justify-center py-6 px-4 transition-colors mb-3 ${podeAlterarMockup ? "cursor-pointer hover:border-[#FFE300]" : "cursor-not-allowed opacity-60"}`}
+                  onClick={() => podeAlterarMockup && fileInputRef.current?.click()}
                 >
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept=".png,.jpg,.jpeg,.pdf"
                     onChange={handleMockupChange}
+                    disabled={!podeAlterarMockup}
                     className="hidden"
                   />
                   <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                   <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                    {mockupPreview ? "Alterar Mockup" : "Upload de Mockup"}
+                    {podeAlterarMockup
+                      ? (mockupPreview ? "Alterar Mockup" : "Upload de Mockup")
+                      : "Mockup somente para Design"}
                   </p>
                   <p className="text-[10px] text-gray-400 mt-1">
                     Arraste arquivos ou clique para selecionar (PNG, JPG, PDF)

@@ -41,7 +41,6 @@ export default function RegistrationSuccessFeature() {
     try {
       // 1) Cadastra o usuário primeiro (sem empresa ainda)
       //    Se falhar aqui, nada mais é cadastrado — evita dados órfãos.
-      //    Se retornar 409 (já existe), segue para login silencioso.
       try {
         await cadastrarUsuario({
           nome: dadosPessoais.fullName,
@@ -51,10 +50,11 @@ export default function RegistrationSuccessFeature() {
           senha: dadosPessoais.password,
         });
       } catch (cadastroErr) {
-        // 409 = usuário já existe (retry após falha anterior) — continua o fluxo
-        if (cadastroErr.response?.status !== 409) {
-          throw cadastroErr;
+        if (cadastroErr.response?.status === 409) {
+          setErrorMessage("Este e-mail já está cadastrado. Faça login ou utilize outro e-mail.");
+          return;
         }
+        throw cadastroErr;
       }
 
       // 2) Login silencioso para obter token e ID do usuário recém-criado
@@ -145,7 +145,7 @@ export default function RegistrationSuccessFeature() {
       } else if (status === 422) {
         setErrorMessage("CNPJ inválido. Verifique o CNPJ informado e tente novamente.");
       } else if (status === 409) {
-        setErrorMessage(apiMsg || "Dado já cadastrado no sistema.");
+        setErrorMessage("Este e-mail já está cadastrado. Faça login ou utilize outro e-mail.");
       } else if (status === 400) {
         // Se o backend retornou lista de erros de validação, mostra detalhado
         if (Array.isArray(apiErrors) && apiErrors.length > 0) {
@@ -297,7 +297,7 @@ export default function RegistrationSuccessFeature() {
 
             {/* Mensagem de erro */}
             {errorMessage && (
-              <div className="w-full mb-4 p-4 bg-red-50 border border-red-200 rounded-sm">
+              <div role="alert" className="w-full mb-4 p-4 bg-red-50 border border-red-200 rounded-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -306,10 +306,7 @@ export default function RegistrationSuccessFeature() {
                 </div>
                 <ul className="space-y-1">
                   {errorMessage.split(" | ").map((msg, i) => (
-                    <li key={i} className="text-[11px] text-red-600 font-medium flex items-start gap-1.5">
-                      <span className="text-red-400 mt-0.5">•</span>
-                      {msg}
-                    </li>
+                    <li key={i} className="text-[11px] text-red-600 font-medium">{msg}</li>
                   ))}
                 </ul>
               </div>

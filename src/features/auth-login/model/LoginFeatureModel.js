@@ -61,6 +61,11 @@ export const useLogin = () => {
 
             if (!error.response) {
                 setErrorMessage("Não foi possível conectar ao servidor.");
+            } else if (status === 429) {
+                const responseMessage = error.response.data?.detail ?? error.response.data?.message;
+                setErrorMessage(
+                    responseMessage || "Muitas tentativas de login. Tente novamente mais tarde."
+                );
             } else if (status === 401 || status === 403) {
                 setErrorMessage("E-mail ou senha incorretos.");
             } else {

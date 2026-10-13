@@ -59,7 +59,7 @@ export default function RegisterEmployeeFeature() {
 
                     {/* EXIBIÇÃO DE ERRO VISUAL*/}
                     {errorMessage && (
-                        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-[90%] z-50 p-2 bg-red-50 border-l-4 border-red-500 text-red-700 text-[10px] font-semibold uppercase tracking-wider text-center shadow-lg animate-pulse">
+                        <div role="alert" className="absolute top-4 left-1/2 transform -translate-x-1/2 w-[90%] z-50 p-2 bg-red-50 border-l-4 border-red-500 text-red-700 text-[10px] font-semibold uppercase tracking-wider text-center shadow-lg animate-pulse">
                             {errorMessage}
                         </div>
                     )}

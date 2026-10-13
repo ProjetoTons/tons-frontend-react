@@ -1,5 +1,6 @@
 import axios from "axios";
+import { env } from "@/shared/config/env";
 
  export const http = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
+    baseURL: env.apiUrl
  });

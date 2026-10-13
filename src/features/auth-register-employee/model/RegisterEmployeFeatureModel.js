@@ -160,7 +160,6 @@ export default function useRegisterEmployeFeature() {
         if (idade < 16) return setErrorMessage("O funcionário deve ter no mínimo 16 anos.");
 
         if (!formData.cargo || formData.cargo.length === 0) return setErrorMessage("Por favor, selecione ao menos um cargo para o funcionário.");
-        if (!formData.foto) return setErrorMessage("Por favor, adicione uma foto do funcionário.");
 
         // Ativa o estado de carregamento (mostra o spinner no botão, por exemplo)
         setIsLoading(true);
@@ -230,8 +229,9 @@ export default function useRegisterEmployeFeature() {
         } catch (error) {
             console.error("[DEBUG] Erro no processo de cadastro:", error);
             const msg = error?.response?.data;
-            setErrorMessage(
-                typeof msg === "string" && msg.length
+            setErrorMessage(error?.response?.status === 409
+                ? "Este e-mail já está cadastrado. Faça login ou utilize outro e-mail."
+                : typeof msg === "string" && msg.length
                     ? msg
                     : "Ocorreu um erro ao tentar salvar o funcionário."
             );
