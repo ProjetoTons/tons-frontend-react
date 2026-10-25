@@ -6,7 +6,7 @@
  * para o formato esperado pela UI (snake_case) e vice-versa.
  *
  * Endpoints utilizados:
- *  - GET    /pedidos
+ *  - GET    /pedidos?page&size&etapa&status&busca&responsavelId&somenteAtivos&sort
  *  - GET    /pedidos/{id}
  *  - POST   /pedidos/{id}/etapas        (avançar/voltar etapa)
  *  - PATCH  /pedidos/{id}/responsavel?idResponsavel=X
@@ -59,14 +59,13 @@ function statusToFrontend(label) {
 // ---------------------------------------------------------------------------
 
 const ETAPA_BACK_TO_FRONT = { "Finalizado": "Finalizados" };
-const ETAPA_FRONT_TO_BACK = { "Finalizados": "Finalizado" };
 
 function etapaToFrontend(etapa) {
   return ETAPA_BACK_TO_FRONT[etapa] ?? etapa;
 }
 
 function etapaToBackend(etapa) {
-  return ETAPA_FRONT_TO_BACK[etapa] ?? etapa;
+  return etapa;
 }
 
 // ---------------------------------------------------------------------------
@@ -136,7 +135,6 @@ function toFrontend(dto) {
                 composicao: item.caracteristicas.composicao,
                 descricao_arte: item.caracteristicas.descricaoArte,
                 tamanho: item.caracteristicas.tamanho,
-                fornecedor: item.caracteristicas.fornecedor,
               }
             : null,
         }))
@@ -168,9 +166,141 @@ function buildEtapaRequest(pedidoAtualizado, usuarioLogado) {
 // API pública
 // ---------------------------------------------------------------------------
 
-export async function fetchPedidos() {
-  const { data } = await http.get("/pedidos");
-  return Array.isArray(data) ? data.map(toFrontend) : [];
+function filtrarPedidosLocalmente(pedidos, options) {
+  let filtrados = pedidos;
+
+  if (options.etapa) {
+    filtrados = filtrados.filter((pedido) => pedido.etapa_pedido === options.etapa);
+  } else if (options.somenteAtivos) {
+    filtrados = filtrados.filter(
+      (pedido) => pedido.etapa_pedido !== "Finalizados" && pedido.etapa_pedido !== "Cancelado"
+    );
+  }
+
+  if (options.status) {
+    const status = statusToFrontend(options.status).toLowerCase();
+    filtrados = filtrados.filter((pedido) => pedido.status?.toLowerCase() === status);
+  }
+
+  if (options.busca) {
+    const termo = options.busca.toLowerCase();
+    filtrados = filtrados.filter((pedido) =>
+      [
+        pedido.num_pedido,
+        pedido.cliente?.nome,
+        pedido.vendedor?.nome,
+        pedido.responsavel?.nome,
+      ].some((valor) => valor?.toLowerCase().includes(termo))
+    );
+  }
+
+  if (options.responsavelId != null) {
+    filtrados = filtrados.filter(
+      (pedido) => String(pedido.responsavel?.id) === String(options.responsavelId)
+    );
+  }
+
+  if (options.sortBy) {
+    const direction = options.sortDirection === "desc" ? -1 : 1;
+    filtrados = [...filtrados].sort((a, b) => {
+      const valueA = a[options.sortBy];
+      const valueB = b[options.sortBy];
+      if (options.sortBy === "valor_total") {
+        return ((Number(valueA) || 0) - (Number(valueB) || 0)) * direction;
+      }
+      return String(valueA || "").localeCompare(String(valueB || "")) * direction;
+    });
+  }
+
+  return filtrados;
+}
+
+function mapearPaginaPedidos(data, options) {
+  if (Array.isArray(data)) {
+    const filtrados = filtrarPedidosLocalmente(data.map(toFrontend), options);
+    const totalElements = filtrados.length;
+    const start = options.page * options.size;
+    return {
+      content: filtrados.slice(start, start + options.size),
+      number: options.page,
+      size: options.size,
+      totalElements,
+      totalPages: Math.ceil(totalElements / options.size),
+    };
+  }
+
+  if (!Array.isArray(data?.content)) {
+    throw new Error("A resposta paginada de pedidos não contém a lista 'content'.");
+  }
+
+  return {
+    ...data,
+    content: data.content.map(toFrontend),
+    number: Number.isInteger(data.number) ? data.number : options.page,
+    size: Number.isInteger(data.size) ? data.size : options.size,
+    totalElements: Number.isFinite(data.totalElements) ? data.totalElements : data.content.length,
+    totalPages: Number.isInteger(data.totalPages)
+      ? data.totalPages
+      : Math.ceil(data.content.length / options.size),
+  };
+}
+
+/**
+ * Sem opções, mantém o contrato de lista completa usado por outras telas.
+ * Com opções, espera Spring Page; a lista antiga é paginada localmente para
+ * permitir a implantação do contrato no backend sem interromper a tela.
+ */
+export async function fetchPedidos(options) {
+  if (!options) {
+    const { data } = await http.get("/pedidos");
+    if (!Array.isArray(data)) {
+      throw new Error("A resposta de pedidos deve ser uma lista.");
+    }
+    return data.map(toFrontend);
+  }
+
+  const {
+    page = 0,
+    size = 10,
+    etapa,
+    status,
+    busca,
+    responsavelId,
+    somenteAtivos = false,
+    sortBy,
+    sortDirection = "asc",
+    signal,
+  } = options;
+  const sortProperty = {
+    data_pedido: "dataPedido",
+    data_finalizacao: "dataFinalizacao",
+    valor_total: "valorTotal",
+  }[sortBy];
+  const { data } = await http.get("/pedidos", {
+    params: {
+      page,
+      size,
+      etapa: etapa || undefined,
+      status: status ? statusToBackend(status) : undefined,
+      busca: busca || undefined,
+      responsavelId: responsavelId ?? undefined,
+      somenteAtivos: somenteAtivos || undefined,
+      sort: sortProperty ? `${sortProperty},${sortDirection}` : undefined,
+    },
+    signal,
+  });
+
+  return mapearPaginaPedidos(data, {
+    page,
+    size,
+    etapa,
+    status,
+    busca,
+    responsavelId,
+    somenteAtivos,
+    sortBy,
+    sortDirection,
+  });
 }
 
 export async function fetchPedidoById(id) {
@@ -218,6 +348,38 @@ export async function fetchMeusPedidos() {
 export async function fetchMeusPedidosHistorico() {
   const { data } = await http.get("/pedidos/meus/historico");
   return Array.isArray(data) ? data.map(toFrontend) : [];
+}
+
+/**
+ * Busca uma página do histórico unificado do cliente autenticado.
+ * GET /pedidos/meus/historico/paginado?filtro&page&size
+ */
+export async function fetchHistoricoMeusPedidosPaginado({
+  filtro = "TODOS",
+  page = 0,
+  size = 10,
+  signal,
+} = {}) {
+  const { data } = await http.get("/pedidos/meus/historico/paginado", {
+    params: { filtro, page, size },
+    signal,
+  });
+
+  if (!Array.isArray(data?.content)) {
+    throw new Error("A resposta paginada do histórico não contém a lista 'content'.");
+  }
+
+  return {
+    content: data.content.map(toFrontend),
+    number: Number.isInteger(data.number) ? data.number : page,
+    size: Number.isInteger(data.size) ? data.size : size,
+    totalElements: Number.isFinite(data.totalElements)
+      ? data.totalElements
+      : data.content.length,
+    totalPages: Number.isInteger(data.totalPages)
+      ? data.totalPages
+      : Math.ceil(data.content.length / size),
+  };
 }
 
 /**

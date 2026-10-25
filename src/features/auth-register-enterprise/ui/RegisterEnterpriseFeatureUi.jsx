@@ -25,11 +25,11 @@ export default function RegisterEnterpriseFeature() {
 
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white font-sans">
+    <div className="flex min-h-screen bg-white font-sans md:h-screen md:min-h-0 md:overflow-hidden">
       <LoadingOverlay isVisible={isLoading} message="Processando Cadastro..." />
 
       {/* SEÇÃO ESQUERDA */}
-      <div className="w-1/2 relative flex flex-col items-center justify-center px-8 lg:px-16 overflow-y-auto bg-[#F8F9FA] animate-slide-in-right">
+      <div className="relative flex w-full flex-col items-center justify-center bg-[#F8F9FA] px-4 py-6 sm:px-8 md:w-1/2 md:overflow-y-auto md:px-8 md:py-0 lg:px-16 animate-slide-in-right">
         <div className="w-full max-w-lg">
 
         {/* HEADER: Logo da Empresa */}
@@ -38,7 +38,7 @@ export default function RegisterEnterpriseFeature() {
             <img
               src="/logo-tons/Logo tons_Sem_Fundo.png"
               alt="Logo"
-              className="w-24 sm:w-32 mb-0 mx-auto cursor-pointer" />
+              className="w-20 mb-2 mx-auto cursor-pointer sm:w-32 sm:mb-0" />
           </Link>
         </div>
 
@@ -50,7 +50,7 @@ export default function RegisterEnterpriseFeature() {
         />
 
         {/* CARTÃO PRINCIPAL BRANCO */}
-        <div className="bg-white p-6 sm:p-8 shadow-sm border border-gray-100 relative">
+        <div className="relative border border-gray-100 bg-white p-4 shadow-sm sm:p-6 md:p-8">
 
           {/* Títulos */}
           <div className="mb-6">
@@ -64,7 +64,7 @@ export default function RegisterEnterpriseFeature() {
 
           {/* EXIBIÇÃO DE ERRO VISUAL */}
           {errorMessage && (
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-[90%] z-50 p-2 bg-red-50 border-l-4 border-red-500 text-red-700 text-[10px] font-semibold uppercase tracking-wider text-center shadow-lg animate-pulse">
+            <div role="alert" className="relative mb-3 w-full z-10 p-2 bg-red-50 border-l-4 border-red-500 text-red-700 text-[10px] font-semibold uppercase tracking-wider text-center shadow-lg animate-pulse md:absolute md:top-4 md:left-1/2 md:w-[90%] md:-translate-x-1/2 md:mb-0">
               {errorMessage}
             </div>
           )}
@@ -160,7 +160,7 @@ export default function RegisterEnterpriseFeature() {
         </div>
 
         {/* FORA DO CARTÃO: Ações secundárias */}
-        <div className="mt-8 mb-8 flex flex-col items-center gap-8 text-center">
+        <div className="mt-5 mb-2 flex flex-col items-center gap-6 text-center sm:mt-8 sm:mb-8 sm:gap-8">
 
           <Link
             state={{
@@ -181,7 +181,7 @@ export default function RegisterEnterpriseFeature() {
 
       {/* SEÇÃO DIREITA - IMAGEM */}
       <div
-        className="w-1/2 bg-cover bg-center flex flex-col justify-between p-12 animate-fade-in relative"
+        className="relative hidden w-1/2 bg-cover bg-center md:flex md:flex-col md:justify-between md:p-12 animate-fade-in"
         style={{ backgroundImage: "url('/product/step2.png')" }}
       >
         <div className="absolute inset-0 bg-black/50"></div>

@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "@/shared/api/authToken";
-import { fetchMeusPedidosHistorico, fetchMeusPedidos } from "@/entities/pedido/api/pedidosApi";
+import { fetchHistoricoMeusPedidosPaginado } from "@/entities/pedido/api/pedidosApi";
 import DetalhesPedidoModal from "@/features/detalhes-pedido/DetalhesPedidoModal";
 import { formatarDataBR } from "@/shared/lib/dateFormatter";
 import { redirecionarWhatsApp } from "@/shared/lib/whatsapp";
 
+const FILTROS = ["Todos", "Finalizados", "Cancelados"];
+const FILTRO_API = {
+  Todos: "TODOS",
+  Finalizados: "FINALIZADOS",
+  Cancelados: "CANCELADOS",
+};
 
 function StatusBadge({ status }) {
   const isCancelado = status === "Cancelado";
@@ -23,6 +29,9 @@ export default function HistoricoPedidosWidget() {
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pedidos, setPedidos] = useState([]);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [pageInfo, setPageInfo] = useState({ page: 0, size: 10, totalElements: 0, totalPages: 0 });
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [filtro, setFiltro] = useState("Todos");
@@ -34,29 +43,47 @@ export default function HistoricoPedidosWidget() {
     }
   }, [navigate]);
 
-  const FILTROS = ["Todos", "Finalizados", "Cancelados"];
-
   useEffect(() => {
     let ativo = true;
-    setLoading(true);
-    Promise.all([fetchMeusPedidosHistorico(), fetchMeusPedidos()])
-      .then(([historico, emAndamento]) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      setLoading(true);
+      setErro(null);
+      fetchHistoricoMeusPedidosPaginado({
+        filtro: FILTRO_API[filtro],
+        page,
+        size: pageSize,
+        signal: controller.signal,
+      })
+      .then((resultado) => {
         if (!ativo) return;
-        // Cancelados vêm do endpoint "em andamento" (etapa != Finalizado)
-        const cancelados = emAndamento.filter(
-          (p) => p.etapa_pedido === "Cancelado" || p.status === "cancelado"
-        );
-        setPedidos([...historico, ...cancelados]);
+        if (resultado.totalPages > 0 && page >= resultado.totalPages) {
+          setPage(resultado.totalPages - 1);
+          return;
+        }
+        setPedidos(resultado.content);
+        setPageInfo({
+          page: resultado.number,
+          size: resultado.size,
+          totalElements: resultado.totalElements,
+          totalPages: resultado.totalPages,
+        });
       })
       .catch((err) => {
+        if (!ativo || controller.signal.aborted) return;
         console.error("Erro ao buscar histórico de pedidos:", err);
-        if (ativo) setErro("Não foi possível carregar o histórico.");
+        setErro("Não foi possível carregar o histórico.");
       })
       .finally(() => {
-        if (ativo) setLoading(false);
+        if (ativo && !controller.signal.aborted) setLoading(false);
       });
-    return () => { ativo = false; };
-  }, []);
+    }, 0);
+    return () => {
+      ativo = false;
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [filtro, page, pageSize]);
 
   const handleOpenModal = (pedido) => {
     setSelectedPedido({
@@ -91,12 +118,6 @@ export default function HistoricoPedidosWidget() {
     setSelectedPedido(null);
   };
 
-  const pedidosFiltrados = filtro === "Todos"
-    ? pedidos
-    : filtro === "Cancelados"
-      ? pedidos.filter((p) => p.status === "cancelado" || p.etapa_pedido === "Cancelado")
-      : pedidos.filter((p) => p.status !== "cancelado" && p.etapa_pedido !== "Cancelado");
-
   return (
     <div className="w-full">
       {/* Título */}
@@ -114,7 +135,10 @@ export default function HistoricoPedidosWidget() {
         {FILTROS.map((f) => (
           <button
             key={f}
-            onClick={() => setFiltro(f)}
+            onClick={() => {
+              setFiltro(f);
+              setPage(0);
+            }}
             className={`px-1.5 md:px-5 py-2 text-xs font-bold uppercase tracking-wider border transition-colors cursor-pointer ${
               filtro === f
                 ? "bg-[#F7D708] border-[#F7D708] text-black"
@@ -132,10 +156,10 @@ export default function HistoricoPedidosWidget() {
           <p className="text-gray-500 text-sm text-center py-10">Carregando...</p>
         ) : erro ? (
           <p className="text-red-500 text-sm text-center py-10">{erro}</p>
-        ) : pedidosFiltrados.length === 0 ? (
+        ) : pedidos.length === 0 ? (
           <p className="text-gray-500 text-sm text-center py-10">Nenhum pedido encontrado.</p>
         ) : (
-          pedidosFiltrados.map((pedido) => (
+          pedidos.map((pedido) => (
             <div
               key={pedido.id_pedido}
               className="bg-white flex flex-col md:flex-row cursor-pointer hover:shadow-md transition-shadow"
@@ -222,6 +246,59 @@ export default function HistoricoPedidosWidget() {
           ))
         )}
       </div>
+
+      {!loading && !erro && (
+        <div className="mt-8 flex flex-col gap-3 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            {pageInfo.totalElements === 0
+              ? "Nenhum pedido"
+              : `Mostrando ${pageInfo.page * pageInfo.size + 1}–${Math.min(
+                  (pageInfo.page + 1) * pageInfo.size,
+                  pageInfo.totalElements
+                )} de ${pageInfo.totalElements} pedidos`}
+          </span>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <label className="flex items-center gap-2">
+              Itens por página
+              <select
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(Number(event.target.value));
+                  setPage(0);
+                }}
+                className="border border-gray-300 bg-white px-2 py-1"
+              >
+                {[10, 20, 50].map((size) => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => setPage((current) => Math.max(0, current - 1))}
+                disabled={pageInfo.page <= 0 || loading}
+                className="border border-gray-300 bg-white px-3 py-1 disabled:opacity-50"
+                aria-label="Página anterior"
+              >
+                Anterior
+              </button>
+              <span className="whitespace-nowrap">
+                Página {pageInfo.totalPages === 0 ? 0 : pageInfo.page + 1} de {pageInfo.totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage((current) => current + 1)}
+                disabled={pageInfo.page + 1 >= pageInfo.totalPages || loading}
+                className="border border-gray-300 bg-white px-3 py-1 disabled:opacity-50"
+                aria-label="Próxima página"
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <DetalhesPedidoModal
         isOpen={isModalOpen}

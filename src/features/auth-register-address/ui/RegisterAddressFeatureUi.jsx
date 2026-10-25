@@ -18,18 +18,18 @@ export default function RegisterAddressFeature() {
   } = useRegisterAddress();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white font-sans">
+    <div className="flex min-h-screen bg-white font-sans md:h-screen md:min-h-0 md:overflow-hidden">
       <LoadingOverlay isVisible={isLoading} message="Buscando endereço..." />
 
       {/* SEÇÃO ESQUERDA */}
-      <div className="w-1/2 relative flex flex-col items-center justify-center px-8 lg:px-16 overflow-y-auto animate-slide-in-left">
+      <div className="relative flex w-full flex-col items-center justify-center px-4 py-6 sm:px-8 md:w-1/2 md:overflow-y-auto md:px-8 md:py-0 lg:px-16 animate-slide-in-left">
         <div className="w-full max-w-lg">
           {/* Logo */}
           <Link to="/portfolio">
             <img
               src="/logo-tons/Logo tons_Sem_Fundo.png"
               alt="Logo"
-              className="w-32 mb-10 mx-auto cursor-pointer"
+              className="w-24 mb-6 sm:w-32 sm:mb-8 md:mb-10 mx-auto cursor-pointer"
             />
           </Link>
 
@@ -49,7 +49,7 @@ export default function RegisterAddressFeature() {
 
           {/* Erro */}
           {errorMessage && (
-            <div className="absolute top-15 left-1/2 transform -translate-x-1/2 w-[65%] z-50 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-[11px] font-semibold uppercase tracking-wider text-center shadow-lg animate-pulse">
+            <div role="alert" className="relative w-full mb-3 z-10 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-[11px] font-semibold uppercase tracking-wider text-center shadow-lg animate-pulse md:absolute md:top-15 md:left-1/2 md:w-[65%] md:-translate-x-1/2 md:mb-0">
               {errorMessage}
             </div>
           )}
@@ -57,7 +57,7 @@ export default function RegisterAddressFeature() {
           {/* Formulário */}
           <form onSubmit={handleSubmit} className="space-y-2">
             {/* CEP */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               <div className="col-span-1">
                 <label className="block text-[10px] text-gray-500 uppercase font-semibold mb-1 tracking-wider">
                   CEP
@@ -84,7 +84,7 @@ export default function RegisterAddressFeature() {
             </div>
 
             {/* Número e Complemento */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               <InputForm
                 label="Número"
                 name="numero"
@@ -92,7 +92,7 @@ export default function RegisterAddressFeature() {
                 onChange={handleChange}
                 placeholder="123"
               />
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <InputForm
                   label="Complemento"
                   name="complemento"
@@ -113,8 +113,8 @@ export default function RegisterAddressFeature() {
             />
 
             {/* Cidade e Estado */}
-            <div className="grid grid-cols-3 gap-2">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <div className="sm:col-span-2">
                 <InputForm
                   label="Cidade"
                   name="cidade"
@@ -171,7 +171,7 @@ export default function RegisterAddressFeature() {
 
       {/* SEÇÃO DIREITA */}
       <div
-        className="w-1/2 bg-cover bg-center flex flex-col justify-between p-12 animate-fade-in relative"
+        className="relative hidden w-1/2 bg-cover bg-center md:flex md:flex-col md:justify-between md:p-12 animate-fade-in"
         style={{ backgroundImage: "url('/cadastro-imgIndustrial.png')" }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
