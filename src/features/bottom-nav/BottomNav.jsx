@@ -21,7 +21,7 @@ export default function BottomNav() {
 
   const isActive = (path) => location.pathname === path;
   if (!usuario) return null;
-
+''
   const Icon = ({ name }) => {
     const common = "w-5 h-5";
     switch (name) {

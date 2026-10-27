@@ -165,10 +165,10 @@ export default function RegistrationSuccessFeature() {
   };
 
   return (
-    <div className="h-screen bg-[#F8F9FA] flex flex-col items-center justify-center px-4 py-4 font-sans text-center overflow-hidden">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center px-4 py-6 font-sans text-center md:h-screen md:overflow-y-auto md:py-4">
       
       {/* HEADER: Logo */}
-      <div className="w-full max-w-2xl mb-4">
+      <div className="w-full max-w-2xl mb-3 sm:mb-4">
         <Link to="/portfolio">
           <img
             src="/logo-tons/Logo tons_Sem_Fundo.png"
@@ -178,7 +178,7 @@ export default function RegistrationSuccessFeature() {
         </Link>
       </div>
 
-      <div className="bg-white p-6 sm:p-10 shadow-sm border border-gray-100 max-w-lg w-full rounded-sm flex flex-col items-center justify-center transition-all duration-500">
+      <div className="min-w-0 bg-white p-4 sm:p-8 md:p-10 shadow-sm border border-gray-100 max-w-lg w-full rounded-sm flex flex-col items-center justify-center transition-all duration-500">
         
         {/* ==========================================
             FASE 1: TELA DE CONFIRMAÇÃO
@@ -208,21 +208,21 @@ export default function RegistrationSuccessFeature() {
                     Dados Pessoais
                   </h2>
                   <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
+                    <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                       <span className="text-gray-400">Nome</span>
-                      <span className="text-gray-900 font-medium">{dadosPessoais.fullName}</span>
+                      <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosPessoais.fullName}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                       <span className="text-gray-400">CPF</span>
-                      <span className="text-gray-900 font-medium">{cpfSalvo}</span>
+                      <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{cpfSalvo}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                       <span className="text-gray-400">E-mail</span>
-                      <span className="text-gray-900 font-medium">{dadosPessoais.email}</span>
+                      <span className="min-w-0 text-gray-900 font-medium break-all sm:text-right">{dadosPessoais.email}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                       <span className="text-gray-400">Telefone</span>
-                      <span className="text-gray-900 font-medium">{dadosPessoais.phone}</span>
+                      <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosPessoais.phone}</span>
                     </div>
                   </div>
                 </div>
@@ -234,26 +234,26 @@ export default function RegistrationSuccessFeature() {
                       Dados da Empresa
                     </h2>
                     <div className="space-y-1 text-xs">
-                      <div className="flex justify-between">
+                      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                         <span className="text-gray-400">CNPJ</span>
-                        <span className="text-gray-900 font-medium">{dadosEmpresa.cnpj}</span>
+                        <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEmpresa.cnpj}</span>
                       </div>
                       {dadosEmpresa.formData?.razaoSocial && (
-                        <div className="flex justify-between">
+                        <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                           <span className="text-gray-400">Razão Social</span>
-                          <span className="text-gray-900 font-medium">{dadosEmpresa.formData.razaoSocial}</span>
+                          <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEmpresa.formData.razaoSocial}</span>
                         </div>
                       )}
                       {dadosEmpresa.formData?.email && (
-                        <div className="flex justify-between">
+                        <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                           <span className="text-gray-400">E-mail</span>
-                          <span className="text-gray-900 font-medium">{dadosEmpresa.formData.email}</span>
+                          <span className="min-w-0 text-gray-900 font-medium break-all sm:text-right">{dadosEmpresa.formData.email}</span>
                         </div>
                       )}
                       {dadosEmpresa.formData?.phone && (
-                        <div className="flex justify-between">
+                        <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                           <span className="text-gray-400">Telefone</span>
-                          <span className="text-gray-900 font-medium">{dadosEmpresa.formData.phone}</span>
+                          <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEmpresa.formData.phone}</span>
                         </div>
                       )}
                     </div>
@@ -267,27 +267,27 @@ export default function RegistrationSuccessFeature() {
                       Endereço
                     </h2>
                     <div className="space-y-1 text-xs">
-                      <div className="flex justify-between">
+                      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                         <span className="text-gray-400">CEP</span>
-                        <span className="text-gray-900 font-medium">{dadosEndereco.cep}</span>
+                        <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEndereco.cep}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                         <span className="text-gray-400">Logradouro</span>
-                        <span className="text-gray-900 font-medium">{dadosEndereco.logradouro}, {dadosEndereco.numero}</span>
+                        <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEndereco.logradouro}, {dadosEndereco.numero}</span>
                       </div>
                       {dadosEndereco.complemento && (
-                        <div className="flex justify-between">
+                        <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                           <span className="text-gray-400">Complemento</span>
-                          <span className="text-gray-900 font-medium">{dadosEndereco.complemento}</span>
+                          <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEndereco.complemento}</span>
                         </div>
                       )}
-                      <div className="flex justify-between">
+                      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                         <span className="text-gray-400">Bairro</span>
-                        <span className="text-gray-900 font-medium">{dadosEndereco.bairro}</span>
+                        <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEndereco.bairro}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-3">
                         <span className="text-gray-400">Cidade/UF</span>
-                        <span className="text-gray-900 font-medium">{dadosEndereco.cidade} - {dadosEndereco.estado}</span>
+                        <span className="min-w-0 text-gray-900 font-medium break-words sm:text-right">{dadosEndereco.cidade} - {dadosEndereco.estado}</span>
                       </div>
                     </div>
                   </div>
@@ -306,7 +306,7 @@ export default function RegistrationSuccessFeature() {
                 </div>
                 <ul className="space-y-1">
                   {errorMessage.split(" | ").map((msg, i) => (
-                    <li key={i} className="text-[11px] text-red-600 font-medium">{msg}</li>
+                    <li key={i} className="text-[11px] text-red-600 font-medium break-words">{msg}</li>
                   ))}
                 </ul>
               </div>
